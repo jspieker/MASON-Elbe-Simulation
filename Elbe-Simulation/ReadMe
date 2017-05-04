@@ -1,0 +1,13 @@
+Um zu testen, ob alles richtig funktioniert reicht es, wenn die elbe.java im Package Test ausgeführt wird.
+
+Wenn es funktioniert erscheint in der Konsole.
+----------------------------------------------------------------------------------------------------------
+
+MASON Version 14.  For further options, try adding ' -help' at end.
+Job: 0 Seed: 1493912874465
+Starting Umgebung.elbe
+Exhausted
+
+-----------------------------------------------------------------------------------------------------------
+
+Damit funktioniert Mason.
