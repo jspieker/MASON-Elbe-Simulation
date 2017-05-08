@@ -8,7 +8,7 @@ The fabulous Elbe simulation...
 git clone https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation.git
 cd Simulation
 mvn clean install
-java -jar target/elbe-1.0.jar 
+java -jar target/elbe-1.0-with-dependencies.jar 
 ```
 In case of any errors follow the stacktrace or check you maven or java installation.
 
