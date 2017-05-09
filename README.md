@@ -12,5 +12,10 @@ java -jar target/elbe-1.0-with-dependencies.jar
 ```
 In case of any errors follow the stacktrace or check you maven or java installation.
 
+## Commit conventions
+Please use the [Karma commit message conventions](http://karma-runner.github.io/0.10/dev/git-commit-msg.html) in order to simplify navigating through the repository.
+
+For example, adding new production code should be labelled as `feat: add elbe visualization in mason`, whereas a bugfix or a simple style change should use the `fix` or `style` tag respectively.
+
 ## Developer notes
 Please write in english (commit messages also).
