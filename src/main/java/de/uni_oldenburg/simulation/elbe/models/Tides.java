@@ -16,8 +16,7 @@ public class Tides {
 	/**
 	 * Determines whether the simulation starts with high tide or not (low tide).
 	 */
-	private boolean isHighTide;
-
+	private boolean isHighTideFirst;
 	/**
 	 * The moon attraction is set by the sinus function to determine how the water is pulled or pushed away.
 	 */
@@ -26,14 +25,15 @@ public class Tides {
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
 	 *
-	 * @param highTidePeriod Is the time needed for the high tide in seconds.
-	 * @param lowTidePeriod  Is the time needed for the low tide in seconds.
-	 * @param isHighTide     Determines whether the simulation starts with high tide or not (low tide).
+	 * @param highTidePeriod  Is the time needed for the high tide in seconds.
+	 * @param lowTidePeriod   Is the time needed for the low tide in seconds.
+	 * @param isHighTideFirst Determines whether the simulation starts with high tide or not (low tide).
 	 */
-	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTide) {
+	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst) {
 		this.highTidePeriod = highTidePeriod;
 		this.lowTidePeriod = lowTidePeriod;
 		this.moonAttraction = 0.0;
+		this.isHighTideFirst = isHighTideFirst;
 	}
 
 	/**
@@ -42,8 +42,14 @@ public class Tides {
 	 * @param time Is the time value at which the moon attraction is wanted.
 	 */
 	public void computeMoonAttraction(long time) {
+		boolean isHighTide = false;
 		// we need to reset the time after one whole cycle from low tide to high tide to low tide or the other way around.
 		time %= (highTidePeriod + lowTidePeriod);
+		if (!isHighTideFirst && time >= lowTidePeriod || isHighTideFirst && time < highTidePeriod) {
+			isHighTide = true;
+		} else if (isHighTideFirst && time >= highTidePeriod || !isHighTideFirst && time < lowTidePeriod) {
+			isHighTide = false;
+		}
 		this.moonAttraction = Math.sin((Math.PI / (isHighTide ? highTidePeriod : lowTidePeriod)) * time);
 	}
 
