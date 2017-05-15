@@ -7,6 +7,9 @@ import sim.engine.SimState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OptionalDataException;
 
 /**
  * Starts the graphical interface (GUI) of MASON by extending the {@link GUIState} and others.
@@ -21,6 +24,12 @@ public class ElbeWithUI extends GUIState {
 	 */
 	public ElbeWithUI() {
 		super(new Elbe(System.currentTimeMillis()));
+	}
+
+	public ElbeWithUI(Display2D display, JFrame jFrame) {
+		super(new Elbe(System.currentTimeMillis()));
+		this.display = display;
+		this.displayFrame = jFrame;
 	}
 
 	/**
