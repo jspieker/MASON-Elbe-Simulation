@@ -66,10 +66,10 @@ public class ElbeWithUI extends GUIState {
 
 		// Set colors for elbeMap
 		Color[] colorMap = new Color[4];
-		colorMap[0] = new Color(203,230,163, 255); // landmass
-		colorMap[1] = new Color(164, 204, 255, 255); // water (Elbe)
-		colorMap[2] = new Color(40, 100, 255, 255); // water (open sea spawn point)
-		colorMap[3] = new Color(237, 65, 62, 255); // hamburg dockyard
+		colorMap[0] = new Color(203,230,163, 255); 		// landmass
+		colorMap[1] = new Color(164, 204, 255, 255); 	// water (Elbe)
+		colorMap[2] = new Color(90, 164, 255, 255); 		// water (open sea spawn point)
+		colorMap[3] = new Color(237, 65, 62, 255); 		// hamburg dockyard
 		elbePortrayal.setMap(new SimpleColorMap(colorMap));
 
 		// reschedule the displayer
@@ -112,7 +112,7 @@ public class ElbeWithUI extends GUIState {
 		super.init(controller);
 
 		// Make the Display2D. We'll have it display stuff later.
-		display = new Display2D(1625, 600, this); // At 10x510, we've got 10x10 per array position
+		display = new Display2D(1200, 350, this); // At 10x510, we've got 10x10 per array position
         display.setScale(scale);
 		displayFrame = display.createFrame();
 		controller.registerFrame(displayFrame);   // Register the frame so it appears in the "Display" list
