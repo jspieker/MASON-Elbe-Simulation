@@ -40,7 +40,9 @@ public class Tides {
 	}
 
 	/**
-	 * Computes the attraction of the moon with the sinus function: sin((pi/highTide*isHighTide+lowTide*!isHighTide))*x). Afterwards the moon attraction can be got using {@link Tides#getMoonAttraction()} and used as a multiplier to the current water level. The switching between low and high tide is done automatically.
+	 * Computes the attraction of the moon with the sinus function: sin((pi/highTide*isHighTide+lowTide*!isHighTide))*x).
+	 * Afterwards the moon attraction can be got using {@link Tides#getMoonAttraction()} and used as a multiplier to the current water level.
+	 * The switching between low and high tide is done automatically.
 	 *
 	 * @param time Is the time value at which the moon attraction is wanted in seconds.
 	 * @throws Exception Is thrown if the time in seconds is negative.
