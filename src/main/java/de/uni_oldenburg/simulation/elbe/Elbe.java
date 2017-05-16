@@ -8,17 +8,20 @@ import sim.field.grid.SparseGrid2D;
 
 public class Elbe extends SimState {
 
-	public IntGrid2D elbeMap;
-	public SparseGrid2D vesselGrid;
+	IntGrid2D elbeMap;
+	SparseGrid2D vesselGrid;
 
-	private final int[] FAIRWAY_LENGTH = {283, 283, 283, 283, 283};
-	private final int[] FAIRWAY_WIDTH =  {40, 32, 38, 27, 25};
+	private final int[] FAIRWAY_LENGTH = 				{507, 230, 230, 200, 48}; // TODO find exact values in relation
+	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED =	{400, 300, 250, 250, 230}; // TODO find exact values for #2 #3 #4 (#0 and #1 are correct, others mostly)
+	private final int[] FAIRWAY_WIDTH_EXTENDED = 		{400, 320, 380, 270, 250};
+	private int[] FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 	private final int MARGIN = 25;
 
 	private int depthOfWaterBelowCD = 15; // sample value
 	private int depthOfWaterAboveCD = 2; // TODO use this for tide function
 	private int depthOfWaterTotal = depthOfWaterBelowCD + depthOfWaterAboveCD;
 
+	private boolean isExtended = false;
 	private int fairwayLengthTotal;
 	private int fairwayWidthMax;
 	private int spawnPositionX;
@@ -71,23 +74,6 @@ public class Elbe extends SimState {
 			}
 			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
 		}
-
-		// Draw transitions between fairway length areas
-		/*tempLengthHelper = 0;
-        for (int elbeSection = 1; elbeSection < FAIRWAY_LENGTH.length; elbeSection++) {
-		   	int diff = (FAIRWAY_WIDTH[elbeSection] - FAIRWAY_WIDTH[elbeSection - 1]) / 2;
-			System.out.println(diff);
-			if (diff >= 0) {
-				for (int i = FAIRWAY_LENGTH[elbeSection - 1] - diff; i < FAIRWAY_LENGTH[elbeSection - 1]; i++) {
-					for (int j = MARGIN; j < MARGIN + diff; j++) {
-						elbeMap.field[i][j] = FAIRWAY_ID;
-						System.out.println("works");
-					}
-				}
-			}
-			tempLengthHelper += FAIRWAY_LENGTH[elbeSection-1];
-		}*/
-
 
 		// Draw spawn
 		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2 ) + MARGIN + FAIRWAY_WIDTH[0]); i++) {
@@ -147,24 +133,17 @@ public class Elbe extends SimState {
 		return depthOfWaterTotal;
 	}
 
-	public int getFAIRWAY_WIDTH_0() {
-		return FAIRWAY_WIDTH[0];
+	public boolean getIsExtended() {
+		return isExtended;
 	}
 
-	public int getFAIRWAY_WIDTH_1() {
-		return FAIRWAY_WIDTH[1];
-	}
-
-	public int getFAIRWAY_WIDTH_2() {
-		return FAIRWAY_WIDTH[2];
-	}
-
-	public int getFAIRWAY_WIDTH_3() {
-		return FAIRWAY_WIDTH[3];
-	}
-
-	public int getFAIRWAY_WIDTH_4() {
-		return FAIRWAY_WIDTH[4];
+	public void setIsExtended(boolean newValue) {
+		isExtended = newValue;
+		if (isExtended) {
+			FAIRWAY_WIDTH = FAIRWAY_WIDTH_EXTENDED;
+		} else {
+			FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
+		}
 	}
 
 }
