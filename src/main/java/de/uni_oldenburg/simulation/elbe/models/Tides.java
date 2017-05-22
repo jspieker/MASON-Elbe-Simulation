@@ -96,8 +96,6 @@ public class Tides {
 	}
 
 	private boolean isAffected(long time, long xCoordinate) throws Exception {
-		// TODO take a curve with x axis as the  time. if the xCoordinate is less than the y value returned that it is affected. Take into account to divide the time by two and start from the otherside to roll back
-
 		if (time < 0) throw new Exception("The time in seconds must not be negative.");
 		// we need to reset the time after one whole cycle from low tide to high tide to low tide or from high tide to low tide to high tide.
 		time %= (highTidePeriod + lowTidePeriod);
@@ -109,19 +107,26 @@ public class Tides {
 			time -= lowTidePeriod;
 		}
 
-		double xPositionsAffectedAtTime = (elbeLength / (isHighTide ? highTidePeriod : lowTidePeriod)) * time;
+		if (isHighTide && time >= ((double) highTidePeriod) / 2 || !isHighTide && time >= ((double) lowTidePeriod) / 2) {
+			return true;
+		} else {
+			double xPositionsAffectedAtTime = ((double) elbeLength / (isHighTide ? ((double) highTidePeriod) / 2 : ((double) lowTidePeriod))) * time; // the time is divided by two because at the top of the sinus function e.g. Hamburg is affected already
 
-		return !isHighTide && xPositionsAffectedAtTime >= xCoordinate /* Tide before the position */ || isHighTide && xPositionsAffectedAtTime < xCoordinate /* Tide behind the position */;
-
+			if (isHighTide && xPositionsAffectedAtTime >= xCoordinate) {
+				return true;
+			} else if (!isHighTide && xPositionsAffectedAtTime < xCoordinate) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 	private boolean isHighTide(long time) {
 		if (!isHighTideFirst && time >= lowTidePeriod || isHighTideFirst && time < highTidePeriod) {
 			return true;
-		} else if (isHighTideFirst && time >= highTidePeriod || !isHighTideFirst && time < lowTidePeriod) {
-			return false;
-		}
-		return false; // should never be entered (check with code coverage)
+		} //else if (isHighTideFirst && time >= highTidePeriod || !isHighTideFirst && time < lowTidePeriod) {
+		return false; // else to satisfy the interpreter
 	}
 
 
