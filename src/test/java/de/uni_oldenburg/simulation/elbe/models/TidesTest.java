@@ -25,23 +25,6 @@ public class TidesTest {
 	public void finish() {
 	}
 
-	// init...
-	@Test(expected = Exception.class)
-	public void TidesConstructor_passWrongParams_throwsException() throws Exception {
-		try { // catch the first exception to test the second parameter
-			new Tides(-1, 1, true, elbeLength);
-		} catch (Exception e) {
-			new Tides(1, -1, false, elbeLength);
-		}
-	}
-
-	// computeMoonAttraction()
-	@Test(expected = Exception.class)
-	public void computeMoonAttraction_passNegativeTime_throwsException() throws Exception {
-		long time = -1;
-		instance.computeMoonAttraction(time);
-	}
-
 	@Test
 	public void computeMoonAttraction_passCorrectHighTideValue_confirms() throws Exception {
 		double moonAttractionExpected = 0.9510565162951536; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D0+and+x%3D15000
@@ -81,21 +64,6 @@ public class TidesTest {
 		instance.computeMoonAttraction(35000);
 		assertEquals("The expected moon attraction must met the computed one.", moonAttractionExpected, instance.getMoonAttraction());
 
-	}
-
-	// computeWaterLevel():
-	@Test(expected = Exception.class)
-	public void computeWaterLevel_passNegativeTime_throwsException() throws Exception {
-		long time = -1;
-		double waterLevel = 1.0;
-		instance.computeWaterLevel(time, waterLevel, 100);
-	}
-
-	@Test(expected = Exception.class)
-	public void computeWaterLevel_passNegativeWaterLevel_throwsException() throws Exception {
-		long time = 1;
-		double waterLevel = -1.0;
-		instance.computeWaterLevel(time, waterLevel, 100);
 	}
 
 	@Test
@@ -185,9 +153,4 @@ public class TidesTest {
 		newWaterLevelTest = instance.computeWaterLevel(30000, waterLevel, 500);
 		assertEquals("The expected water level must met the computed one.", newWaterLevelExpected, newWaterLevelTest);
 	}
-
-
-	// getMoonAttraction(): (implicitly tested)
-	// isAffected(long time, long xCoordinate): (implicitly tested)
-
 }
