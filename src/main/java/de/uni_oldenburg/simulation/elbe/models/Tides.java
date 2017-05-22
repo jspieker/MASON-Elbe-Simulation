@@ -1,5 +1,9 @@
 package de.uni_oldenburg.simulation.elbe.models;
 
+import sim.engine.SimState;
+
+import static java.util.Objects.requireNonNull;
+
 /**
  * Computes the models of the elbe by using an adapted sinus function: f(t,y) = sin((pi/highTidePeriod)*t) TODO extend
  */
@@ -33,11 +37,8 @@ public class Tides {
 	 * @param lowTidePeriod   Is the time needed for the low tide in seconds.
 	 * @param isHighTideFirst Determines whether the simulation starts with high tide or not (low tide).
 	 * @param elbeLength      Is the length of the Elbe. The parameter is used to determine whether a specific x coordinate is affected by the moon attraction or not.
-	 * @throws Exception Is thrown if highTidePeriod or lowTidePeriod are set inappropriate.
 	 */
-	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst, long elbeLength) throws Exception {
-		if (highTidePeriod <= 0) throw new Exception("The high tide period must not be negative or zero.");
-		if (lowTidePeriod <= 0) throw new Exception("The low tide period must not be negative or zero.");
+	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst, long elbeLength) {
 		this.highTidePeriod = highTidePeriod;
 		this.lowTidePeriod = lowTidePeriod;
 		this.moonAttraction = 0.0;
@@ -51,10 +52,9 @@ public class Tides {
 	 * The switching between low and high tide is done automatically.
 	 *
 	 * @param time Is the time value at which the moon attraction is wanted in seconds.
-	 * @throws Exception Is thrown if the time in seconds is negative.
 	 */
-	public void computeMoonAttraction(long time) throws Exception {
-		if (time < 0) throw new Exception("The time in seconds must not be negative.");
+	public void computeMoonAttraction(long time) {
+
 		// we need to reset the time after one whole cycle from low tide to high tide to low tide or from high tide to low tide to high tide.
 		time %= (highTidePeriod + lowTidePeriod);
 		boolean isHighTide = isHighTide(time);
@@ -74,11 +74,10 @@ public class Tides {
 	 * @param averageWaterLevel Is the average water level that should be adjusted using the current moon attraction.
 	 * @param xCoordinate       Is a x coordinate at the length of the elbe. The parameter is used to determine whether the position is affected by the moon attraction or not.
 	 * @return The current water level adjusted by the current moon attraction or -1 if the x coordinate is not affected yet.
-	 * @throws Exception Is thrown if either the time in seconds or the water level is negative.
 	 */
-	public double computeWaterLevel(long time, double averageWaterLevel, long xCoordinate) throws Exception {
-		if (averageWaterLevel < 0) throw new Exception("The average water level cannot be negative.");
-		computeMoonAttraction(time); // throws an exception if and only if time is negative
+	public double computeWaterLevel(long time, double averageWaterLevel, long xCoordinate) {
+
+		computeMoonAttraction(time);
 		if (isAffected(time, xCoordinate)) {
 			return averageWaterLevel + averageWaterLevel * this.moonAttraction; // adds or subtracts the current moon attraction
 		} else {
@@ -95,8 +94,8 @@ public class Tides {
 		return moonAttraction;
 	}
 
-	private boolean isAffected(long time, long xCoordinate) throws Exception {
-		if (time < 0) throw new Exception("The time in seconds must not be negative.");
+	private boolean isAffected(long time, long xCoordinate) {
+
 		// we need to reset the time after one whole cycle from low tide to high tide to low tide or from high tide to low tide to high tide.
 		time %= (highTidePeriod + lowTidePeriod);
 		boolean isHighTide = isHighTide(time);
@@ -128,6 +127,4 @@ public class Tides {
 		} //else if (isHighTideFirst && time >= highTidePeriod || !isHighTideFirst && time < lowTidePeriod) {
 		return false; // else to satisfy the interpreter
 	}
-
-
 }

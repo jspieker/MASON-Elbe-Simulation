@@ -21,7 +21,8 @@ public class ElbeWithUI extends GUIState {
 
 	private Display2D display;
 	private JFrame displayFrame;
-	private FastValueGridPortrayal2D elbePortrayal = new FastValueGridPortrayal2D("Elbe Map", false);
+	private FastValueGridPortrayal2D elbePortrayal = new FastValueGridPortrayal2D("Elbe Map", true);
+	private FastValueGridPortrayal2D tidesPortrayal = new FastValueGridPortrayal2D("Tides", false);
 	private SparseGridPortrayal2D vesselPortrayal = new SparseGridPortrayal2D();
 
 	private final double scale = 1; // scale of the simulation // TODO set to 0.5
@@ -69,25 +70,25 @@ public class ElbeWithUI extends GUIState {
 
 		Elbe elbe = (Elbe) state;
 
-		// tell the portrayals what to portray and how to portray them
-		vesselPortrayal.setField(elbe.vesselGrid);
+		// Draw the tide values
+		tidesPortrayal.setField(elbe.tidesMap);
+		tidesPortrayal.setMap(new SimpleColorMap(10, 20, Color.WHITE, Color.BLUE));
+
+		// Show the Elbe map
 		elbePortrayal.setField(elbe.elbeMap);
 
-		// Set colors for elbeMap
+		// Set the colors for the Elbe map
 		Color[] colorMap = new Color[4];
 		colorMap[0] = new Color(203,230,163, 255); 		// landmass
-		colorMap[1] = new Color(164, 204, 255, 255); 	// water (Elbe)
+		colorMap[1] = new Color(0, 0, 0, 0);            	// transparent water (values given by tides)
 		colorMap[2] = new Color(90, 164, 255, 255); 		// water (open sea spawn point)
 		colorMap[3] = new Color(237, 65, 62, 255); 		// hamburg dockyard
 		elbePortrayal.setMap(new SimpleColorMap(colorMap));
 
+		// Map the vessels
+		vesselPortrayal.setField(elbe.vesselGrid);
+
 		// reschedule the displayer
-		display.reset();
-
-		// redraw the display
-		display.repaint();
-
-		//schedule the displayer
 		display.reset();
 
 		// redraw the display
@@ -128,12 +129,12 @@ public class ElbeWithUI extends GUIState {
 		displayFrame.setVisible(true);
 
 		// Attach the portrayals from bottom to top
-		display.attach(elbePortrayal, "Dockyard");
+		display.attach(tidesPortrayal, "Tides");
+		display.attach(elbePortrayal, "Elbe Map");
 		display.attach(vesselPortrayal, "Vessels");
 
 		// specify the backdrop color  -- what gets painted behind the displays
 		display.setBackdrop(new Color(80, 80, 80, 255)); // landmass
-
 	}
 
 	/**
