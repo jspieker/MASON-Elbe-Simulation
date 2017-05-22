@@ -1,10 +1,7 @@
 package de.uni_oldenburg.simulation.elbe;
 
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
 
 /**
  * Tests {@link AppStarter}
