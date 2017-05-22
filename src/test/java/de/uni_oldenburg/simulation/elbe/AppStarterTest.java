@@ -1,6 +1,7 @@
 package de.uni_oldenburg.simulation.elbe;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -10,13 +11,8 @@ class AppStarterTest {
 
 	private AppStarter appStarter;
 
-	@Before
+	@Test
 	public void setup() {
 		appStarter = new AppStarter();
-	}
-
-	@Test
-	void main() {
-		AppStarter.main(new String[0]);
 	}
 }
