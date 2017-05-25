@@ -46,7 +46,7 @@ public class Transport extends Ship {
 	
 	
 	/*
-	 * 
+	 * <ayx 
 	 */
 	public Transport(String mmsi, String name, double weight, double length, double width) {
 		super();
@@ -128,8 +128,6 @@ public class Transport extends Ship {
 		xNew = x + epsilon * cos(yaw);
 		yNew = y + epsilon * sin(yaw);
 		vNew = v + epsilon * r;
-		
-		
 		
 		MutableDouble2D positionNew = new MutableDouble2D(xNew, yNew);
 		
