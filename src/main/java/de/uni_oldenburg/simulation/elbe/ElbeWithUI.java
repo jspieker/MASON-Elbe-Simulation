@@ -4,9 +4,15 @@ import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
+import sim.portrayal.grid.FastValueGridPortrayal2D;
+import sim.portrayal.grid.SparseGridPortrayal2D;
+import sim.util.gui.SimpleColorMap;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OptionalDataException;
 
 /**
  * Starts the graphical interface (GUI) of MASON by extending the {@link GUIState} and others.
@@ -15,12 +21,23 @@ public class ElbeWithUI extends GUIState {
 
 	private Display2D display;
 	private JFrame displayFrame;
+	private FastValueGridPortrayal2D elbePortrayal = new FastValueGridPortrayal2D("Elbe Map", true);
+	private FastValueGridPortrayal2D tidesPortrayal = new FastValueGridPortrayal2D("Tides", false);
+	private SparseGridPortrayal2D vesselPortrayal = new SparseGridPortrayal2D();
+
+	private final double scale = 1; // scale of the simulation // TODO set to 0.5
 
 	/**
 	 * Start the Simulation at time 0
 	 */
 	public ElbeWithUI() {
 		super(new Elbe(System.currentTimeMillis()));
+	}
+
+	public ElbeWithUI(Display2D display, JFrame jFrame) {
+		super(new Elbe(System.currentTimeMillis()));
+		this.display = display;
+		this.displayFrame = jFrame;
 	}
 
 	/**
@@ -50,6 +67,26 @@ public class ElbeWithUI extends GUIState {
 	 * Set up our views
 	 */
 	private void setupPortrayals() {
+
+		Elbe elbe = (Elbe) state;
+
+		// Draw the tide values
+		tidesPortrayal.setField(elbe.tidesMap);
+		tidesPortrayal.setMap(new SimpleColorMap(10, 20, Color.WHITE, Color.BLUE));
+
+		// Show the Elbe map
+		elbePortrayal.setField(elbe.elbeMap);
+
+		// Set the colors for the Elbe map
+		Color[] colorMap = new Color[4];
+		colorMap[0] = new Color(203,230,163, 255); 		// landmass
+		colorMap[1] = new Color(0, 0, 0, 0);            	// transparent water (values given by tides)
+		colorMap[2] = new Color(90, 164, 255, 255); 		// water (open sea spawn point)
+		colorMap[3] = new Color(237, 65, 62, 255); 		// hamburg dockyard
+		elbePortrayal.setMap(new SimpleColorMap(colorMap));
+
+		// Map the vessels
+		vesselPortrayal.setField(elbe.vesselGrid);
 
 		// reschedule the displayer
 		display.reset();
@@ -85,13 +122,19 @@ public class ElbeWithUI extends GUIState {
 		super.init(controller);
 
 		// Make the Display2D. We'll have it display stuff later.
-		display = new Display2D(500, 500, this); // At 10x510, we've got 10x10 per array position
+		display = new Display2D(1200, 350, this); // At 10x510, we've got 10x10 per array position
+        display.setScale(scale);
 		displayFrame = display.createFrame();
 		controller.registerFrame(displayFrame);   // Register the frame so it appears in the "Display" list
 		displayFrame.setVisible(true);
 
+		// Attach the portrayals from bottom to top
+		display.attach(tidesPortrayal, "Tides");
+		display.attach(elbePortrayal, "Elbe Map");
+		display.attach(vesselPortrayal, "Vessels");
+
 		// specify the backdrop color  -- what gets painted behind the displays
-		display.setBackdrop(Color.gray);
+		display.setBackdrop(new Color(80, 80, 80, 255)); // landmass
 	}
 
 	/**
