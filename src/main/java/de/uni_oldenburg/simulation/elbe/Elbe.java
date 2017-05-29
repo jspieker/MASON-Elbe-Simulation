@@ -4,6 +4,7 @@ import de.uni_oldenburg.simulation.elbe.models.Tides;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.field.continuous.Continuous2D;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
@@ -12,7 +13,7 @@ public class Elbe extends SimState {
 
 	IntGrid2D elbeMap;
 	DoubleGrid2D tidesMap;
-	SparseGrid2D vesselGrid;
+	public Continuous2D vesselGrid;
 
 	private final int[] FAIRWAY_LENGTH = 				{507, 230, 230, 200, 48}; // TODO find exact values in relation
 	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED =	{400, 300, 250, 250, 230}; // TODO find exact values for #2 #3 #4 (#0 and #1 are correct, others mostly)
@@ -51,7 +52,7 @@ public class Elbe extends SimState {
 		// Initialize grids
 		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
 		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
-		vesselGrid = new SparseGrid2D(gridWidth, gridHeight);
+		vesselGrid = new Continuous2D(0.01, gridWidth, gridHeight);
 
 		// Get some water
 		tides = new Tides(25000/60, 20000/60, true, gridWidth);
