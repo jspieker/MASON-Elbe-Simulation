@@ -1,8 +1,6 @@
 package de.uni_oldenburg.simulation.elbe.models;
 
-import sim.engine.SimState;
-
-import static java.util.Objects.requireNonNull;
+import java.util.ArrayList;
 
 /**
  * Computes the models of the elbe by using an adapted sinus function: f(t,y) = sin((pi/highTidePeriod)*t) TODO extend
@@ -28,7 +26,9 @@ public class Tides {
 	/**
 	 * Is the length of the Elbe. The parameter is used to determine whether a specific x coordinate is affected by the moon attraction or not.
 	 */
-	private long elbeLength;
+	private int elbeLength;
+
+	private WaterLevel waterLevel[];
 
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
@@ -38,12 +38,17 @@ public class Tides {
 	 * @param isHighTideFirst Determines whether the simulation starts with high tide or not (low tide).
 	 * @param elbeLength      Is the length of the Elbe. The parameter is used to determine whether a specific x coordinate is affected by the moon attraction or not.
 	 */
-	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst, long elbeLength) {
+	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst, int elbeLength) {
 		this.highTidePeriod = highTidePeriod;
 		this.lowTidePeriod = lowTidePeriod;
 		this.moonAttraction = 0.0;
 		this.isHighTideFirst = isHighTideFirst;
 		this.elbeLength = elbeLength;
+		waterLevel = new WaterLevel[elbeLength];
+
+		for (int i = 0; i < elbeLength; i++) {
+			waterLevel[i] = new WaterLevel(0, i);
+		}
 	}
 
 	/**
@@ -75,14 +80,13 @@ public class Tides {
 	 * @param xCoordinate       Is a x coordinate at the length of the elbe. The parameter is used to determine whether the position is affected by the moon attraction or not.
 	 * @return The current water level adjusted by the current moon attraction or -1 if the x coordinate is not affected yet.
 	 */
-	public double computeWaterLevel(long time, double averageWaterLevel, long xCoordinate) {
+	public double computeWaterLevel(long time, double averageWaterLevel, int xCoordinate) {
 
 		computeMoonAttraction(time);
 		if (isAffected(time, xCoordinate)) {
-			return averageWaterLevel + averageWaterLevel * this.moonAttraction; // adds or subtracts the current moon attraction
-		} else {
-			return -1;
+			waterLevel[xCoordinate].updateWaterLevel(averageWaterLevel + averageWaterLevel * this.moonAttraction); // adds or subtracts the current moon attraction
 		}
+		return waterLevel[xCoordinate].getLastKnownWaterLevel();
 	}
 
 	/**

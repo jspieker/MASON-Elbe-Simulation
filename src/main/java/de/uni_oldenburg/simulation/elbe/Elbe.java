@@ -34,8 +34,6 @@ public class Elbe extends SimState {
 	private final int SPAWN_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
 
-	private long stepCount = 0;
-
 	public Elbe(long seed) {
 		super(seed);
 
@@ -63,9 +61,8 @@ public class Elbe extends SimState {
 
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
 
-			stepCount++;
 			for (int x = 0; x < gridWidth; x++) {
-				double waterLevel = depthOfWaterBelowCD + tides.computeWaterLevel(stepCount, depthOfWaterBelowCD, x);
+				double waterLevel = depthOfWaterBelowCD + tides.computeWaterLevel(schedule.getSteps(), depthOfWaterBelowCD, x);
 				for (int y = 0; y < gridHeight; y++) {
 					tidesMap.set(x, y, waterLevel);
 				}
