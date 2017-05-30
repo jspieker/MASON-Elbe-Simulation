@@ -56,7 +56,7 @@ public class DynamicWaterLevel {
 	 */
 	private void updateWaterLevels(long time) {
 		for (int x = 0; x < waterLevels.length; x++) {
-			waterLevels[x].updateWaterLevel(tides.computeWaterLevel(time, x));
+			waterLevels[x].updateWaterLevel((waterLevels[x].getLastKnownWaterLevel()*100 + tides.computeWaterLevel(time, x))/101);
 		}
 	}
 

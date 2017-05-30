@@ -38,7 +38,15 @@ public class Tides {
 	 * The final value is computed by putting the average high tide water level in relation to the average low tide water level.
 	 * The average water level is used to adjust the water level above CD.
 	 */
-	static final double AVERAGE_WATERLEVEL_ABOVE_CD = (3.6 - 0.47) / 2;
+	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD = 0.47; // Low tide minimum
+	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD = 3.6; // high tide maximum
+
+
+	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_ADDER = 2.035;
+	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 1.565;
+
+	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER = 2.035;
+	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 1.565;
 
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
@@ -66,9 +74,13 @@ public class Tides {
 	public double computeWaterLevel(long time, long xCoordinate) {
 		computeTime(time);
 		computeMoonAttraction();
-
 		double levelOfAffection = levelOfAffection(xCoordinate);
-		return AVERAGE_WATERLEVEL_ABOVE_CD + AVERAGE_WATERLEVEL_ABOVE_CD * this.moonAttraction * levelOfAffection; // adds or subtracts the current moon attraction
+
+		if (isHighTide) {
+			return (this.moonAttraction * AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_ADDER)* levelOfAffection;
+		} else {
+			return (this.moonAttraction * AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER);
+		}
 	}
 
 	/**

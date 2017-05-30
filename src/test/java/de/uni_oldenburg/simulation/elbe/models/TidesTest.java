@@ -28,7 +28,7 @@ public class TidesTest {
 	@Test
 	public void computeWaterLevel_passCorrectValueWithHighTide_confirms() throws Exception {
 		long time = 10000;
-		double waterLevel = Tides.AVERAGE_WATERLEVEL_ABOVE_CD;
+		double waterLevel = 4.9;
 
 		double moonAttractionExpected = 0.9510565162951536; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D0+and+x%3D15000
 		double newWaterLevelExpected = waterLevel + waterLevel * moonAttractionExpected;
@@ -42,7 +42,7 @@ public class TidesTest {
 	public void computeWaterLevel_passCorrectValueWithLowTide_confirms() throws Exception {
 		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
 		double moonAttractionExpected = -0.7071067811865475; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D1+and+x%3D15000
-		double waterLevel = Tides.AVERAGE_WATERLEVEL_ABOVE_CD;
+		double waterLevel = 4.9;
 
 		double newWaterLevelExpected = waterLevel + waterLevel * moonAttractionExpected;
 		double newWaterLevelTest = instance.computeWaterLevel(5000, elbeLength - 50);
@@ -53,7 +53,7 @@ public class TidesTest {
 	@Test
 	public void computeWaterLevel_passCorrectValueButNotYetAffectedWitHighTide_confirms() throws Exception {
 		long time = 5000;
-		double waterLevel = Tides.AVERAGE_WATERLEVEL_ABOVE_CD;
+		double waterLevel = 4.9;
 
 		double newWaterLevelExpected = -1;
 
@@ -68,7 +68,7 @@ public class TidesTest {
 		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
 
 		long time = 5000;
-		double waterLevel = Tides.AVERAGE_WATERLEVEL_ABOVE_CD;
+		double waterLevel = 4.9;
 
 		double newWaterLevelExpected = -1;
 
@@ -82,7 +82,7 @@ public class TidesTest {
 	public void computeWaterLevel_passCorrectLowTideValueThenSwitchToHighTide_confirms() throws Exception {
 		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
 		double moonAttractionExpected = -0.7071067811865477; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D1+and+x%3D15000
-		double waterLevel = Tides.AVERAGE_WATERLEVEL_ABOVE_CD;
+		double waterLevel = 4.9;
 
 		double newWaterLevelExpected = waterLevel + waterLevel * moonAttractionExpected;
 		double newWaterLevelTest = instance.computeWaterLevel(15000, 0);
@@ -98,7 +98,7 @@ public class TidesTest {
 
 	@Test
 	public void computeWaterLevel_passCorrectHighTideValueThenSwitchToLowTide_confirms() throws Exception {
-		double waterLevel = Tides.AVERAGE_WATERLEVEL_ABOVE_CD;
+		double waterLevel = 4.9;
 
 		double moonAttractionExpected = 0.9510565162951536; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D0+and+x%3D15000
 		double newWaterLevelExpected = waterLevel + waterLevel * moonAttractionExpected;
