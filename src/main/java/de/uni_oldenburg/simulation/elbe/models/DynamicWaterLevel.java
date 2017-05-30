@@ -27,7 +27,7 @@ public class DynamicWaterLevel {
 	public DynamicWaterLevel(int elbeLength, final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst) {
 		waterLevels = new WaterLevel[elbeLength];
 		for (int x = 0; x < elbeLength; x++) {
-			waterLevels[x] = new WaterLevel(Tides.AVERAGE_WATERLEVEL_ABOVE_CD, x);
+			waterLevels[x] = new WaterLevel(0 /* We have no water at the beginning*/, x);
 		}
 
 		tides = new Tides(highTidePeriod, lowTidePeriod, isHighTideFirst, elbeLength);
@@ -57,8 +57,13 @@ public class DynamicWaterLevel {
 	private void updateWaterLevels(long time) {
 		for (int x = 0; x < waterLevels.length; x++) {
 			double currentWaterLevel = tides.computeWaterLevel(time, x);
-			if (currentWaterLevel >= 0) waterLevels[x].updateWaterLevel(currentWaterLevel);
+			if (currentWaterLevel >= 0) {
+				waterLevels[x].updateWaterLevel(currentWaterLevel);
+			} else {
+				//waterLevels[x].updateWaterLevel(currentWaterLevel);
+			}
 		}
+		System.out.println(tides.getMoonAttraction());
 	}
 
 

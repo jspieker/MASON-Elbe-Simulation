@@ -66,11 +66,16 @@ public class Tides {
 	public double computeWaterLevel(long time, long xCoordinate) {
 		computeTime(time);
 		computeMoonAttraction();
-		if (isAffected(xCoordinate)) {
+
+		double levelOfAffection = levelOfAffection(xCoordinate);
+		if (levelOfAffection < 0) return -1;
+		return AVERAGE_WATERLEVEL_ABOVE_CD + AVERAGE_WATERLEVEL_ABOVE_CD * (this.moonAttraction * levelOfAffection); // adds or subtracts the current moon attraction
+
+		/*if (isAffected(xCoordinate)) {
 			return AVERAGE_WATERLEVEL_ABOVE_CD + AVERAGE_WATERLEVEL_ABOVE_CD * this.moonAttraction; // adds or subtracts the current moon attraction
 		} else {
 			return -1;
-		}
+		}*/
 	}
 
 	/**
@@ -85,12 +90,12 @@ public class Tides {
 	// private methods
 
 	/**
-	 * Computes the attraction of the moon with the sinus function: sin((pi/highTide*isHighTide+lowTide*!isHighTide))*x).
+	 * Computes the attraction of the moon with the cosinus function: (-1*isHighTide)*cos((pi/highTide*isHighTide+lowTide*!isHighTide))*x).
 	 * Afterwards the moon attraction can be got using {@link Tides#getMoonAttraction()} and used as a multiplier to the current water level.
 	 * The switching between low and high tide is done automatically.
 	 */
 	private void computeMoonAttraction() {
-		this.moonAttraction = Math.sin((Math.PI / (isHighTide ? highTidePeriod : lowTidePeriod)) * time + (isHighTide ? 0 : Math.PI));
+		this.moonAttraction = (isHighTide ? -1 : 1) * Math.cos((Math.PI / (isHighTide ? highTidePeriod : lowTidePeriod)) * time);
 	}
 
 	private void computeTime(long time) {
@@ -104,6 +109,32 @@ public class Tides {
 			time -= lowTidePeriod;
 		}
 		this.time = time;
+	}
+
+	private double levelOfAffection(long xCoordinate) {
+		double levelOfAffection;
+		double xPositionsAffectedAtTime;
+
+
+		if (isHighTide) {
+			xPositionsAffectedAtTime = ((double) elbeLength / highTidePeriod) * time;
+
+			if (xPositionsAffectedAtTime >= xCoordinate) {
+				levelOfAffection = 1.0;
+			} else {
+				levelOfAffection = -1;
+			}
+		} else {
+			xPositionsAffectedAtTime = ((double) elbeLength / lowTidePeriod) * (time * -1) + elbeLength;
+
+			if (xPositionsAffectedAtTime <= xCoordinate) {
+				levelOfAffection = 1.0;
+			} else {
+				levelOfAffection = -1;
+			}
+		}
+
+		return levelOfAffection;
 	}
 
 	private boolean isAffected(long xCoordinate) {
