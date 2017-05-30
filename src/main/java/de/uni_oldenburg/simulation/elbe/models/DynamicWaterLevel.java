@@ -17,26 +17,17 @@ public class DynamicWaterLevel {
 	private Tides tides;
 
 	/**
-	 * Is the default waterLevel at the beginning of the simulation. The default water level value is used to calculate the water levels depending on the moon attraction.
-	 */
-	private double defaultWaterLevel;
-
-	/**
 	 * Constructor to initialize the waterLevels array with the specific water levels and the Tide to update the water levels.
 	 *
-	 * @param elbeLength        Is the length of the Elbe. Indicates the maximal index of the internal waterLevels array.
-	 * @param defaultWaterLevel Is the default waterLevel at the beginning of the simulation. The default water level value is used to calculate the water levels depending on the moon attraction.
-	 * @param highTidePeriod    Is the time needed for the high tide in seconds.
-	 * @param lowTidePeriod     Is the time needed for the low tide in seconds.
-	 * @param isHighTideFirst   Determines whether the simulation starts with high tide or not (low tide).
+	 * @param elbeLength      Is the length of the Elbe. Indicates the maximal index of the internal waterLevels array.
+	 * @param highTidePeriod  Is the time needed for the high tide in seconds.
+	 * @param lowTidePeriod   Is the time needed for the low tide in seconds.
+	 * @param isHighTideFirst Determines whether the simulation starts with high tide or not (low tide).
 	 */
-	public DynamicWaterLevel(int elbeLength, double defaultWaterLevel, final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst) {
-		this.defaultWaterLevel = defaultWaterLevel;
-
+	public DynamicWaterLevel(int elbeLength, final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst) {
 		waterLevels = new WaterLevel[elbeLength];
 		for (int x = 0; x < elbeLength; x++) {
-			// TODO extra default Value for the waterLevel?
-			waterLevels[x] = new WaterLevel(0, x);
+			waterLevels[x] = new WaterLevel(Tides.AVERAGE_WATERLEVEL_ABOVE_CD, x);
 		}
 
 		tides = new Tides(highTidePeriod, lowTidePeriod, isHighTideFirst, elbeLength);
@@ -65,7 +56,7 @@ public class DynamicWaterLevel {
 	 */
 	private void updateWaterLevels(long time) {
 		for (int x = 0; x < waterLevels.length; x++) {
-			double currentWaterLevel = tides.computeWaterLevel(time, this.defaultWaterLevel, x);
+			double currentWaterLevel = tides.computeWaterLevel(time, x);
 			if (currentWaterLevel >= 0) waterLevels[x].updateWaterLevel(currentWaterLevel);
 		}
 	}

@@ -27,6 +27,7 @@ public class WaterLevel {
 
 	/**
 	 * Updates the last known water level to the current water level.
+	 *
 	 * @param waterLevel The current water level.
 	 */
 	public void updateWaterLevel(double waterLevel) {

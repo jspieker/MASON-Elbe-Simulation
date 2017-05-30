@@ -53,8 +53,7 @@ public class Elbe extends SimState {
 		vesselGrid = new SparseGrid2D(gridWidth, gridHeight);
 
 		// Get some water
-		// TODO find the defaultWaterLevel statistically
-		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, depthOfWaterBelowCD/2, 25000 / 60, 20000 / 60, true);
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 25000 / 60, 20000 / 60, true);
 
 		// Draw Elbe, spawn area and dockyard to the map
 		drawObjects();

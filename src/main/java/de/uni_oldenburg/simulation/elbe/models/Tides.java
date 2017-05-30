@@ -33,6 +33,12 @@ public class Tides {
 	 * A boolean value to determine whether the current tide is high or low.
 	 */
 	private boolean isHighTide;
+	/**
+	 * Is the average water level that is neither affected by the low nor high tide.
+	 * The final value is computed by putting the average high tide water level in relation to the average low tide water level.
+	 * The average water level is used to adjust the water level above CD.
+	 */
+	static final double AVERAGE_WATERLEVEL_ABOVE_CD = (3.6 - 0.47) / 2;
 
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
@@ -53,16 +59,15 @@ public class Tides {
 	/**
 	 * Computes the water level by using {@link Tides#computeMoonAttraction()} and the given water level. The adjustment is then returned.
 	 *
-	 * @param time              Is the time value at which the moon attraction is wanted.
-	 * @param averageWaterLevel Is the average water level that should be adjusted using the current moon attraction.
-	 * @param xCoordinate       Is a x coordinate at the length of the elbe. The parameter is used to determine whether the position is affected by the moon attraction or not.
+	 * @param time        Is the time value at which the moon attraction is wanted.
+	 * @param xCoordinate Is a x coordinate at the length of the elbe. The parameter is used to determine whether the position is affected by the moon attraction or not.
 	 * @return The current water level adjusted by the current moon attraction or -1 if the x coordinate is not affected yet.
 	 */
-	public double computeWaterLevel(long time, double averageWaterLevel, long xCoordinate) {
+	public double computeWaterLevel(long time, long xCoordinate) {
 		computeTime(time);
 		computeMoonAttraction();
 		if (isAffected(xCoordinate)) {
-			return averageWaterLevel + averageWaterLevel * this.moonAttraction; // adds or subtracts the current moon attraction
+			return AVERAGE_WATERLEVEL_ABOVE_CD + AVERAGE_WATERLEVEL_ABOVE_CD * this.moonAttraction; // adds or subtracts the current moon attraction
 		} else {
 			return -1;
 		}
