@@ -26,47 +26,6 @@ public class TidesTest {
 	}
 
 	@Test
-	public void computeMoonAttraction_passCorrectHighTideValue_confirms() throws Exception {
-		double moonAttractionExpected = 0.9510565162951536; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D0+and+x%3D15000
-		instance.computeMoonAttraction(15000);
-		assertEquals("The expected moon attraction must met the computed one.", moonAttractionExpected, instance.getMoonAttraction());
-	}
-
-	@Test
-	public void computeMoonAttraction_passCorrectLowTideValue_confirms() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
-		double moonAttractionExpected = -0.7071067811865477; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D1+and+x%3D15000
-		instance.computeMoonAttraction(15000);
-		assertEquals("The expected moon attraction must met the computed one.", moonAttractionExpected, instance.getMoonAttraction());
-	}
-
-	@Test
-	public void computeMoonAttraction_passCorrectLowTideValueThenSwitchToHighTide_confirms() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
-		double moonAttractionExpected = -0.7071067811865477; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D1+and+x%3D15000
-		instance.computeMoonAttraction(15000);
-		assertEquals("The expected moon attraction must met the computed one.", moonAttractionExpected, instance.getMoonAttraction());
-
-		// switch tide
-		moonAttractionExpected = 0.587785252292473;// see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D0+and+x%3D25000-20000
-		instance.computeMoonAttraction(25000);
-		assertEquals("The expected moon attraction must met the computed one.", moonAttractionExpected, instance.getMoonAttraction());
-	}
-
-	@Test
-	public void computeMoonAttraction_passCorrectHighTideValueThenSwitchToLowTide_confirms() throws Exception {
-		double moonAttractionExpected = 0.9510565162951536; // see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D0+and+x%3D15000
-		instance.computeMoonAttraction(15000);
-		assertEquals("The expected moon attraction must met the computed one.", moonAttractionExpected, instance.getMoonAttraction());
-
-		// switch tide
-		moonAttractionExpected = -1.0;// see wolfram alpha at https://www.wolframalpha.com/input/?i=sin((pi%2F(25000-y5000))*x+%2B+(pi*y)),+where+y%3D1+and+x%3D35000-25000
-		instance.computeMoonAttraction(35000);
-		assertEquals("The expected moon attraction must met the computed one.", moonAttractionExpected, instance.getMoonAttraction());
-
-	}
-
-	@Test
 	public void computeWaterLevel_passCorrectValueWithHighTide_confirms() throws Exception {
 		long time = 10000;
 		double waterLevel = 4.0; // 4.0 meters
