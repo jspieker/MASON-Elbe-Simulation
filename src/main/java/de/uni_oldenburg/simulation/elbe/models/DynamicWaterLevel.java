@@ -56,14 +56,8 @@ public class DynamicWaterLevel {
 	 */
 	private void updateWaterLevels(long time) {
 		for (int x = 0; x < waterLevels.length; x++) {
-			double currentWaterLevel = tides.computeWaterLevel(time, x);
-			if (currentWaterLevel >= 0) {
-				waterLevels[x].updateWaterLevel(currentWaterLevel);
-			} else {
-				//waterLevels[x].updateWaterLevel(currentWaterLevel);
-			}
+			waterLevels[x].updateWaterLevel(tides.computeWaterLevel(time, x));
 		}
-		System.out.println(tides.getMoonAttraction());
 	}
 
 

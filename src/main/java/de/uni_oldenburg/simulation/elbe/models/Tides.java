@@ -68,14 +68,7 @@ public class Tides {
 		computeMoonAttraction();
 
 		double levelOfAffection = levelOfAffection(xCoordinate);
-		if (levelOfAffection < 0) return -1;
-		return AVERAGE_WATERLEVEL_ABOVE_CD + AVERAGE_WATERLEVEL_ABOVE_CD * (this.moonAttraction * levelOfAffection); // adds or subtracts the current moon attraction
-
-		/*if (isAffected(xCoordinate)) {
-			return AVERAGE_WATERLEVEL_ABOVE_CD + AVERAGE_WATERLEVEL_ABOVE_CD * this.moonAttraction; // adds or subtracts the current moon attraction
-		} else {
-			return -1;
-		}*/
+		return AVERAGE_WATERLEVEL_ABOVE_CD + AVERAGE_WATERLEVEL_ABOVE_CD * this.moonAttraction * levelOfAffection; // adds or subtracts the current moon attraction
 	}
 
 	/**
@@ -115,14 +108,14 @@ public class Tides {
 		double levelOfAffection;
 		double xPositionsAffectedAtTime;
 
-
 		if (isHighTide) {
 			xPositionsAffectedAtTime = ((double) elbeLength / highTidePeriod) * time;
 
 			if (xPositionsAffectedAtTime >= xCoordinate) {
 				levelOfAffection = 1.0;
 			} else {
-				levelOfAffection = -1;
+				// Compute the levelOfAffection before the "wave"
+				levelOfAffection = Math.sin((Math.PI / ((elbeLength - xPositionsAffectedAtTime) * 2)) * ((xCoordinate - elbeLength) * (-1)));
 			}
 		} else {
 			xPositionsAffectedAtTime = ((double) elbeLength / lowTidePeriod) * (time * -1) + elbeLength;
@@ -130,29 +123,14 @@ public class Tides {
 			if (xPositionsAffectedAtTime <= xCoordinate) {
 				levelOfAffection = 1.0;
 			} else {
-				levelOfAffection = -1;
+				levelOfAffection = Math.sin((Math.PI / (xPositionsAffectedAtTime * 2)) * xCoordinate);
 			}
 		}
 
 		return levelOfAffection;
 	}
 
-	private boolean isAffected(long xCoordinate) {
-		if (isHighTide) {
-			double xPositionsAffectedAtTime = ((double) elbeLength / (((double) highTidePeriod) / 2)) * time; // the period is divided by two because at the top of the sinus function e.g. Hamburg is affected already
-			System.out.println("high: " + xPositionsAffectedAtTime + " at time: " + time);
-			return xPositionsAffectedAtTime >= xCoordinate;
-		} else {
-			double xPositionsAffectedAtTime = ((double) elbeLength / (((double) lowTidePeriod) / 2)) * (time * -1) + elbeLength; // the period is divided by two because at the top of the sinus function e.g. Hamburg is affected already
-			System.out.println("low: " + xPositionsAffectedAtTime + " at time: " + time);
-			return xPositionsAffectedAtTime <= xCoordinate;
-		}
-	}
-
 	private boolean isHighTide(long time) {
-		if (!isHighTideFirst && time >= lowTidePeriod || isHighTideFirst && time < highTidePeriod) {
-			return true;
-		} //else if (isHighTideFirst && time >= highTidePeriod || !isHighTideFirst && time < lowTidePeriod) {
-		return false; // else to satisfy the interpreter
+		return !isHighTideFirst && time >= lowTidePeriod || isHighTideFirst && time < highTidePeriod;
 	}
 }
