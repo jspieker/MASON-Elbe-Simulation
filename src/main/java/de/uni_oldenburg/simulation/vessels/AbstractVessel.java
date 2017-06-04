@@ -6,6 +6,9 @@ import Jama.Matrix;
 import de.uni_oldenburg.simulation.elbe.Elbe;
 import sim.engine.*;
 import sim.field.continuous.Continuous2D;
+import sim.field.network.Edge;
+import sim.field.network.Network;
+import sim.portrayal.DrawInfo2D;
 import sim.util.*;
 
 import java.util.ArrayList;
@@ -13,24 +16,43 @@ import java.util.ArrayList;
 /**
  * The AbstractVessel combines the properties of all vessels
  */
+@SuppressWarnings("serial")
 public abstract class AbstractVessel implements Steppable {
 	
 	// Properties
 	final private double weight;
 	final private double length;
 	final private double width;
-	final private double targetSpeed;
 	final private boolean directionHamburg;
+	final private double maxSpeed;
+	
+	private double targetSpeed;
+	
+	private Network observationField;
 
+	//target Distance to coast
+	final private double targetDistance = 50;
+	//observation area
+	final private double distance = 50;
+	
 	//---Movement---
 	Matrix M, D, C;
 
-	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg) {
+
+	public AbstractVessel( double weight, double length, double width, double targetSpeed, boolean directionHamburg) {
+
 		this.weight = weight;
 		this.length = length;
 		this.width = width;
 		this.targetSpeed = targetSpeed;
 		this.directionHamburg = directionHamburg;
+		
+		maxSpeed = 20;
+		
+		
+		observationField = new Network();
+		
+		observationField.addNode(this);
 	}
 
 	// Getters (no setters needed)
@@ -53,88 +75,129 @@ public abstract class AbstractVessel implements Steppable {
 	@Override
 	public void step(SimState state) {
 
-		double yaw = 0;
+		double yaw;
+		
 		Elbe elbe = (Elbe) state;
+		
 		Double2D myPosition, myCourse, prePosition;
-		ArrayList<AbstractVessel> foundShip;
-		boolean rejectCourse = true;
-		myPosition = elbe.vesselGrid.getObjectLocation(this);
-		double distanceToCoast = distanceToCoast(elbe, myPosition);
-		foundShip = Observation(elbe, myPosition);
 		
-		int tries = 0;
-		do {
-			prePosition = predictionPosition(myPosition, yaw);
-			if (Colregs(elbe.vesselGrid, prePosition, foundShip, distanceToCoast) || tries == 10) {
-				rejectCourse = false;
-			}
-			tries ++;
+		myPosition = elbe.getVesselGrid().getObjectLocation(this);
+		
+		//create /change distance Network
+		observNearSpace(elbe, myPosition);
+		
+			yaw = computeYaw(elbe, myPosition);
 			
-			//yaw new define
-			if (tries % 2 == 0) {
-				yaw = tries * 5;
-			} else {
-				yaw = tries * (-1) * 5;
-			}
-		
-		} while (rejectCourse);
+			prePosition = predictPosition(myPosition, yaw);
+			
+			adaptSpeed(elbe, prePosition, yaw);			
 		
 		myCourse = prePosition;
-		elbe.vesselGrid.setObjectLocation(this, myCourse);
+		
+		elbe.getVesselGrid().setObjectLocation(this, myCourse);
 	}
 	
-	private boolean Colregs(Continuous2D vesselGrid, Double2D prePosition, ArrayList<AbstractVessel> foundShip, double distanceToCoast) {
+	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw){
 		
-		boolean acpt = false;
-		
-		Double2D obsPosition;
-		if(!foundShip.isEmpty()){
-			for (AbstractVessel ship : foundShip) {
-				obsPosition = vesselGrid.getObjectLocation(ship);
-			 	double distToShip = pow(pow(abs(obsPosition.getX() - prePosition.getX()), 2) + 	pow(abs(obsPosition.getY() - prePosition.getY()), 2), 0.5);
-			 	if (10 >= distToShip) {
-			 		acpt = true;
+		for (Object vessel : observationField.getAllNodes()) {
+			
+			Double2D d = elbe.getVesselGrid().getObjectLocation(vessel);
+			
+			if (((AbstractVessel) vessel).getDirectionHamburg() == this.getDirectionHamburg()) {
+				
+				Edge e = observationField.getEdge(this, vessel);
+				
+				MutableDouble2D otherPos = new MutableDouble2D(elbe.getVesselGrid().getObjectLocation(vessel));
+				
+				Double2D myPosition = elbe.getVesselGrid().getObjectLocation(this);
+				
+				//forward
+				if ((this.getDirectionHamburg() && d.getX() > prePosition.x) ^ (!this.getDirectionHamburg() && d.getX() < prePosition.x)) {
+					
+					if((double) e.getInfo() < otherPos.distance(prePosition)){
+					//reduce speed	
+						do{
+							
+							targetSpeed -= 1;
+							
+							prePosition = predictPosition(myPosition, yaw);
+						
+						}while((double) e.getInfo() <= otherPos.distance(prePosition));
+						
+					
+					}else if((double) e.getInfo() > otherPos.distance(prePosition)){
+						//rise speed
+						do{
+							
+							targetSpeed += 1;
+							
+							prePosition = predictPosition(myPosition, yaw);
+						
+						}while((double) e.getInfo() > otherPos.distance(prePosition) || targetSpeed == maxSpeed);
+					}
 				}
 			}
 		}
-		return acpt;
 	}
 
-	private double distanceToCoast(SimState state, Double2D myPosition){
+	private  void observNearSpace(Elbe elbe, Double2D myPosition){	
 		
-		double distance;
 		
-		//TODO replace SparseGrid to Fairway
-		//IntGrid2D fairWay = new IntGrid2D(1, 1); //state.getVesselGrid();
-		//GetY derivation from GetX
-		
-		distance = 50 - myPosition.getY();
-		return distance;
-	}
-
-
-
-	private  ArrayList<AbstractVessel> Observation(Elbe elbe, Double2D myPosition){
-
-		Continuous2D vesselGrid = elbe.vesselGrid;
-		ArrayList<AbstractVessel> foundShip = new ArrayList<AbstractVessel>();
-
-		//all Vessel
-		Bag vesselBag = vesselGrid.getAllObjects();
-		MutableDouble2D position;
-		
-		for (int i = 0; i < vesselBag.size(); i++) {
-			position = new MutableDouble2D(vesselGrid.getObjectLocation(vesselBag.get(i)));
-			if(abs(position.getX() - myPosition.getX()) <= 10 ){
-				foundShip.add((AbstractVessel) vesselBag.get(i));
+			
+			//new Obersvation field all Vessel  
+			Bag vesselBag = elbe.getVesselGrid().getNeighborsExactlyWithinDistance(myPosition, distance, true);
+			
+			vesselBag.remove(this);			
+			
+			for (Object newVessel : vesselBag) {
 				
-			}	
-		}
+				boolean isNew = true;
+				
+				for (Object vessel : observationField.getAllNodes()) {
+					
+					if(vessel.equals(newVessel)){
+						isNew = false;
+						break;
+					}
+					
+					//if vessel vector too long delete from Network
+					
+					MutableDouble2D otherPos = new MutableDouble2D(elbe.getVesselGrid().getObjectLocation(vessel));
+					
+					//delete vessel from Observation Network
+					if(otherPos.distance(myPosition) > distance){	
+						observationField.removeEdge(observationField.getEdge(this, vessel));
+						observationField.removeNode(vessel);
+					}
+				}
+				
+				//add vessel to Observation Network
+				if(isNew){
+					
+					MutableDouble2D otherPos = new MutableDouble2D(elbe.getVesselGrid().getObjectLocation(newVessel));
+					
+					observationField.addNode(newVessel);
+					
+					observationField.addEdge(this, newVessel, otherPos.distance(myPosition) );
+				}
+			}
+			
+			//update already known distances
+			for (Object vessel : observationField.getAllNodes()) {
+				
+				if(!this.equals(vessel)){
+					Edge e = observationField.getEdge(this, vessel);
+					
+					MutableDouble2D otherPos = new MutableDouble2D(elbe.getVesselGrid().getObjectLocation(vessel));
+					
+					e.setInfo(otherPos.distance(myPosition));
+				}
+			}
 		
-		return foundShip;
+		
 	}
 	
-	private Double2D predictionPosition(Double2D myPosition, double yaw){
+	private Double2D predictPosition(Double2D myPosition, double yaw){
 		
 		double x = myPosition.getX();
 		double y = myPosition.getY();
@@ -148,14 +211,33 @@ public abstract class AbstractVessel implements Steppable {
 			yaw += 180;
 		}
 		
-		// sin(a) * Hypo = GegenK
-		yNew = sin(yaw) * targetSpeed + y;
-		xNew = cos(yaw) * targetSpeed + x;
+		// compute position in coordiante
+		yNew = sin(toRadians(yaw)) * targetSpeed + y;
+		xNew = cos(toRadians(yaw)) * targetSpeed + x;
+		
 		positionNew = new Double2D(xNew, yNew);
+		
 		return positionNew;
 	}
 
+	private double computeYaw(Elbe elbe, Double2D myPosition){
+		
+		double yaw = 0;
+		
+		if (directionHamburg) {
+			
+			
+			
+		}else{
+			
+		}
+		
+		
+		return yaw;
+	}
 /*
+ * TODO improve physical model for the movement
+ * 
 	private  MutableDouble2D Movement(MutableDouble2D position, double yaw){
 		
 		// TODO physikalische/mathematische Modell für die Fortbewegung
@@ -187,7 +269,7 @@ public abstract class AbstractVessel implements Steppable {
 		return positionNew;
 	}
 	
-
+ 
 	protected void Matrices(){
 		
 		double xu = -226.5 * 10e-5;
