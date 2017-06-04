@@ -1,13 +1,13 @@
 package de.uni_oldenburg.simulation.elbe;
 
 import de.uni_oldenburg.simulation.elbe.models.Tides;
-import sim.engine.Schedule;
-import sim.engine.SimState;
-import sim.engine.Steppable;
+import de.uni_oldenburg.simulation.vessels.*;
+import sim.engine.*;
 import sim.field.continuous.Continuous2D;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
-import sim.field.grid.SparseGrid2D;
+import sim.util.Double2D;
+import sim.util.MutableDouble2D;
 
 public class Elbe extends SimState {
 
@@ -42,6 +42,14 @@ public class Elbe extends SimState {
 
 		calculateInitialValues();
 	}
+	
+	public static void main(String[] args) {
+		
+		doLoop(Elbe.class, args);
+		
+		System.exit(0);
+		
+	}
 
 	/**
 	 * Start the simulation
@@ -59,8 +67,37 @@ public class Elbe extends SimState {
 
 		// Draw Elbe, spawn area and dockyard to the map
 		drawObjects();
-
+		
+		
 		// TODO Create Vessels
+		
+		vesselGrid.clear();
+
+		
+		for (int i = 0; i < 10; i++) {
+			
+			System.out.println("Vessel "+i+" created");
+			
+			ContainerShip vessel;
+			
+			if(i % 2 == 0){
+				vessel = new ContainerShip(true);
+			}else{
+				vessel = new ContainerShip(false);
+			}
+			
+			//Double2D location = new Double2D(vesselGrid.getHeight() * random.nextDouble() ,  vesselGrid.getWidth() * random.nextDouble());
+			
+			Double2D location = new Double2D(vesselGrid.getHeight() / 2, vesselGrid.getWidth() * random.nextDouble());			
+			
+			vesselGrid.setObjectLocation(vessel, location);
+			
+			schedule.scheduleRepeating(vessel);
+			
+		} 
+		
+		
+		
 
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
 
@@ -146,6 +183,10 @@ public class Elbe extends SimState {
 		} else {
 			FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 		}
+	}
+	
+	public Continuous2D getVesselGrid(){
+		return vesselGrid;
 	}
 
 }
