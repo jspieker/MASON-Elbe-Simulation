@@ -1,5 +1,6 @@
 package de.uni_oldenburg.simulation.elbe;
 
+import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
 import de.uni_oldenburg.simulation.elbe.models.Tides;
 import de.uni_oldenburg.simulation.vessels.*;
 import sim.engine.*;
@@ -17,13 +18,13 @@ public class Elbe extends SimState {
 	DoubleGrid2D tidesMap;
 	public Continuous2D vesselGrid;
 
-	private final int[] FAIRWAY_LENGTH = 				{507, 230, 230, 200, 48}; // TODO find exact values in relation
-	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED =	{400, 300, 250, 250, 230}; // TODO find exact values for #2 #3 #4 (#0 and #1 are correct, others mostly)
-	private final int[] FAIRWAY_WIDTH_EXTENDED = 		{400, 320, 380, 270, 250};
+	private final int[] FAIRWAY_LENGTH = {507, 230, 230, 200, 48}; // TODO find exact values in relation
+	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED = {400, 300, 250, 250, 230}; // TODO find exact values for #2 #3 #4 (#0 and #1 are correct, others mostly)
+	private final int[] FAIRWAY_WIDTH_EXTENDED = {400, 320, 380, 270, 250};
 	private int[] FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 	private final int MARGIN = 25;
 
-	private Tides tides;
+	private DynamicWaterLevel dynamicWaterLevel;
 	private int depthOfWaterBelowCD = 15; // sample value
 
 	private boolean isExtended = false;
@@ -36,8 +37,6 @@ public class Elbe extends SimState {
 	private final int FAIRWAY_ID = 1;
 	private final int SPAWN_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
-
-	private long stepCount = 0;
 
 	public Elbe(long seed) {
 		super(seed);
@@ -65,7 +64,7 @@ public class Elbe extends SimState {
 		vesselGrid = new Continuous2D(0.01, gridWidth, gridHeight);
 
 		// Get some water
-		tides = new Tides(25000/60, 20000/60, true, gridWidth);
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 25000 / 60, 20000 / 60, true);
 
 		// Draw Elbe, spawn area and dockyard to the map
 		drawObjects();
@@ -103,9 +102,9 @@ public class Elbe extends SimState {
 
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
 
-			stepCount++;
+			double [] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
 			for (int x = 0; x < gridWidth; x++) {
-				double waterLevel = depthOfWaterBelowCD + tides.computeWaterLevel(stepCount, depthOfWaterBelowCD, x);
+				double waterLevel = depthOfWaterBelowCD + currentWaterLevels[x];
 				for (int y = 0; y < gridHeight; y++) {
 					tidesMap.set(x, y, waterLevel);
 				}
@@ -152,7 +151,7 @@ public class Elbe extends SimState {
 		}
 
 		// Draw spawn area
-		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2 ) + MARGIN + FAIRWAY_WIDTH[0]); i++) {
+		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN + FAIRWAY_WIDTH[0]); i++) {
 			for (int j = 0; j < MARGIN; j++) {
 				elbeMap.field[spawnPositionX - (j + 1)][i] = SPAWN_POINT_ID;
 			}

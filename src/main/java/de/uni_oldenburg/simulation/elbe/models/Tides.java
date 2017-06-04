@@ -1,9 +1,5 @@
 package de.uni_oldenburg.simulation.elbe.models;
 
-import sim.engine.SimState;
-
-import static java.util.Objects.requireNonNull;
-
 /**
  * Computes the models of the elbe by using an adapted sinus function: f(t,y) = sin((pi/highTidePeriod)*t) TODO extend
  */
@@ -29,6 +25,28 @@ public class Tides {
 	 * Is the length of the Elbe. The parameter is used to determine whether a specific x coordinate is affected by the moon attraction or not.
 	 */
 	private long elbeLength;
+	/**
+	 * Is the time depending on the current tide and the corresponding sinus function interval.
+	 */
+	private long time;
+	/**
+	 * A boolean value to determine whether the current tide is high or low.
+	 */
+	private boolean isHighTide;
+	/**
+	 * Is the average water level that is neither affected by the low nor high tide.
+	 * The final value is computed by putting the average high tide water level in relation to the average low tide water level.
+	 * The average water level is used to adjust the water level above CD.
+	 */
+	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD = 0.47; // Low tide minimum
+	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD = 3.6; // high tide maximum
+
+
+	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_ADDER = 2.035;
+	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 1.565;
+
+	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER = 2.035;
+	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 1.565;
 
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
@@ -47,84 +65,84 @@ public class Tides {
 	}
 
 	/**
-	 * Computes the attraction of the moon with the sinus function: sin((pi/highTide*isHighTide+lowTide*!isHighTide))*x).
-	 * Afterwards the moon attraction can be got using {@link Tides#getMoonAttraction()} and used as a multiplier to the current water level.
-	 * The switching between low and high tide is done automatically.
+	 * Computes the water level by using {@link Tides#computeMoonAttraction()} and the given water level. The adjustment is then returned.
 	 *
-	 * @param time Is the time value at which the moon attraction is wanted in seconds.
-	 */
-	public void computeMoonAttraction(long time) {
-
-		// we need to reset the time after one whole cycle from low tide to high tide to low tide or from high tide to low tide to high tide.
-		time %= (highTidePeriod + lowTidePeriod);
-		boolean isHighTide = isHighTide(time);
-
-		if (isHighTideFirst && !isHighTide) { // modulo the number to the seconds within the new one
-			time -= highTidePeriod; // lowTideIsNotSet
-		} else if (!isHighTideFirst && isHighTide) {
-			time -= lowTidePeriod;
-		}
-		this.moonAttraction = Math.sin((Math.PI / (isHighTide ? highTidePeriod : lowTidePeriod)) * time + (isHighTide ? 0 : Math.PI));
-	}
-
-	/**
-	 * Computes the water level by using {@link Tides#computeMoonAttraction(long)} and the given water level. The adjustment is then returned.
-	 *
-	 * @param time              Is the time value at which the moon attraction is wanted.
-	 * @param averageWaterLevel Is the average water level that should be adjusted using the current moon attraction.
-	 * @param xCoordinate       Is a x coordinate at the length of the elbe. The parameter is used to determine whether the position is affected by the moon attraction or not.
+	 * @param time        Is the time value at which the moon attraction is wanted.
+	 * @param xCoordinate Is a x coordinate at the length of the elbe. The parameter is used to determine whether the position is affected by the moon attraction or not.
 	 * @return The current water level adjusted by the current moon attraction or -1 if the x coordinate is not affected yet.
 	 */
-	public double computeWaterLevel(long time, double averageWaterLevel, long xCoordinate) {
+	public double computeWaterLevel(long time, long xCoordinate) {
+		computeTime(time);
+		computeMoonAttraction();
+		double levelOfAffection = levelOfAffection(xCoordinate);
 
-		computeMoonAttraction(time);
-		if (isAffected(time, xCoordinate)) {
-			return averageWaterLevel + averageWaterLevel * this.moonAttraction; // adds or subtracts the current moon attraction
+		if (isHighTide) {
+			return (this.moonAttraction * AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_ADDER)* levelOfAffection;
 		} else {
-			return -1;
+			return (this.moonAttraction * AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER);
 		}
 	}
 
 	/**
 	 * Get the current moonAttraction.
 	 *
-	 * @return Return the current moonAttraciton value computed by {@link Tides#computeMoonAttraction(long)}
+	 * @return Return the current moonAttraction value computed by {@link Tides#computeMoonAttraction()}
 	 */
 	public double getMoonAttraction() {
 		return moonAttraction;
 	}
 
-	private boolean isAffected(long time, long xCoordinate) {
+	// private methods
 
+	/**
+	 * Computes the attraction of the moon with the cosinus function: (-1*isHighTide)*cos((pi/highTide*isHighTide+lowTide*!isHighTide))*x).
+	 * Afterwards the moon attraction can be got using {@link Tides#getMoonAttraction()} and used as a multiplier to the current water level.
+	 * The switching between low and high tide is done automatically.
+	 */
+	private void computeMoonAttraction() {
+		this.moonAttraction = (isHighTide ? -1 : 1) * Math.cos((Math.PI / (isHighTide ? highTidePeriod : lowTidePeriod)) * time);
+	}
+
+	private void computeTime(long time) {
 		// we need to reset the time after one whole cycle from low tide to high tide to low tide or from high tide to low tide to high tide.
 		time %= (highTidePeriod + lowTidePeriod);
-		boolean isHighTide = isHighTide(time);
+		isHighTide = isHighTide(time);
 
 		if (isHighTideFirst && !isHighTide) { // modulo the number to the seconds within the new one
 			time -= highTidePeriod; // lowTideIsNotSet
 		} else if (!isHighTideFirst && isHighTide) {
 			time -= lowTidePeriod;
 		}
+		this.time = time;
+	}
 
-		if (isHighTide && time >= ((double) highTidePeriod) / 2 || !isHighTide && time >= ((double) lowTidePeriod) / 2) {
-			return true;
-		} else {
-			double xPositionsAffectedAtTime = ((double) elbeLength / (isHighTide ? ((double) highTidePeriod) / 2 : ((double) lowTidePeriod))) * time; // the time is divided by two because at the top of the sinus function e.g. Hamburg is affected already
+	private double levelOfAffection(long xCoordinate) {
+		double levelOfAffection;
+		double xPositionsAffectedAtTime;
 
-			if (isHighTide && xPositionsAffectedAtTime >= xCoordinate) {
-				return true;
-			} else if (!isHighTide && xPositionsAffectedAtTime < xCoordinate) {
-				return true;
+		if (isHighTide) {
+			xPositionsAffectedAtTime = ((double) elbeLength / highTidePeriod) * time;
+
+			if (xPositionsAffectedAtTime >= xCoordinate) {
+				levelOfAffection = 1.0;
 			} else {
-				return false;
+				// Compute the levelOfAffection before the "wave"
+				levelOfAffection = Math.sin((Math.PI / ((elbeLength - xPositionsAffectedAtTime) * 2)) * ((xCoordinate - elbeLength) * (-1)));
+			}
+		} else {
+			xPositionsAffectedAtTime = ((double) elbeLength / lowTidePeriod) * (time * -1) + elbeLength;
+
+			if (xPositionsAffectedAtTime <= xCoordinate) {
+				levelOfAffection = 1.0;
+			} else {
+				levelOfAffection = Math.sin((Math.PI / (xPositionsAffectedAtTime * 2)) * xCoordinate);
 			}
 		}
+
+		return levelOfAffection;
 	}
 
 	private boolean isHighTide(long time) {
-		if (!isHighTideFirst && time >= lowTidePeriod || isHighTideFirst && time < highTidePeriod) {
-			return true;
-		} //else if (isHighTideFirst && time >= highTidePeriod || !isHighTideFirst && time < lowTidePeriod) {
-		return false; // else to satisfy the interpreter
+		return !isHighTideFirst && time >= lowTidePeriod || isHighTideFirst && time < highTidePeriod;
 	}
 }
