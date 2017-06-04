@@ -15,3 +15,6 @@ out/*
 # Package Files #
 *.war
 *.ear
+/Scratchbook.jpage
+/.classpath
+/.project
