@@ -4,6 +4,7 @@ import static java.lang.Math.*;
 
 import Jama.Matrix;
 import de.uni_oldenburg.simulation.elbe.Elbe;
+import de.uni_oldenburg.simulation.elbe.Observer;
 import sim.engine.*;
 import sim.field.continuous.Continuous2D;
 import sim.field.network.Edge;
@@ -35,20 +36,21 @@ public abstract class AbstractVessel implements Steppable {
 	//observation area
 	final private double distance = 50;
 	
+	Observer observer;
+	
 	//---Movement---
 	Matrix M, D, C;
 
 
-	public AbstractVessel( double weight, double length, double width, double targetSpeed, boolean directionHamburg) {
+	public AbstractVessel( double weight, double length, double width, double targetSpeed, boolean directionHamburg, Observer observer) {
 
 		this.weight = weight;
 		this.length = length;
 		this.width = width;
 		this.targetSpeed = targetSpeed;
 		this.directionHamburg = directionHamburg;
-		
+		this.observer = observer;
 		maxSpeed = 20;
-		
 		
 		observationField = new Network();
 		
@@ -94,12 +96,22 @@ public abstract class AbstractVessel implements Steppable {
 		
 		myCourse = prePosition;
 		
+		System.out.println(" Schiff: "+this.toString() + " Kurs: " +myCourse.toString());
+		System.out.println("Step: "+ elbe.schedule.getSteps() +  " time: "+elbe.schedule.getTime());
 		elbe.getVesselGrid().setObjectLocation(this, myCourse);
+		
+		observer.update(this);
+		
+		
 	}
 	
 	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw){
 		
-		for (Object vessel : observationField.getAllNodes()) {
+		Bag vesselBag = observationField.getAllNodes();
+		
+		vesselBag.remove(this);
+		
+		for (Object vessel : vesselBag) {
 			
 			Double2D d = elbe.getVesselGrid().getObjectLocation(vessel);
 			
@@ -112,7 +124,8 @@ public abstract class AbstractVessel implements Steppable {
 				Double2D myPosition = elbe.getVesselGrid().getObjectLocation(this);
 				
 				//forward
-				if ((this.getDirectionHamburg() && d.getX() > prePosition.x) ^ (!this.getDirectionHamburg() && d.getX() < prePosition.x)) {
+				if ((this.getDirectionHamburg() && d.getX() > prePosition.getX()) ^ 
+						(!this.getDirectionHamburg() && d.getX() < prePosition.x)) {
 					
 					if((double) e.getInfo() < otherPos.distance(prePosition)){
 					//reduce speed	
@@ -142,12 +155,21 @@ public abstract class AbstractVessel implements Steppable {
 
 	private  void observNearSpace(Elbe elbe, Double2D myPosition){	
 		
-		
-			
 			//new Obersvation field all Vessel  
-			Bag vesselBag = elbe.getVesselGrid().getNeighborsExactlyWithinDistance(myPosition, distance, true);
+			Bag vesselBag = elbe.getVesselGrid().getAllObjects();//getNeighborsExactlyWithinDistance(myPosition, distance, true);
 			
-			vesselBag.remove(this);			
+			vesselBag.remove(this);	
+			
+			for (Object vessel : vesselBag) {
+				
+				MutableDouble2D otherPos = new MutableDouble2D(elbe.getVesselGrid().getObjectLocation(vessel));
+			
+				if(otherPos.distance(myPosition) > distance){	
+					
+					vesselBag.remove(vessel);
+				}
+			}
+					
 			
 			for (Object newVessel : vesselBag) {
 				
@@ -235,6 +257,12 @@ public abstract class AbstractVessel implements Steppable {
 		
 		return yaw;
 	}
+
+	
+
+	
+	
+	
 /*
  * TODO improve physical model for the movement
  * 
