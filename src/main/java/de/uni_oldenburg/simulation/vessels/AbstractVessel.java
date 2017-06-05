@@ -96,8 +96,9 @@ public abstract class AbstractVessel implements Steppable {
 		
 		myCourse = prePosition;
 		
-		System.out.println(" Schiff: "+this.toString() + " Kurs: " +myCourse.toString());
-		System.out.println("Step: "+ elbe.schedule.getSteps() +  " time: "+elbe.schedule.getTime());
+		//System.out.println(" Schiff: "+this.toString() + " Kurs: " +myCourse.toString());
+		//System.out.println("Step: "+ elbe.schedule.getSteps() +  " time: "+elbe.schedule.getTime());
+		
 		elbe.getVesselGrid().setObjectLocation(this, myCourse);
 		
 		observer.update(this);
