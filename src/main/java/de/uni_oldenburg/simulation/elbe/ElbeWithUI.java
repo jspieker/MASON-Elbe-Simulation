@@ -4,6 +4,7 @@ import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
+import sim.portrayal.continuous.ContinuousPortrayal2D;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.util.gui.SimpleColorMap;
@@ -23,7 +24,7 @@ public class ElbeWithUI extends GUIState {
 	private JFrame displayFrame;
 	private FastValueGridPortrayal2D elbePortrayal = new FastValueGridPortrayal2D("Elbe Map", true);
 	private FastValueGridPortrayal2D tidesPortrayal = new FastValueGridPortrayal2D("Tides", false);
-	private SparseGridPortrayal2D vesselPortrayal = new SparseGridPortrayal2D();
+	private ContinuousPortrayal2D vesselPortrayal = new ContinuousPortrayal2D();
 
 	private final double scale = 1; // scale of the simulation // TODO set to 0.5
 
