@@ -37,6 +37,8 @@ public class Elbe extends SimState {
 	private final int FAIRWAY_ID = 1;
 	private final int SPAWN_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
+	
+	private Observer obs;
 
 	public Elbe(long seed) {
 		super(seed);
@@ -46,7 +48,31 @@ public class Elbe extends SimState {
 	
 	public static void main(String[] args) {
 		
-		doLoop(Elbe.class, args);
+		//doLoop(Elbe.class, args);
+		
+		SimState elbe = new Elbe(System.currentTimeMillis());
+		
+		elbe.nameThread();
+		
+		int jobs = 1;
+		
+		for (int job = 0; job < jobs; job++) {
+			
+			elbe.setJob(job);
+			
+			elbe.start();
+			
+			do {
+				
+				if (!elbe.schedule.step(elbe)) {
+					
+					break;
+				}
+				
+			} while (elbe.schedule.getTime() < 4320);
+			
+			elbe.finish();
+		}
 		
 		System.exit(0);
 		
@@ -70,26 +96,27 @@ public class Elbe extends SimState {
 		drawObjects();
 		
 		
-		// TODO Create Vessels
+		// TODO Create Vessels and Observer
 		
 		vesselGrid.clear();
-
 		
-		for (int i = 0; i < 10; i++) {
+		obs = new Observer(this);
+		
+		for (int i = 0; i < 300; i++) {
 			
 			System.out.println("Vessel "+i+" created");
 			
 			ContainerShip vessel;
 			
 			if(i % 2 == 0){
-				vessel = new ContainerShip(true);
+				vessel = new ContainerShip(true, obs);
 			}else{
-				vessel = new ContainerShip(false);
+				vessel = new ContainerShip(false, obs);
 			}
 			
 			//Double2D location = new Double2D(vesselGrid.getHeight() * random.nextDouble() ,  vesselGrid.getWidth() * random.nextDouble());
 			
-			Double2D location = new Double2D(vesselGrid.getHeight() / 2, vesselGrid.getWidth() * random.nextDouble());			
+			Double2D location = new Double2D(vesselGrid.getHeight() * 2, vesselGrid.getWidth() * random.nextDouble());			
 			
 			vesselGrid.setObjectLocation(vessel, location);
 			
@@ -110,6 +137,14 @@ public class Elbe extends SimState {
 				}
 			}
 		}, 1);
+	}
+
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+		
+		System.out.println("Beinahe zusammenstöße: "+ obs.getAlmostCollision()+ " zusammenstöße: "+obs.getCollision());
 	}
 
 	/**
@@ -213,5 +248,11 @@ public class Elbe extends SimState {
 	public Continuous2D getVesselGrid(){
 		return vesselGrid;
 	}
+
+	public Observer getObs() {
+		return obs;
+	}
+	
+	
 
 }
