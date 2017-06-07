@@ -1,15 +1,12 @@
 package de.uni_oldenburg.simulation.elbe;
 
 import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
-import de.uni_oldenburg.simulation.elbe.models.Tides;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
-
-import java.lang.reflect.Array;
 
 public class Elbe extends SimState {
 
@@ -64,7 +61,7 @@ public class Elbe extends SimState {
 
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
 
-			double [] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
+			double[] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
 			for (int x = 0; x < gridWidth; x++) {
 				double waterLevel = depthOfWaterBelowCD + currentWaterLevels[x];
 				for (int y = 0; y < gridHeight; y++) {
@@ -84,7 +81,8 @@ public class Elbe extends SimState {
 		for (int elbeSection = 0; elbeSection < FAIRWAY_LENGTH.length; elbeSection++) {
 			try {
 				tempWidthHelper = (FAIRWAY_WIDTH[elbeSection] - FAIRWAY_WIDTH[elbeSection + 1]) / 2;
-			} catch (ArrayIndexOutOfBoundsException ignored) {}
+			} catch (ArrayIndexOutOfBoundsException ignored) {
+			}
 
 			// Draw blocks for elbe sections
 			for (int i = MARGIN + tempLengthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i++) { // from left to right
@@ -104,12 +102,12 @@ public class Elbe extends SimState {
 					}
 					tempTopIndex++;
 					tempBottomIndex -= 2;
-				} else if (tempWidthHelper < 0){
+				} else if (tempWidthHelper < 0) {
 					// Draw transitions if the following elbeSection is wider than the previous one
 					System.out.println("Das hier wird nicht ausgeführt, da MASON mit veränderten Variablen nicht klarkommt"); // TODO
 				}
 			}
-				tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
+			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
 		}
 
 		// Draw spawn area
@@ -172,4 +170,31 @@ public class Elbe extends SimState {
 		}
 	}
 
+	public int[] getFAIRWAY_LENGTH() {
+		return FAIRWAY_LENGTH;
+	}
+
+	public int[] getFAIRWAY_WIDTH_NOT_EXTENDED() {
+		return FAIRWAY_WIDTH_NOT_EXTENDED;
+	}
+
+	public int[] getFAIRWAY_WIDTH_EXTENDED() {
+		return FAIRWAY_WIDTH_EXTENDED;
+	}
+
+	public int[] getFAIRWAY_WIDTH() {
+		return FAIRWAY_WIDTH;
+	}
+
+	public int getFairwayLengthTotal() {
+		return fairwayLengthTotal;
+	}
+
+	public int getFairwayWidthMax() {
+		return fairwayWidthMax;
+	}
+
+	public boolean executeStep() {
+		return super.schedule.step(this);
+	}
 }
