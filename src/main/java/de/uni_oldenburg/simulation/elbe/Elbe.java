@@ -9,6 +9,8 @@ import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 
+import java.lang.reflect.Array;
+
 public class Elbe extends SimState {
 
 	IntGrid2D elbeMap;
@@ -78,13 +80,36 @@ public class Elbe extends SimState {
 	private void drawObjects() {
 		// Draw Elbe area
 		int tempLengthHelper = 0;
+		int tempWidthHelper = 0;
 		for (int elbeSection = 0; elbeSection < FAIRWAY_LENGTH.length; elbeSection++) {
-			for (int i = MARGIN + tempLengthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]); i++) { // from left to right
+			try {
+				tempWidthHelper = (FAIRWAY_WIDTH[elbeSection] - FAIRWAY_WIDTH[elbeSection + 1]) / 2;
+			} catch (ArrayIndexOutOfBoundsException ignored) {}
+
+			// Draw blocks for elbe sections
+			for (int i = MARGIN + tempLengthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i++) { // from left to right
 				for (int j = ((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN; j < (((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[elbeSection]); j++) { // from top to bottom
 					elbeMap.field[i][j] = FAIRWAY_ID;
 				}
 			}
-			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
+
+			// Draw transitions
+			int tempTopIndex = ((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN;
+			int tempBottomIndex = FAIRWAY_WIDTH[elbeSection] - tempWidthHelper;
+			for (int i = (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]); i++) {
+				if (tempWidthHelper > 0) {
+					// Draw transitions if the following elbeSection is narrower than the previous one
+					for (int j = tempTopIndex; j < tempTopIndex + tempWidthHelper + tempBottomIndex; j++) {
+						elbeMap.field[i][j] = FAIRWAY_ID;
+					}
+					tempTopIndex++;
+					tempBottomIndex -= 2;
+				} else if (tempWidthHelper < 0){
+					// Draw transitions if the following elbeSection is wider than the previous one
+					System.out.println("Das hier wird nicht ausgeführt, da MASON mit veränderten Variablen nicht klarkommt"); // TODO
+				}
+			}
+				tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
 		}
 
 		// Draw spawn area
@@ -95,7 +120,8 @@ public class Elbe extends SimState {
 		}
 
 		// Draw dockyard
-		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN + FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]); i++) {
+		int lastTransitionWidth = (FAIRWAY_WIDTH[FAIRWAY_WIDTH.length - 2] - FAIRWAY_WIDTH[FAIRWAY_WIDTH.length - 1]) / 2;
+		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN + lastTransitionWidth; i < (((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN + FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) - lastTransitionWidth; i++) {
 			for (int j = 0; j < MARGIN; j++) {
 				elbeMap.field[dockyardPositionX + j][i] = DOCKYARD_POINT_ID;
 			}
