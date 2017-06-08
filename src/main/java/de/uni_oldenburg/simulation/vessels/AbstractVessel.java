@@ -11,6 +11,7 @@ import sim.field.network.Edge;
 import sim.field.network.Network;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.simple.RectanglePortrayal2D;
+import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
 import java.awt.*;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 /**
  * The AbstractVessel combines the properties of all vessels
  */
-public abstract class AbstractVessel extends RectanglePortrayal2D implements Steppable {
+public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
 	
 	// Properties
 	final private double weight;
@@ -49,7 +50,9 @@ public abstract class AbstractVessel extends RectanglePortrayal2D implements Ste
 	 * @param directionHamburg True if moving towards docks, else false
 	 * @param observer
 	 */
-	public AbstractVessel( double weight, double length, double width, double targetSpeed, boolean directionHamburg, Observer observer) {
+	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, Observer observer) {
+
+		super(new double[] {0, length/4*3/100, length/100, length/4*3/100, 0}, new double[] {0, 0, width/2, width, width}, new Color(255, 255, 0), 1, true);
 
 		this.weight = weight;
 		this.length = length;
@@ -113,44 +116,30 @@ public abstract class AbstractVessel extends RectanglePortrayal2D implements Ste
 	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw){
 		
 		Bag vesselBag = observationField.getAllNodes();
-		
 		vesselBag.remove(this);
-		
+
 		for (Object vessel : vesselBag) {
-			
 			Double2D d = elbe.vesselGrid.getObjectLocation(vessel);
-			
 			if (((AbstractVessel) vessel).getDirectionHamburg() == this.getDirectionHamburg()) {
-				
 				Edge e = observationField.getEdge(this, vessel);
-				
 				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-				
 				Double2D myPosition = elbe.vesselGrid.getObjectLocation(this);
 				
 				//forward
 				if ((this.getDirectionHamburg() && d.getX() > prePosition.getX()) ^ 
 						(!this.getDirectionHamburg() && d.getX() < prePosition.x)) {
-					
 					if((double) e.getInfo() < otherPos.distance(prePosition)){
 					//reduce speed	
 						do{
-							
 							targetSpeed -= 1;
-							
 							prePosition = predictPosition(myPosition, yaw);
-						
 						}while((double) e.getInfo() <= otherPos.distance(prePosition));
-						
-					
+
 					}else if((double) e.getInfo() > otherPos.distance(prePosition)){
 						//rise speed
 						do{
-							
 							targetSpeed += 1;
-							
 							prePosition = predictPosition(myPosition, yaw);
-						
 						}while((double) e.getInfo() > otherPos.distance(prePosition) || targetSpeed == maxSpeed);
 					}
 				}
@@ -158,70 +147,56 @@ public abstract class AbstractVessel extends RectanglePortrayal2D implements Ste
 		}
 	}
 
-	private  void observNearSpace(Elbe elbe, Double2D myPosition){	
-		
-			//new Obersvation field all Vessel  
-			Bag vesselBag = elbe.vesselGrid.getAllObjects();//getNeighborsExactlyWithinDistance(myPosition, distance, true);
-			
-			vesselBag.remove(this);	
-			
-			for (Object vessel : vesselBag) {
-				
-				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-			
-				if(otherPos.distance(myPosition) > distance){	
-					
-					vesselBag.remove(vessel);
-				}
+	private  void observNearSpace(Elbe elbe, Double2D myPosition){
+		//new Obersvation field all Vessel
+		Bag vesselBag = elbe.vesselGrid.getAllObjects();//getNeighborsExactlyWithinDistance(myPosition, distance, true);
+		vesselBag.remove(this);
+
+		for (Object vessel : vesselBag) {
+
+			MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
+
+			if(otherPos.distance(myPosition) > distance){
+
+				vesselBag.remove(vessel);
 			}
-					
-			
-			for (Object newVessel : vesselBag) {
-				
-				boolean isNew = true;
-				
-				for (Object vessel : observationField.getAllNodes()) {
-					
-					if(vessel.equals(newVessel)){
-						isNew = false;
-						break;
-					}
-					
-					//if vessel vector too long delete from Network
-					
-					MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-					
-					//delete vessel from Observation Network
-					if(otherPos.distance(myPosition) > distance){	
-						observationField.removeEdge(observationField.getEdge(this, vessel));
-						observationField.removeNode(vessel);
-					}
-				}
-				
-				//add vessel to Observation Network
-				if(isNew){
-					
-					MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(newVessel));
-					
-					observationField.addNode(newVessel);
-					
-					observationField.addEdge(this, newVessel, otherPos.distance(myPosition) );
-				}
-			}
-			
-			//update already known distances
+		}
+
+		for (Object newVessel : vesselBag) {
+			boolean isNew = true;
 			for (Object vessel : observationField.getAllNodes()) {
-				
-				if(!this.equals(vessel)){
-					Edge e = observationField.getEdge(this, vessel);
-					
-					MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-					
-					e.setInfo(otherPos.distance(myPosition));
+				if(vessel.equals(newVessel)){
+					isNew = false;
+					break;
+				}
+
+				//if vessel vector too long delete from Network
+				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
+
+				//delete vessel from Observation Network
+				if(otherPos.distance(myPosition) > distance){
+					observationField.removeEdge(observationField.getEdge(this, vessel));
+					observationField.removeNode(vessel);
 				}
 			}
-		
-		
+
+			//add vessel to Observation Network
+			if(isNew){
+				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(newVessel));
+				observationField.addNode(newVessel);
+				observationField.addEdge(this, newVessel, otherPos.distance(myPosition) );
+			}
+		}
+
+		//update already known distances
+		for (Object vessel : observationField.getAllNodes()) {
+
+			if (!this.equals(vessel)) {
+				Edge e = observationField.getEdge(this, vessel);
+				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
+				e.setInfo(otherPos.distance(myPosition));
+			}
+		}
 	}
 	
 	private Double2D predictPosition(Double2D myPosition, double yaw){
@@ -248,22 +223,11 @@ public abstract class AbstractVessel extends RectanglePortrayal2D implements Ste
 	}
 
 	private double computeYaw(Elbe elbe, Double2D myPosition){
-		
 		double yaw = 0;
-		
-		if (directionHamburg) {
-			
-			
-			
-		}else{
-			
-		}
-		
-		
 		return yaw;
 	}
 
-	public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+	/*public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
 		graphics.setColor(Color.black);
 
 		int x = (int) (info.draw.x - info.draw.width / 2.0);
@@ -271,5 +235,5 @@ public abstract class AbstractVessel extends RectanglePortrayal2D implements Ste
 		int width = (int) (info.draw.width);
 		int height = (int) (info.draw.height);
 		graphics.fillRect(x, y, 50, 50);
-	}
+	}*/
 }

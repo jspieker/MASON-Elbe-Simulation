@@ -8,9 +8,6 @@ import sim.field.continuous.Continuous2D;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.util.Double2D;
-import sim.util.MutableDouble2D;
-
-import java.lang.reflect.Array;
 
 public class Elbe extends SimState {
 
@@ -96,7 +93,7 @@ public class Elbe extends SimState {
 		
 		obs = new Observer(this);
 		
-		for (int i = 0; i < 300; i++) {
+		for (int i = 0; i < 10; i++) {
 			ContainerShip vessel;
 			if (i % 2 == 0) {
 				vessel = new ContainerShip(true, obs);
@@ -106,9 +103,9 @@ public class Elbe extends SimState {
 			
 			//Double2D location = new Double2D(vesselGrid.getHeight() * random.nextDouble() ,  vesselGrid.getWidth() * random.nextDouble());
 			
-			Double2D location = new Double2D(vesselGrid.getHeight() * 2, vesselGrid.getWidth() * random.nextDouble());
+			Double2D location = new Double2D(vesselGrid.getWidth() * random.nextDouble(), vesselGrid.getHeight() * 0.5);
 			vesselGrid.setObjectLocation(vessel, location);
-			schedule.scheduleRepeating(vessel);
+			//schedule.scheduleRepeating(vessel);
 		}
 	}
 
