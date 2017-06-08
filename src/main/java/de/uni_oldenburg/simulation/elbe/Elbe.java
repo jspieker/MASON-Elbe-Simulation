@@ -47,35 +47,21 @@ public class Elbe extends SimState {
 	}
 	
 	public static void main(String[] args) {
-		
 		//doLoop(Elbe.class, args);
-		
 		SimState elbe = new Elbe(System.currentTimeMillis());
-		
 		elbe.nameThread();
-		
 		int jobs = 1;
-		
 		for (int job = 0; job < jobs; job++) {
-			
 			elbe.setJob(job);
-			
 			elbe.start();
-			
 			do {
-				
 				if (!elbe.schedule.step(elbe)) {
-					
 					break;
 				}
-				
 			} while (elbe.schedule.getTime() < 4320);
-			
 			elbe.finish();
 		}
-		
 		System.exit(0);
-		
 	}
 
 	/**
@@ -87,48 +73,13 @@ public class Elbe extends SimState {
 		// Initialize grids
 		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
 		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
-		vesselGrid = new Continuous2D(0.01, gridWidth, gridHeight);
+		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
 
 		// Get some water
 		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 25000 / 60, 20000 / 60, true);
 
-		// Draw Elbe, spawn area and dockyard to the map
-		drawObjects();
-		
-		
-		// TODO Create Vessels and Observer
-		
-		vesselGrid.clear();
-		
-		obs = new Observer(this);
-		
-		for (int i = 0; i < 300; i++) {
-			
-			System.out.println("Vessel "+i+" created");
-			
-			ContainerShip vessel;
-			
-			if(i % 2 == 0){
-				vessel = new ContainerShip(true, obs);
-			}else{
-				vessel = new ContainerShip(false, obs);
-			}
-			
-			//Double2D location = new Double2D(vesselGrid.getHeight() * random.nextDouble() ,  vesselGrid.getWidth() * random.nextDouble());
-			
-			Double2D location = new Double2D(vesselGrid.getHeight() * 2, vesselGrid.getWidth() * random.nextDouble());			
-			
-			vesselGrid.setObjectLocation(vessel, location);
-			
-			schedule.scheduleRepeating(vessel);
-			
-		} 
-		
-		
-		
-
+		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
-
 			double [] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
 			for (int x = 0; x < gridWidth; x++) {
 				double waterLevel = depthOfWaterBelowCD + currentWaterLevels[x];
@@ -137,6 +88,28 @@ public class Elbe extends SimState {
 				}
 			}
 		}, 1);
+
+		// Draw Elbe, spawn area and dockyard to the map
+		drawObjects();
+		
+		vesselGrid.clear();
+		
+		obs = new Observer(this);
+		
+		for (int i = 0; i < 300; i++) {
+			ContainerShip vessel;
+			if (i % 2 == 0) {
+				vessel = new ContainerShip(true, obs);
+			} else {
+				vessel = new ContainerShip(false, obs);
+			}
+			
+			//Double2D location = new Double2D(vesselGrid.getHeight() * random.nextDouble() ,  vesselGrid.getWidth() * random.nextDouble());
+			
+			Double2D location = new Double2D(vesselGrid.getHeight() * 2, vesselGrid.getWidth() * random.nextDouble());
+			vesselGrid.setObjectLocation(vessel, location);
+			schedule.scheduleRepeating(vessel);
+		}
 	}
 
 	@Override
@@ -244,15 +217,4 @@ public class Elbe extends SimState {
 			FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 		}
 	}
-	
-	public Continuous2D getVesselGrid(){
-		return vesselGrid;
-	}
-
-	public Observer getObs() {
-		return obs;
-	}
-	
-	
-
 }

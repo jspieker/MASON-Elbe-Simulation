@@ -89,7 +89,7 @@ public class ElbeWithUI extends GUIState {
 		// Map the vessels
 		vesselPortrayal.setField(elbe.vesselGrid);
 
-		// reschedule the displayer
+		// reschedule the display
 		display.reset();
 
 		// redraw the display

@@ -16,7 +16,7 @@ public  class Observer {
 	
 	public Observer(Elbe elbe) {
 		super();
-		this.vesselGrid = elbe.getVesselGrid();
+		this.vesselGrid = elbe.vesselGrid;
 	}
 
 	public int getAlmostCollision() {
