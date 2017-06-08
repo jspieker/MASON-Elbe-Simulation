@@ -12,9 +12,11 @@ import sim.field.network.Network;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.simple.RectanglePortrayal2D;
 import sim.portrayal.simple.ShapePortrayal2D;
+import sim.portrayal.simple.TransformedPortrayal2D;
 import sim.util.*;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 /**
@@ -28,9 +30,12 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	final private double width;
 	final private boolean directionHamburg;
 	final private double maxSpeed;
-	
+
 	private double targetSpeed;
-	
+	private Double2D currentPosition;
+
+	Elbe elbe;
+
 	private Network observationField;
 
 	//target Distance to coast
@@ -52,7 +57,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 */
 	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, Observer observer) {
 
-		super(new double[] {0, length/4*3/100, length/100, length/4*3/100, 0}, new double[] {0, 0, width/2, width, width}, new Color(255, 255, 0), 1, true);
+		super(new double[] {-length/2/100, length/4/100, length/2/100, length/4/100, -length/2/100}, new double[] {-width/2, -width/2, 0, width/2, width/2}, new Color(255, 255, 0), 1, true);
 
 		this.weight = weight;
 		this.length = length;
@@ -86,32 +91,27 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	@Override
 	public void step(SimState state) {
 
-		double yaw;
-		
-		Elbe elbe = (Elbe) state;
-		
-		Double2D myPosition, myCourse, prePosition;
-		
-		myPosition = elbe.vesselGrid.getObjectLocation(this);
-		
-		//create /change distance Network
-		observNearSpace(elbe, myPosition);
-		
-			yaw = computeYaw(elbe, myPosition);
-			
-			prePosition = predictPosition(myPosition, yaw);
-			
-			adaptSpeed(elbe, prePosition, yaw);			
-		
-		myCourse = prePosition;
-		
-		//System.out.println(" Schiff: "+this.toString() + " Kurs: " +myCourse.toString());
-		//System.out.println("Step: "+ elbe.schedule.getSteps() +  " time: "+elbe.schedule.getTime());
-		
-		elbe.vesselGrid.setObjectLocation(this, myCourse);
-		
-		observer.update(this);
+		elbe = (Elbe) state;
+		currentPosition = elbe.vesselGrid.getObjectLocation(this);
+
+		// Quit if vessel not on the map
+		if (currentPosition == null) return;
+
+		// Remove vessel when arrived at dockyard
+		if (elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 3) {
+			elbe.vesselGrid.remove(this);
+			return;
+		}
+
+		// Transform km/h to 10m/min
+		Double2D forwardMotion = new Double2D(getTargetSpeed()*60/100 , 0);
+
+		forwardMotion = forwardMotion.rotate(getTargetYaw());
+		Double2D newPosition = currentPosition.add(forwardMotion);
+
+		elbe.vesselGrid.setObjectLocation(this, newPosition);
 	}
+
 	
 	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw){
 		
@@ -222,18 +222,26 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		return positionNew;
 	}
 
-	private double computeYaw(Elbe elbe, Double2D myPosition){
-		double yaw = 0;
+	/**
+	 * Get the best yaw according to the current environment
+	 *
+	 * @return yaw in rad from the normal yaw
+	 */
+	public double getTargetYaw() {
+
+		double yaw;
+
+		// look forward one ship length
+		if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth())) == 0) {
+			// near to coast (< half ship width), turn left
+			yaw = -0.785398; // -45 deg
+		} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth()*1.5)) == 0) {
+			// just about right
+			yaw = 0;
+		} else {
+			// off coast (> 1 ship width), turn right
+			yaw = 0.785398; // +45 deg
+		}
 		return yaw;
 	}
-
-	/*public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
-		graphics.setColor(Color.black);
-
-		int x = (int) (info.draw.x - info.draw.width / 2.0);
-		int y = (int) (info.draw.y - info.draw.height / 2.0);
-		int width = (int) (info.draw.width);
-		int height = (int) (info.draw.height);
-		graphics.fillRect(x, y, 50, 50);
-	}*/
 }

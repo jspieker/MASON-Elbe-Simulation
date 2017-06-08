@@ -11,8 +11,8 @@ import sim.util.Double2D;
 
 public class Elbe extends SimState {
 
-	IntGrid2D elbeMap;
-	DoubleGrid2D tidesMap;
+	public IntGrid2D elbeMap;
+	public DoubleGrid2D tidesMap;
 	public Continuous2D vesselGrid;
 
 	private final int[] FAIRWAY_LENGTH = {507, 230, 230, 200, 48}; // TODO find exact values in relation
@@ -41,24 +41,6 @@ public class Elbe extends SimState {
 		super(seed);
 
 		calculateInitialValues();
-	}
-	
-	public static void main(String[] args) {
-		//doLoop(Elbe.class, args);
-		SimState elbe = new Elbe(System.currentTimeMillis());
-		elbe.nameThread();
-		int jobs = 1;
-		for (int job = 0; job < jobs; job++) {
-			elbe.setJob(job);
-			elbe.start();
-			do {
-				if (!elbe.schedule.step(elbe)) {
-					break;
-				}
-			} while (elbe.schedule.getTime() < 4320);
-			elbe.finish();
-		}
-		System.exit(0);
 	}
 
 	/**
@@ -100,12 +82,10 @@ public class Elbe extends SimState {
 			} else {
 				vessel = new ContainerShip(false, obs);
 			}
-			
-			//Double2D location = new Double2D(vesselGrid.getHeight() * random.nextDouble() ,  vesselGrid.getWidth() * random.nextDouble());
-			
+
 			Double2D location = new Double2D(vesselGrid.getWidth() * random.nextDouble(), vesselGrid.getHeight() * 0.5);
 			vesselGrid.setObjectLocation(vessel, location);
-			//schedule.scheduleRepeating(vessel);
+			schedule.scheduleRepeating(vessel);
 		}
 	}
 
