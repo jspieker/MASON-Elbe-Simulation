@@ -75,12 +75,21 @@ public class Tides {
 		computeTime(time);
 		computeMoonAttraction();
 		double levelOfAffection = levelOfAffection(xCoordinate);
-
-		if (isHighTide) {
-			return (this.moonAttraction * AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_ADDER)* levelOfAffection;
+		double waterLevel = (this.moonAttraction * AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER);
+		if (this.isHighTide) {
+			if (waterLevel * levelOfAffection >= AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD) {
+				return waterLevel * levelOfAffection;
+			} else {
+				return AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD;
+			}
 		} else {
-			return (this.moonAttraction * AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER);
+			if (waterLevel / levelOfAffection <= AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD) {
+				return waterLevel / levelOfAffection;
+			} else {
+				return AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD;
+			}
 		}
+
 	}
 
 	/**
@@ -127,15 +136,14 @@ public class Tides {
 				levelOfAffection = 1.0;
 			} else {
 				// Compute the levelOfAffection before the "wave"
-				levelOfAffection = Math.sin((Math.PI / ((elbeLength - xPositionsAffectedAtTime) * 2)) * ((xCoordinate - elbeLength) * (-1)));
+				levelOfAffection = Math.sin((Math.PI / ((elbeLength - xPositionsAffectedAtTime) * 4)) * (((xCoordinate - elbeLength) * (-1)) + (elbeLength - xPositionsAffectedAtTime)));
 			}
 		} else {
 			xPositionsAffectedAtTime = ((double) elbeLength / lowTidePeriod) * (time * -1) + elbeLength;
-
 			if (xPositionsAffectedAtTime <= xCoordinate) {
 				levelOfAffection = 1.0;
 			} else {
-				levelOfAffection = Math.sin((Math.PI / (xPositionsAffectedAtTime * 2)) * xCoordinate);
+				levelOfAffection = Math.sin((Math.PI / (xPositionsAffectedAtTime * 4)) * (xCoordinate + xPositionsAffectedAtTime));
 			}
 		}
 

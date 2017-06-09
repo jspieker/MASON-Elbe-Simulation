@@ -27,7 +27,12 @@ public class DynamicWaterLevel {
 	public DynamicWaterLevel(int elbeLength, final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst) {
 		waterLevels = new WaterLevel[elbeLength];
 		for (int x = 0; x < elbeLength; x++) {
-			waterLevels[x] = new WaterLevel(0 /* We have no water at the beginning*/, x);
+			if (isHighTideFirst) {
+				waterLevels[x] = new WaterLevel(Tides.AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD, x);
+
+			} else {
+				waterLevels[x] = new WaterLevel(Tides.AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD, x);
+			}
 		}
 
 		tides = new Tides(highTidePeriod, lowTidePeriod, isHighTideFirst, elbeLength);
@@ -56,7 +61,8 @@ public class DynamicWaterLevel {
 	 */
 	private void updateWaterLevels(long time) {
 		for (int x = 0; x < waterLevels.length; x++) {
-			waterLevels[x].updateWaterLevel((waterLevels[x].getLastKnownWaterLevel()*100 + tides.computeWaterLevel(time, x))/101);
+			double newWaterLevel = tides.computeWaterLevel(time, x);
+			waterLevels[x].updateWaterLevel(newWaterLevel);
 		}
 	}
 

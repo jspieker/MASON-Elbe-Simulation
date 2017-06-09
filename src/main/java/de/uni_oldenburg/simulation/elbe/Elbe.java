@@ -1,10 +1,11 @@
 package de.uni_oldenburg.simulation.elbe;
 
 import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
-import de.uni_oldenburg.simulation.elbe.models.Tides;
 import de.uni_oldenburg.simulation.vessels.*;
-import sim.engine.*;
 import sim.field.continuous.Continuous2D;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Steppable;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.util.Double2D;
@@ -34,7 +35,7 @@ public class Elbe extends SimState {
 	private final int FAIRWAY_ID = 1;
 	private final int SPAWN_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
-	
+
 	private Observer obs;
 
 	public Elbe(long seed) {
@@ -59,7 +60,7 @@ public class Elbe extends SimState {
 
 		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
-			double [] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
+			double[] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
 			for (int x = 0; x < gridWidth; x++) {
 				double waterLevel = depthOfWaterBelowCD + currentWaterLevels[x];
 				for (int y = 0; y < gridHeight; y++) {
@@ -70,11 +71,11 @@ public class Elbe extends SimState {
 
 		// Draw Elbe, spawn area and dockyard to the map
 		drawObjects();
-		
+
 		vesselGrid.clear();
-		
+
 		obs = new Observer(this);
-		
+
 		for (int i = 0; i < 10; i++) {
 			ContainerShip vessel;
 			if (i % 2 == 0) {
@@ -93,7 +94,7 @@ public class Elbe extends SimState {
 	public void finish() {
 		// TODO Auto-generated method stub
 		super.finish();
-		
+
 		System.out.println("Beinahe zusammenstöße: "+ obs.getAlmostCollision()+ " zusammenstöße: "+obs.getCollision());
 	}
 
@@ -127,12 +128,12 @@ public class Elbe extends SimState {
 					}
 					tempTopIndex++;
 					tempBottomIndex -= 2;
-				} else if (tempWidthHelper < 0){
+				} else if (tempWidthHelper < 0) {
 					// Draw transitions if the following elbeSection is wider than the previous one
 					System.out.println("Das hier wird nicht ausgeführt, da MASON mit veränderten Variablen nicht klarkommt"); // TODO
 				}
 			}
-				tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
+			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
 		}
 
 		// Draw spawn area
@@ -193,5 +194,33 @@ public class Elbe extends SimState {
 		} else {
 			FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 		}
+	}
+
+	public int[] getFAIRWAY_LENGTH() {
+		return FAIRWAY_LENGTH;
+	}
+
+	public int[] getFAIRWAY_WIDTH_NOT_EXTENDED() {
+		return FAIRWAY_WIDTH_NOT_EXTENDED;
+	}
+
+	public int[] getFAIRWAY_WIDTH_EXTENDED() {
+		return FAIRWAY_WIDTH_EXTENDED;
+	}
+
+	public int[] getFAIRWAY_WIDTH() {
+		return FAIRWAY_WIDTH;
+	}
+
+	public int getFairwayLengthTotal() {
+		return fairwayLengthTotal;
+	}
+
+	public int getFairwayWidthMax() {
+		return fairwayWidthMax;
+	}
+
+	public boolean executeStep() {
+		return super.schedule.step(this);
 	}
 }
