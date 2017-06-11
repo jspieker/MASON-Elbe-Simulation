@@ -1,18 +1,20 @@
 package de.uni_oldenburg.simulation.elbe;
 
 import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
+import de.uni_oldenburg.simulation.vessels.*;
+import sim.field.continuous.Continuous2D;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
-import sim.field.grid.SparseGrid2D;
+import sim.util.Double2D;
 
 public class Elbe extends SimState {
 
-	IntGrid2D elbeMap;
-	DoubleGrid2D tidesMap;
-	SparseGrid2D vesselGrid;
+	public IntGrid2D elbeMap;
+	public DoubleGrid2D tidesMap;
+	public Continuous2D vesselGrid;
 
 	private final int[] FAIRWAY_LENGTH = {507, 230, 230, 200, 48}; // TODO find exact values in relation
 	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED = {400, 300, 250, 250, 230}; // TODO find exact values for #2 #3 #4 (#0 and #1 are correct, others mostly)
@@ -31,13 +33,23 @@ public class Elbe extends SimState {
 	private int gridHeight;
 	private int gridWidth;
 	private final int FAIRWAY_ID = 1;
-	private final int SPAWN_POINT_ID = 2;
+	private final int SEA_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
+
+	private Observer obs;
 
 	public Elbe(long seed) {
 		super(seed);
 
 		calculateInitialValues();
+
+		// Initialize empty grids
+		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
+		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
+		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
+
+		// Draw Elbe, spawn area and dockyard to the map
+		drawObjects();
 	}
 
 	/**
@@ -46,21 +58,11 @@ public class Elbe extends SimState {
 	public void start() {
 		super.start(); // clear out the schedule
 
-		// Initialize grids
-		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
-		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
-		vesselGrid = new SparseGrid2D(gridWidth, gridHeight);
-
 		// Get some water
 		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 25000 / 60, 20000 / 60, true);
 
-		// Draw Elbe, spawn area and dockyard to the map
-		drawObjects();
-
-		// TODO Create Vessels
-
+		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
-
 			double[] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
 			for (int x = 0; x < gridWidth; x++) {
 				double waterLevel = depthOfWaterBelowCD + currentWaterLevels[x];
@@ -69,6 +71,49 @@ public class Elbe extends SimState {
 				}
 			}
 		}, 1);
+
+		vesselGrid.clear();
+
+		obs = new Observer(this);
+
+		// Dynamically spawn new customers
+		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
+
+			// Spawn vessels coming from sea
+			if (newShipArrivedFromSea()) {
+				AbstractVessel newVessel = getNewVessel(true);
+				vesselGrid.setObjectLocation(newVessel, new Double2D(0, 380));
+				schedule.scheduleRepeating(newVessel, 1);
+			}
+
+			// Spawn vessels coming from docks
+			if (newShipArrivedFromDocks()) {
+				AbstractVessel newVessel = getNewVessel(false);
+				vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth-1, 170));
+				schedule.scheduleRepeating(newVessel, 1);
+			}
+		}, 1);
+	}
+
+	private boolean newShipArrivedFromSea() {
+		return random.nextBoolean(0.1);
+	}
+
+	private boolean newShipArrivedFromDocks() {
+		return random.nextBoolean(0.1);
+	}
+
+	private AbstractVessel getNewVessel(boolean directionHamburg) {
+		// TODO: Implement selection of random vessel type
+		return new ContainerShip(directionHamburg, obs);
+	}
+
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+
+		System.out.println("Beinahe zusammenstöße: "+ obs.getAlmostCollision()+ " zusammenstöße: "+obs.getCollision());
 	}
 
 	/**
@@ -81,8 +126,7 @@ public class Elbe extends SimState {
 		for (int elbeSection = 0; elbeSection < FAIRWAY_LENGTH.length; elbeSection++) {
 			try {
 				tempWidthHelper = (FAIRWAY_WIDTH[elbeSection] - FAIRWAY_WIDTH[elbeSection + 1]) / 2;
-			} catch (ArrayIndexOutOfBoundsException ignored) {
-			}
+			} catch (ArrayIndexOutOfBoundsException ignored) {}
 
 			// Draw blocks for elbe sections
 			for (int i = MARGIN + tempLengthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i++) { // from left to right
@@ -113,7 +157,7 @@ public class Elbe extends SimState {
 		// Draw spawn area
 		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN + FAIRWAY_WIDTH[0]); i++) {
 			for (int j = 0; j < MARGIN; j++) {
-				elbeMap.field[spawnPositionX - (j + 1)][i] = SPAWN_POINT_ID;
+				elbeMap.field[spawnPositionX - (j + 1)][i] = SEA_POINT_ID;
 			}
 		}
 
@@ -205,22 +249,6 @@ public class Elbe extends SimState {
         }
 
 		return (((fairwayWidthMax - FAIRWAY_WIDTH[currentElbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[currentElbeSection]);
-	}
-
-	public int[] getFAIRWAY_LENGTH() {
-		return FAIRWAY_LENGTH;
-	}
-
-	public int[] getFAIRWAY_WIDTH_NOT_EXTENDED() {
-		return FAIRWAY_WIDTH_NOT_EXTENDED;
-	}
-
-	public int[] getFAIRWAY_WIDTH_EXTENDED() {
-		return FAIRWAY_WIDTH_EXTENDED;
-	}
-
-	public int[] getFAIRWAY_WIDTH() {
-		return FAIRWAY_WIDTH;
 	}
 
 	public int getFairwayLengthTotal() {
