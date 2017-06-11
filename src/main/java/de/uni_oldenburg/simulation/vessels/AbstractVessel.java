@@ -2,22 +2,15 @@ package de.uni_oldenburg.simulation.vessels;
 
 import static java.lang.Math.*;
 
-import Jama.Matrix;
 import de.uni_oldenburg.simulation.elbe.Elbe;
 import de.uni_oldenburg.simulation.elbe.Observer;
 import sim.engine.*;
-import sim.field.continuous.Continuous2D;
 import sim.field.network.Edge;
 import sim.field.network.Network;
-import sim.portrayal.DrawInfo2D;
-import sim.portrayal.simple.RectanglePortrayal2D;
 import sim.portrayal.simple.ShapePortrayal2D;
-import sim.portrayal.simple.TransformedPortrayal2D;
 import sim.util.*;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 
 /**
  * The AbstractVessel combines the properties of all vessels
