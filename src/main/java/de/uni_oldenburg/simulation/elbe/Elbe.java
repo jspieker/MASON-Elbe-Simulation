@@ -170,6 +170,43 @@ public class Elbe extends SimState {
 		}
 	}
 
+	/**
+	 * Calculates the upper border (y-value) of the fairway.
+	 * @param x-value of position to be calculated
+	 * @return y-value in relation to given x-value
+	 */
+	public int getTopBorderOfElbe(int x) {
+		int tempLengthHelper = 0;
+		int currentElbeSection = 0;
+		for (int i = 0; i < FAIRWAY_LENGTH.length; i++) {
+			tempLengthHelper += FAIRWAY_LENGTH[i];
+			if (tempLengthHelper > x) {
+				currentElbeSection = i;
+				break;
+			}
+        }
+		return ((fairwayWidthMax - FAIRWAY_WIDTH[currentElbeSection]) / 2);
+	}
+
+	/**
+	 * Calculates the lower border (y-value) of the fairway.
+	 * @param x-value of position to be calculated
+	 * @return y-value in relation to given x-value
+	 */
+	public int getBottomBorderOfElbe(int x) {
+		int tempLengthHelper = 0;
+		int currentElbeSection = 0;
+		for (int i = 0; i < FAIRWAY_LENGTH.length; i++) {
+			tempLengthHelper += FAIRWAY_LENGTH[i];
+			if (tempLengthHelper > x) {
+				currentElbeSection = i;
+				break;
+			}
+        }
+
+		return (((fairwayWidthMax - FAIRWAY_WIDTH[currentElbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[currentElbeSection]);
+	}
+
 	public int[] getFAIRWAY_LENGTH() {
 		return FAIRWAY_LENGTH;
 	}
