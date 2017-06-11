@@ -97,15 +97,6 @@ public class ElbeWithUI extends GUIState {
 	}
 
 	/**
-	 * Start the simulation
-	 */
-	public void start() {
-		super.start();  // set up everything but replacing the display
-		// set up our portrayals
-		setupPortrayals();
-	}
-
-	/**
 	 * Load a specific state
 	 * @param state The state to be simulated
 	 */
@@ -136,6 +127,9 @@ public class ElbeWithUI extends GUIState {
 
 		// specify the backdrop color  -- what gets painted behind the displays
 		display.setBackdrop(new Color(80, 80, 80, 255)); // landmass
+
+		// set up our portrayals
+		setupPortrayals();
 	}
 
 	/**

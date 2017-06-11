@@ -42,6 +42,14 @@ public class Elbe extends SimState {
 		super(seed);
 
 		calculateInitialValues();
+
+		// Initialize empty grids
+		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
+		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
+		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
+
+		// Draw Elbe, spawn area and dockyard to the map
+		drawObjects();
 	}
 
 	/**
@@ -49,11 +57,6 @@ public class Elbe extends SimState {
 	 */
 	public void start() {
 		super.start(); // clear out the schedule
-
-		// Initialize grids
-		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
-		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
-		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
 
 		// Get some water
 		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 25000 / 60, 20000 / 60, true);
@@ -68,9 +71,6 @@ public class Elbe extends SimState {
 				}
 			}
 		}, 1);
-
-		// Draw Elbe, spawn area and dockyard to the map
-		drawObjects();
 
 		vesselGrid.clear();
 
