@@ -33,7 +33,7 @@ public class Elbe extends SimState {
 	private int gridHeight;
 	private int gridWidth;
 	private final int FAIRWAY_ID = 1;
-	private final int SPAWN_POINT_ID = 2;
+	private final int SEA_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
 
 	private Observer obs;
@@ -76,18 +76,36 @@ public class Elbe extends SimState {
 
 		obs = new Observer(this);
 
-		for (int i = 0; i < 10; i++) {
-			ContainerShip vessel;
-			if (i % 2 == 0) {
-				vessel = new ContainerShip(true, obs);
-			} else {
-				vessel = new ContainerShip(false, obs);
+		// Dynamically spawn new customers
+		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
+
+			// Spawn vessels coming from sea
+			if (newShipArrivedFromSea()) {
+				AbstractVessel newVessel = getNewVessel(true);
+				vesselGrid.setObjectLocation(newVessel, new Double2D(0, 380));
+				schedule.scheduleRepeating(newVessel, 1);
 			}
 
-			Double2D location = new Double2D(vesselGrid.getWidth() * random.nextDouble(), vesselGrid.getHeight() * 0.5);
-			vesselGrid.setObjectLocation(vessel, location);
-			schedule.scheduleRepeating(vessel);
-		}
+			// Spawn vessels coming from docks
+			if (newShipArrivedFromDocks()) {
+				AbstractVessel newVessel = getNewVessel(false);
+				vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth-1, 170));
+				schedule.scheduleRepeating(newVessel, 1);
+			}
+		}, 1);
+	}
+
+	private boolean newShipArrivedFromSea() {
+		return random.nextBoolean(0.1);
+	}
+
+	private boolean newShipArrivedFromDocks() {
+		return random.nextBoolean(0.1);
+	}
+
+	private AbstractVessel getNewVessel(boolean directionHamburg) {
+		// TODO: Implement selection of random vessel type
+		return new ContainerShip(directionHamburg, obs);
 	}
 
 	@Override
@@ -139,7 +157,7 @@ public class Elbe extends SimState {
 		// Draw spawn area
 		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN + FAIRWAY_WIDTH[0]); i++) {
 			for (int j = 0; j < MARGIN; j++) {
-				elbeMap.field[spawnPositionX - (j + 1)][i] = SPAWN_POINT_ID;
+				elbeMap.field[spawnPositionX - (j + 1)][i] = SEA_POINT_ID;
 			}
 		}
 
@@ -231,22 +249,6 @@ public class Elbe extends SimState {
         }
 
 		return (((fairwayWidthMax - FAIRWAY_WIDTH[currentElbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[currentElbeSection]);
-	}
-
-	public int[] getFAIRWAY_LENGTH() {
-		return FAIRWAY_LENGTH;
-	}
-
-	public int[] getFAIRWAY_WIDTH_NOT_EXTENDED() {
-		return FAIRWAY_WIDTH_NOT_EXTENDED;
-	}
-
-	public int[] getFAIRWAY_WIDTH_EXTENDED() {
-		return FAIRWAY_WIDTH_EXTENDED;
-	}
-
-	public int[] getFAIRWAY_WIDTH() {
-		return FAIRWAY_WIDTH;
 	}
 
 	public int getFairwayLengthTotal() {

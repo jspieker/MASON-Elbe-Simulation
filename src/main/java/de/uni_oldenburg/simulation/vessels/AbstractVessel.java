@@ -32,14 +32,13 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	final private double maxSpeed;
 
 	private double targetSpeed;
+	private double currentSpeed;
 	private Double2D currentPosition;
 
 	Elbe elbe;
 
 	private Network observationField;
 
-	//target Distance to coast
-	final private double targetDistance = 50;
 	//observation area
 	final private double distance = 50;
 	
@@ -87,7 +86,12 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	public boolean getDirectionHamburg() {
 		return directionHamburg;
 	}
-	
+
+	/**
+	 * Move one simulation step (1 min)
+	 *
+	 * @param state
+	 */
 	@Override
 	public void step(SimState state) {
 
@@ -97,15 +101,18 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		// Quit if vessel not on the map
 		if (currentPosition == null) return;
 
-		// Remove vessel when arrived at dockyard
-		if (elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 3) {
+		// Remove vessel when arrived at destination
+		if ((directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 3) ||
+			(!directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 2)) {
 			elbe.vesselGrid.remove(this);
 			return;
 		}
 
-		// Transform km/h to 10m/min
-		Double2D forwardMotion = new Double2D(getTargetSpeed()*60/100 , 0);
+		// TODO: dynamically adopt speed (with respect to vessel weight)
+		currentSpeed = getTargetSpeed();
 
+		// Transform km/h to 10m/min, calculate new position
+		Double2D forwardMotion = new Double2D(0, -currentSpeed*60/100); // course north on (0 deg)
 		forwardMotion = forwardMotion.rotate(getTargetYaw());
 		Double2D newPosition = currentPosition.add(forwardMotion);
 
@@ -113,7 +120,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	}
 
 	
-	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw){
+	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw) {
 		
 		Bag vesselBag = observationField.getAllNodes();
 		vesselBag.remove(this);
@@ -223,7 +230,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	}
 
 	/**
-	 * Get the best yaw according to the current environment
+	 * Get the best yaw according to the destination and the current environment
 	 *
 	 * @return yaw in rad from the normal yaw
 	 */
@@ -231,17 +238,33 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		double yaw;
 
-		// look forward one ship length
-		if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth())) == 0) {
-			// near to coast (< half ship width), turn left
-			yaw = -0.785398; // -45 deg
-		} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth()*1.5)) == 0) {
-			// just about right
-			yaw = 0;
+		if (directionHamburg) {
+			// look forward one ship length
+			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth())) == 0) {
+				// near to coast (< half ship width), turn left
+				yaw = 0.785398; // 45 deg
+			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth()*1.5)) == 0) {
+				// just about right
+				yaw = 1.5708; // 90 deg
+			} else {
+				// off coast (> 1 ship width), turn right
+				yaw = 2.35619; // 135 deg
+			}
+			return yaw;
 		} else {
-			// off coast (> 1 ship width), turn right
-			yaw = 0.785398; // +45 deg
+			// look forward one ship length
+			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x-getLength()/10), (int) Math.ceil(currentPosition.y-getWidth())) == 0) {
+				// near to coast (< half ship width), turn left
+				yaw = 3.92699; // 225 deg
+			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x-getLength()/10), (int) Math.ceil(currentPosition.y-getWidth()*1.5)) == 0) {
+				// just about right
+				yaw = 4.71239; // 270 deg
+			} else {
+				// off coast (> 1 ship width), turn right
+				yaw = 5.49779; // 135 deg
+			}
+			return yaw;
 		}
-		return yaw;
+
 	}
 }
