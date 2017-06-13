@@ -41,12 +41,8 @@ public class Tides {
 	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD = 0.47; // Low tide minimum
 	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD = 3.6; // high tide maximum
 
-
-	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_ADDER = 2.035;
-	static final double AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 1.565;
-
-	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER = 2.035;
-	static final double AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 1.565;
+	static final double AVERAGE_WATERLEVEL_ABOVE_CD_ADDER = 0.47;
+	static final double AVERAGE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 3.13;
 
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
@@ -75,7 +71,7 @@ public class Tides {
 		computeTime(time);
 		computeMoonAttraction();
 		double levelOfAffection = levelOfAffection(xCoordinate);
-		double waterLevel = (this.moonAttraction * AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD_ADDER);
+		double waterLevel = (this.moonAttraction * AVERAGE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_WATERLEVEL_ABOVE_CD_ADDER);
 		if (this.isHighTide) {
 			if (waterLevel * levelOfAffection >= AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD) {
 				return waterLevel * levelOfAffection;
@@ -109,7 +105,7 @@ public class Tides {
 	 * The switching between low and high tide is done automatically.
 	 */
 	private void computeMoonAttraction() {
-		this.moonAttraction = (isHighTide ? -1 : 1) * Math.cos((Math.PI / (isHighTide ? highTidePeriod : lowTidePeriod)) * time);
+		this.moonAttraction = Math.sin((Math.PI / (2 * (isHighTide ? highTidePeriod : lowTidePeriod))) * time + (isHighTide ? 0 : (Math.PI / 2)));
 	}
 
 	private void computeTime(long time) {
