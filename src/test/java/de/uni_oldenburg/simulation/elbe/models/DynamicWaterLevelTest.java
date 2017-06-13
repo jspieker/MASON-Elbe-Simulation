@@ -18,7 +18,7 @@ public class DynamicWaterLevelTest {
 
 	@Before
 	public void setUp() throws Exception {
-		instance = new DynamicWaterLevel(elbeLength, highTidePeriod, lowTidePeriod, true);
+		instance = new DynamicWaterLevel(elbeLength, highTidePeriod, lowTidePeriod, true, true);
 	}
 
 	@After
@@ -41,7 +41,7 @@ public class DynamicWaterLevelTest {
 	@Test
 	public void getCurrentWaterLevels_LowTidePassCorrectValues_confirms() throws Exception {
 
-		instance = new DynamicWaterLevel(elbeLength, highTidePeriod, lowTidePeriod, false);
+		instance = new DynamicWaterLevel(elbeLength, highTidePeriod, lowTidePeriod, false, true);
 		long time = 0;
 		double[] waterLevels = instance.getCurrentWaterLevels(time);
 

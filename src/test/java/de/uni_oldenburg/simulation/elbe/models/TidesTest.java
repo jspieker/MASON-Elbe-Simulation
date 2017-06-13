@@ -18,7 +18,7 @@ public class TidesTest {
 
 	@Before
 	public void setUp() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, true, elbeLength);
+		instance = new Tides(highTidePeriod, lowTidePeriod, true, elbeLength, true);
 	}
 
 	@After
@@ -40,7 +40,7 @@ public class TidesTest {
 
 	@Test
 	public void computeWaterLevel_passCorrectValueWithLowTide_confirms() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
+		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength, true);
 
 		long time = 20000;
 		double newWaterLevelExpected = Tides.AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD;
@@ -52,7 +52,7 @@ public class TidesTest {
 
 	@Test
 	public void others_passCorrectValueWithLowTide_confirms() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
+		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength, true);
 
 		assertEquals("The actual moon attraction must meet the expected one.", 0.0, instance.getMoonAttraction());
 

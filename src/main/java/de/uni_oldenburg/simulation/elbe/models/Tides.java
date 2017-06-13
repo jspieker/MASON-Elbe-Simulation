@@ -34,6 +34,11 @@ public class Tides {
 	 */
 	private boolean isHighTide;
 	/**
+	 * Boolean value indicating whether the tide computation is active or not.
+	 */
+	private boolean isTideActive;
+
+	/**
 	 * Is the average water level that is neither affected by the low nor high tide.
 	 * The final value is computed by putting the average high tide water level in relation to the average low tide water level.
 	 * The average water level is used to adjust the water level above CD.
@@ -44,6 +49,9 @@ public class Tides {
 	static final double AVERAGE_WATERLEVEL_ABOVE_CD_ADDER = 0.466666667;
 	static final double AVERAGE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 3.133333333;
 
+	private final double waterLevelLWDelta = 0.167;
+	private final double waterLevelHWDelta = 0.5;
+
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
 	 *
@@ -51,13 +59,15 @@ public class Tides {
 	 * @param lowTidePeriod   Is the time needed for the low tide in seconds.
 	 * @param isHighTideFirst Determines whether the simulation starts with high tide or not (low tide).
 	 * @param elbeLength      Is the length of the Elbe. The parameter is used to determine whether a specific x coordinate is affected by the moon attraction or not.
+	 * @param isTideActive    Boolean value indicating whether the tide computation is active or not. If not the highest high tide value (Hamburg has the highest one) is always returned on a new water level request.
 	 */
-	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst, long elbeLength) {
+	public Tides(final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst, long elbeLength, boolean isTideActive) {
 		this.highTidePeriod = highTidePeriod;
 		this.lowTidePeriod = lowTidePeriod;
 		this.moonAttraction = 0.0;
 		this.isHighTideFirst = isHighTideFirst;
 		this.elbeLength = elbeLength;
+		this.isTideActive = isTideActive;
 	}
 
 	/**
@@ -68,17 +78,20 @@ public class Tides {
 	 * @return The current water level adjusted by the current moon attraction or -1 if the x coordinate is not affected yet.
 	 */
 	public double computeWaterLevel(long time, long xCoordinate) {
-		computeTime(time);
-		computeMoonAttraction();
-		double waterLevel = (this.moonAttraction * AVERAGE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_WATERLEVEL_ABOVE_CD_ADDER) + computeWaterLevelDelta(xCoordinate);
+		if (isTideActive) {
+			computeTime(time);
+			computeMoonAttraction();
+			double waterLevel = (this.moonAttraction * AVERAGE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER + AVERAGE_WATERLEVEL_ABOVE_CD_ADDER) + computeWaterLevelDelta(xCoordinate);
 
-		return waterLevel;
+			return waterLevel;
+		} else {
+			return AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD + this.waterLevelHWDelta;
+		}
+
 	}
 
 	private double computeWaterLevelDelta(long xCoordinate) {
 		double waterLevelDelta;
-		double waterLevelLWDelta = 0.167;
-		double waterLevelHWDelta = 0.5;
 
 		if (isHighTide) {
 			waterLevelDelta = (((waterLevelHWDelta / elbeLength) * xCoordinate) / highTidePeriod) * time;
@@ -87,15 +100,6 @@ public class Tides {
 		}
 
 		return waterLevelDelta;
-	}
-
-	/**
-	 * Get the current moonAttraction.
-	 *
-	 * @return Return the current moonAttraction value computed by {@link Tides#computeMoonAttraction()}
-	 */
-	public double getMoonAttraction() {
-		return moonAttraction;
 	}
 
 	// private methods
@@ -124,5 +128,24 @@ public class Tides {
 
 	private boolean isHighTide(long time) {
 		return !isHighTideFirst && time >= lowTidePeriod || isHighTideFirst && time < highTidePeriod;
+	}
+
+	// getter and setter
+
+	/**
+	 * Get the current moonAttraction.
+	 *
+	 * @return Return the current moonAttraction value computed by {@link Tides#computeMoonAttraction()}
+	 */
+	public double getMoonAttraction() {
+		return moonAttraction;
+	}
+
+	public boolean isTideActive() {
+		return isTideActive;
+	}
+
+	public void setTideActive(boolean tideActive) {
+		isTideActive = tideActive;
 	}
 }

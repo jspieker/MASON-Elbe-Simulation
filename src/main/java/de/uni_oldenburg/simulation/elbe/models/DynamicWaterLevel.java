@@ -23,8 +23,9 @@ public class DynamicWaterLevel {
 	 * @param highTidePeriod  Is the time needed for the high tide in seconds.
 	 * @param lowTidePeriod   Is the time needed for the low tide in seconds.
 	 * @param isHighTideFirst Determines whether the simulation starts with high tide or not (low tide).
+	 * @param isTideActive    Boolean value indicating whether the tide computation is active or not. If not the highest high tide value (Hamburg has the highest one) is always returned on a new water level request.
 	 */
-	public DynamicWaterLevel(int elbeLength, final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst) {
+	public DynamicWaterLevel(int elbeLength, final long highTidePeriod, final long lowTidePeriod, final boolean isHighTideFirst, boolean isTideActive) {
 		waterLevels = new WaterLevel[elbeLength];
 		for (int x = 0; x < elbeLength; x++) {
 			if (isHighTideFirst) {
@@ -35,7 +36,7 @@ public class DynamicWaterLevel {
 			}
 		}
 
-		tides = new Tides(highTidePeriod, lowTidePeriod, isHighTideFirst, elbeLength);
+		tides = new Tides(highTidePeriod, lowTidePeriod, isHighTideFirst, elbeLength, isTideActive);
 	}
 
 	/**

@@ -24,6 +24,8 @@ public class Elbe extends SimState {
 
 	private DynamicWaterLevel dynamicWaterLevel;
 	private int depthOfWaterBelowCD = 15; // sample value
+	private boolean isTideActive = true;
+
 
 	private boolean isExtended = false;
 	private int fairwayLengthTotal;
@@ -59,7 +61,7 @@ public class Elbe extends SimState {
 		super.start(); // clear out the schedule
 
 		// Get some water
-		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 19670 / 60, 24505 / 60, true);
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 19670 / 60, 24505 / 60, true, isTideActive);
 
 		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
@@ -264,5 +266,13 @@ public class Elbe extends SimState {
 
 	public boolean executeStep() {
 		return super.schedule.step(this);
+	}
+
+	public boolean isTideActive() {
+		return isTideActive;
+	}
+
+	public void setTideActive(boolean tideActive) {
+		isTideActive = tideActive;
 	}
 }
