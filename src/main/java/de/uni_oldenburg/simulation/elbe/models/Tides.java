@@ -77,14 +77,14 @@ public class Tides {
 
 	private double computeWaterLevelDelta(long xCoordinate) {
 		double waterLevelDelta;
-		double waterLevelLWHWDelta = 0.3335;
+		double waterLevelLWDelta = 0.167;
+		double waterLevelHWDelta = 0.5;
 
 		if (isHighTide) {
-			waterLevelDelta = (((waterLevelLWHWDelta / elbeLength) * xCoordinate) / highTidePeriod) * time;
+			waterLevelDelta = (((waterLevelHWDelta / elbeLength) * xCoordinate) / highTidePeriod) * time;
 		} else {
-			waterLevelDelta = (((waterLevelLWHWDelta / elbeLength) * xCoordinate) / lowTidePeriod) * (lowTidePeriod - time);
+			waterLevelDelta = (((((waterLevelHWDelta - waterLevelLWDelta) / elbeLength) * xCoordinate) / lowTidePeriod) * (lowTidePeriod - time)) + ((((waterLevelLWDelta / elbeLength) * xCoordinate) / lowTidePeriod) * (lowTidePeriod - time));
 		}
-
 
 		return waterLevelDelta;
 	}
