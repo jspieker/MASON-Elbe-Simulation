@@ -49,8 +49,7 @@ public class Tides {
 	static final double AVERAGE_WATERLEVEL_ABOVE_CD_ADDER = 0.466666667;
 	static final double AVERAGE_WATERLEVEL_ABOVE_CD_MOON_ATTRACTION_MULTIPLIER = 3.133333333;
 
-	private final double waterLevelLWDelta = 0.167;
-	private final double waterLevelHWDelta = 0.5;
+	private final double waterLevelHWDelta = 0.233;
 
 	/**
 	 * Tide constructor to initialize the tides context given the parameters.
@@ -96,7 +95,7 @@ public class Tides {
 		if (isHighTide) {
 			waterLevelDelta = (((waterLevelHWDelta / elbeLength) * xCoordinate) / highTidePeriod) * time;
 		} else {
-			waterLevelDelta = (((((waterLevelHWDelta - waterLevelLWDelta) / elbeLength) * xCoordinate) / lowTidePeriod) * (lowTidePeriod - time)) + ((((waterLevelLWDelta / elbeLength) * xCoordinate) / lowTidePeriod) * (lowTidePeriod - time));
+			waterLevelDelta = ((((waterLevelHWDelta / elbeLength) * xCoordinate) / lowTidePeriod) * (lowTidePeriod - time));
 		}
 
 		return waterLevelDelta;
@@ -141,9 +140,6 @@ public class Tides {
 		return moonAttraction;
 	}
 
-	public boolean isTideActive() {
-		return isTideActive;
-	}
 
 	public void setTideActive(boolean tideActive) {
 		isTideActive = tideActive;

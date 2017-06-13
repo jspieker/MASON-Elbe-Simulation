@@ -42,11 +42,11 @@ public class DynamicWaterLevelTest {
 	public void getCurrentWaterLevels_LowTidePassCorrectValues_confirms() throws Exception {
 
 		instance = new DynamicWaterLevel(elbeLength, highTidePeriod, lowTidePeriod, false, true);
-		long time = 0;
+		long time = lowTidePeriod;
 		double[] waterLevels = instance.getCurrentWaterLevels(time);
 
 		for (double waterLevel : waterLevels) {
-			assertEquals("The actual water level must meet the expected one.", Tides.AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD, waterLevel, 0.01);
+			assertEquals("The actual water level must meet the expected one.", Tides.AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD, waterLevel, 0.01);
 		}
 	}
 }

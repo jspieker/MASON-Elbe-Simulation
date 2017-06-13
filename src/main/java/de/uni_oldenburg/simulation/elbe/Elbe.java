@@ -274,5 +274,6 @@ public class Elbe extends SimState {
 
 	public void setTideActive(boolean tideActive) {
 		isTideActive = tideActive;
+		dynamicWaterLevel.setTideActive(this.isTideActive);
 	}
 }

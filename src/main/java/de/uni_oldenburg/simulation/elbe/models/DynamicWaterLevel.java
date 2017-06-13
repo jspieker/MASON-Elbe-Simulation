@@ -67,5 +67,8 @@ public class DynamicWaterLevel {
 		}
 	}
 
+	public void setTideActive(boolean tideActive) {
+		tides.setTideActive(tideActive);
+	}
 
 }
