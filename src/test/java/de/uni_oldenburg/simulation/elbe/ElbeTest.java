@@ -45,4 +45,13 @@ public class ElbeTest {
 		instance.executeStep();
 		// TODO further tests
 	}
+
+	@Test
+	public void setAndGetIsTideActive_LowTidePassCorrectValues_confirms() throws Exception {
+
+		instance.start();
+		instance.executeStep();
+		instance.setTideActive(false);
+		assertEquals("The must be deactivated.", false, instance.isTideActive());
+	}
 }

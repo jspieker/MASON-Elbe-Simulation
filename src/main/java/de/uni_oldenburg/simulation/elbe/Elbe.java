@@ -24,6 +24,8 @@ public class Elbe extends SimState {
 
 	private DynamicWaterLevel dynamicWaterLevel;
 	private int depthOfWaterBelowCD = 15; // sample value
+	private boolean isTideActive = true;
+
 
 	private boolean isExtended = false;
 	private int fairwayLengthTotal;
@@ -59,7 +61,7 @@ public class Elbe extends SimState {
 		super.start(); // clear out the schedule
 
 		// Get some water
-		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 25000 / 60, 20000 / 60, true);
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 19670 / 60, 24505 / 60, true, isTideActive);
 
 		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
@@ -89,7 +91,7 @@ public class Elbe extends SimState {
 			// Spawn vessels coming from docks
 			if (newShipArrivedFromDocks()) {
 				AbstractVessel newVessel = getNewVessel(false);
-				vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth-1, 170));
+				vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth - 1, 170));
 				schedule.scheduleRepeating(newVessel, 1);
 			}
 		}, 1);
@@ -113,7 +115,7 @@ public class Elbe extends SimState {
 		// TODO Auto-generated method stub
 		super.finish();
 
-		System.out.println("Beinahe zusammenstöße: "+ obs.getAlmostCollision()+ " zusammenstöße: "+obs.getCollision());
+		System.out.println("Beinahe zusammenstöße: " + obs.getAlmostCollision() + " zusammenstöße: " + obs.getCollision());
 	}
 
 	/**
@@ -126,7 +128,8 @@ public class Elbe extends SimState {
 		for (int elbeSection = 0; elbeSection < FAIRWAY_LENGTH.length; elbeSection++) {
 			try {
 				tempWidthHelper = (FAIRWAY_WIDTH[elbeSection] - FAIRWAY_WIDTH[elbeSection + 1]) / 2;
-			} catch (ArrayIndexOutOfBoundsException ignored) {}
+			} catch (ArrayIndexOutOfBoundsException ignored) {
+			}
 
 			// Draw blocks for elbe sections
 			for (int i = MARGIN + tempLengthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i++) { // from left to right
@@ -216,6 +219,7 @@ public class Elbe extends SimState {
 
 	/**
 	 * Calculates the upper border (y-value) of the fairway.
+	 *
 	 * @param x-value of position to be calculated
 	 * @return y-value in relation to given x-value
 	 */
@@ -228,12 +232,13 @@ public class Elbe extends SimState {
 				currentElbeSection = i;
 				break;
 			}
-        }
+		}
 		return ((fairwayWidthMax - FAIRWAY_WIDTH[currentElbeSection]) / 2);
 	}
 
 	/**
 	 * Calculates the lower border (y-value) of the fairway.
+	 *
 	 * @param x-value of position to be calculated
 	 * @return y-value in relation to given x-value
 	 */
@@ -246,7 +251,7 @@ public class Elbe extends SimState {
 				currentElbeSection = i;
 				break;
 			}
-        }
+		}
 
 		return (((fairwayWidthMax - FAIRWAY_WIDTH[currentElbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[currentElbeSection]);
 	}
@@ -261,5 +266,14 @@ public class Elbe extends SimState {
 
 	public boolean executeStep() {
 		return super.schedule.step(this);
+	}
+
+	public boolean isTideActive() {
+		return isTideActive;
+	}
+
+	public void setTideActive(boolean tideActive) {
+		isTideActive = tideActive;
+		dynamicWaterLevel.setTideActive(this.isTideActive);
 	}
 }

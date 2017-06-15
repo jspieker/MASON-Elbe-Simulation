@@ -1,6 +1,7 @@
 package de.uni_oldenburg.simulation.elbe.models;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class TidesTest {
 
 	@Before
 	public void setUp() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, true, elbeLength);
+		instance = new Tides(highTidePeriod, lowTidePeriod, true, elbeLength, true);
 	}
 
 	@After
@@ -31,16 +32,16 @@ public class TidesTest {
 		double waterLevel = Tides.AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD;
 
 		double moonAttractionExpected = 1.0;
-		double newWaterLevelExpected = waterLevel * moonAttractionExpected;
+		double newWaterLevelExpected = waterLevel * moonAttractionExpected + 0.233;
 
-		double newWaterLevelTest = instance.computeWaterLevel(time, 100);
+		double newWaterLevelTest = instance.computeWaterLevel(time, elbeLength);
 
 		assertEquals("The expected water level must met the computed one.", newWaterLevelExpected, newWaterLevelTest);
 	}
 
 	@Test
 	public void computeWaterLevel_passCorrectValueWithLowTide_confirms() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
+		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength, true);
 
 		long time = 20000;
 		double newWaterLevelExpected = Tides.AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD;
@@ -52,7 +53,7 @@ public class TidesTest {
 
 	@Test
 	public void others_passCorrectValueWithLowTide_confirms() throws Exception {
-		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength);
+		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength, true);
 
 		assertEquals("The actual moon attraction must meet the expected one.", 0.0, instance.getMoonAttraction());
 
@@ -60,6 +61,22 @@ public class TidesTest {
 		double newWaterLevelExpected = Tides.AVERAGE_LOW_TIDE_WATERLEVEL_ABOVE_CD;
 
 		double newWaterLevelTest = instance.computeWaterLevel(time, elbeLength - 50);
+
+	}
+
+	@Test
+	public void others_passCorrectValueWithTidesDeactivated_confirms() throws Exception {
+		instance = new Tides(highTidePeriod, lowTidePeriod, false, elbeLength, false);
+
+		assertEquals("The actual moon attraction must meet the expected one.", 0.0, instance.getMoonAttraction());
+
+		long time = 0;
+		double newWaterLevelExpected = Tides.AVERAGE_HIGH_TIDE_WATERLEVEL_ABOVE_CD + 0.233;
+
+		for (int x = 0; x < elbeLength; x++) {
+			double waterLevel = instance.computeWaterLevel(x, time);
+			Assert.assertEquals("The actual water level must meet the expected one.", newWaterLevelExpected, waterLevel, 0.01);
+		}
 
 	}
 }
