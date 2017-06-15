@@ -1,5 +1,6 @@
 package de.uni_oldenburg.simulation.elbe;
 
+import de.uni_oldenburg.simulation.WEKA.WaterLevelWEKA;
 import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
 import de.uni_oldenburg.simulation.vessels.*;
 import sim.field.continuous.Continuous2D;
@@ -40,6 +41,9 @@ public class Elbe extends SimState {
 
 	private Observer obs;
 
+	// WEKA
+	WaterLevelWEKA waterLevelWEKA;
+
 	public Elbe(long seed) {
 		super(seed);
 
@@ -49,6 +53,8 @@ public class Elbe extends SimState {
 		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
 		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
 		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
+
+		waterLevelWEKA = new WaterLevelWEKA("C:\\Users\\Icebreaker\\Desktop\\git\\Elbe\\Simulation\\src\\main\\resources\\");
 
 		// Draw Elbe, spawn area and dockyard to the map
 		drawObjects();
@@ -68,6 +74,7 @@ public class Elbe extends SimState {
 			double[] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
 			for (int x = 0; x < gridWidth; x++) {
 				double waterLevel = depthOfWaterBelowCD + currentWaterLevels[x];
+				waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 				for (int y = 0; y < gridHeight; y++) {
 					tidesMap.set(x, y, waterLevel);
 				}
@@ -115,6 +122,7 @@ public class Elbe extends SimState {
 		// TODO Auto-generated method stub
 		super.finish();
 
+		waterLevelWEKA.writeWEKAEntries();
 		System.out.println("Beinahe zusammenstöße: " + obs.getAlmostCollision() + " zusammenstöße: " + obs.getCollision());
 	}
 

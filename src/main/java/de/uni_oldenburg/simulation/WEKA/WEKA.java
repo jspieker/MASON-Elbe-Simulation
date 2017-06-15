@@ -24,7 +24,7 @@ public abstract class WEKA {
 		this.path = path;
 	}
 
-	public abstract boolean addWEKAEntry(double waterLevel, int xCoordinate, int time);
+	public abstract boolean addWEKAEntry(Object [] wekaEntry);
 
 	abstract void prepareWEKAEntry();
 

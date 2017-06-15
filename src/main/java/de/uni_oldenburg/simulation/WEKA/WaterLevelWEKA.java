@@ -18,7 +18,11 @@ public class WaterLevelWEKA extends WEKA {
 	}
 
 	@Override
-	public boolean addWEKAEntry(double waterLevel, int xCoordinate, int time) {
+	public boolean addWEKAEntry(Object[] wekaEntry) {
+		long time = (long) wekaEntry[0];
+		int xCoordinate = (int) wekaEntry[1];
+		double waterLevel = (double) wekaEntry[2];
+
 		double[] rowValuesData = new double[]{time, xCoordinate, waterLevel};
 		DenseInstance denseInstance = new DenseInstance(1.0, rowValuesData);
 		return instances.add(denseInstance);
@@ -36,7 +40,6 @@ public class WaterLevelWEKA extends WEKA {
 		attributes.add(waterLevelAttribute);
 
 		instances = new Instances("WaterLevels", attributes, 100000000);
-
 	}
 
 	@Override
