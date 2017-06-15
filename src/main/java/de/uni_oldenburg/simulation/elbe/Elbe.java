@@ -1,5 +1,6 @@
 package de.uni_oldenburg.simulation.elbe;
 
+import de.uni_oldenburg.simulation.WEKA.CollisionWEKA;
 import de.uni_oldenburg.simulation.WEKA.WaterLevelWEKA;
 import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
 import de.uni_oldenburg.simulation.vessels.*;
@@ -43,9 +44,13 @@ public class Elbe extends SimState {
 
 	// WEKA
 	WaterLevelWEKA waterLevelWEKA;
+	CollisionWEKA collisionWEKA;
 
 	public Elbe(long seed) {
 		super(seed);
+
+		waterLevelWEKA = new WaterLevelWEKA("C:\\Users\\Icebreaker\\Desktop\\git\\Elbe\\Simulation\\src\\main\\resources\\");
+		collisionWEKA = new CollisionWEKA("C:\\Users\\Icebreaker\\Desktop\\git\\Elbe\\Simulation\\src\\main\\resources\\");
 
 		calculateInitialValues();
 
@@ -53,8 +58,6 @@ public class Elbe extends SimState {
 		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
 		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
 		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
-
-		waterLevelWEKA = new WaterLevelWEKA("C:\\Users\\Icebreaker\\Desktop\\git\\Elbe\\Simulation\\src\\main\\resources\\");
 
 		// Draw Elbe, spawn area and dockyard to the map
 		drawObjects();
@@ -74,11 +77,14 @@ public class Elbe extends SimState {
 			double[] currentWaterLevels = dynamicWaterLevel.getCurrentWaterLevels(schedule.getSteps());
 			for (int x = 0; x < gridWidth; x++) {
 				double waterLevel = depthOfWaterBelowCD + currentWaterLevels[x];
-				waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 				for (int y = 0; y < gridHeight; y++) {
 					tidesMap.set(x, y, waterLevel);
 				}
+				// WEKA entries
+				waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
+			// WEKA entries
+			collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), obs.getAlmostCollision(), obs.getCollision()});
 		}, 1);
 
 		vesselGrid.clear();
@@ -123,6 +129,7 @@ public class Elbe extends SimState {
 		super.finish();
 
 		waterLevelWEKA.writeWEKAEntries();
+		collisionWEKA.writeWEKAEntries();
 		System.out.println("Beinahe zusammenstöße: " + obs.getAlmostCollision() + " zusammenstöße: " + obs.getCollision());
 	}
 

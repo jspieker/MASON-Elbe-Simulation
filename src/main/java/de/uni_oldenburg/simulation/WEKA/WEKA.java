@@ -3,9 +3,6 @@ package de.uni_oldenburg.simulation.WEKA;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * {@link weka.Run} wrapper.
  */
