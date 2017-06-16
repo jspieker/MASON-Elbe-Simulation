@@ -43,12 +43,17 @@ public class WaterLevelWEKA extends WEKA {
 		attributes.add(waterLevelAttribute);
 
 		instances = new Instances("WaterLevels", attributes, 100000000);
+		try {
+			plot = new Plot2D();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public void plotWEKAEntries() {
 		try {
-			Plot plot = new Plot2D();
 			plot.plot(instances);
 		} catch (Exception e) {
 			e.printStackTrace();

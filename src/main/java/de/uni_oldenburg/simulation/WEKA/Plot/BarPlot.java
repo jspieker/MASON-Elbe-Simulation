@@ -1,73 +1,69 @@
 package de.uni_oldenburg.simulation.WEKA.Plot;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.stage.Stage;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.ui.RefineryUtilities;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * Implements {@link Plot} and extends {@link Application} to enable bar charts.
+ * Implements {@link Plot} and extends {@link ApplicationFrame} to enable bar charts.
  */
-public class BarPlot extends Application implements Plot {
+public class BarPlot extends ApplicationFrame implements Plot {
 
-	final static String austria = "Austria";
-	final static String brazil = "Brazil";
-	final static String france = "France";
-	final static String italy = "Italy";
-	final static String usa = "USA";
+	private Instances instances;
 
-	public BarPlot() throws Exception {
-
+	public BarPlot() {
+		super("Elbe Events");
 	}
 
+	private CategoryDataset createDataset() {
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("Bar Chart Sample");
-		final CategoryAxis xAxis = new CategoryAxis();
-		final NumberAxis yAxis = new NumberAxis();
-		final BarChart<String, Number> bc =
-				new BarChart<String, Number>(xAxis, yAxis);
-		bc.setTitle("Country Summary");
-		xAxis.setLabel("Country");
-		yAxis.setLabel("Value");
+		final DefaultCategoryDataset dataset =
+				new DefaultCategoryDataset();
 
-		XYChart.Series series1 = new XYChart.Series();
-		series1.setName("2003");
-		series1.getData().add(new XYChart.Data(austria, 25601.34));
-		series1.getData().add(new XYChart.Data(brazil, 20148.82));
-		series1.getData().add(new XYChart.Data(france, 10000));
-		series1.getData().add(new XYChart.Data(italy, 35407.15));
-		series1.getData().add(new XYChart.Data(usa, 12000));
+		for (Instance instance : instances) {
+			double[] instanceValues = instance.toDoubleArray();
 
-		XYChart.Series series2 = new XYChart.Series();
-		series2.setName("2004");
-		series2.getData().add(new XYChart.Data(austria, 57401.85));
-		series2.getData().add(new XYChart.Data(brazil, 41941.19));
-		series2.getData().add(new XYChart.Data(france, 45263.37));
-		series2.getData().add(new XYChart.Data(italy, 117320.16));
-		series2.getData().add(new XYChart.Data(usa, 14845.27));
+			dataset.addValue(instanceValues[1], String.valueOf(instanceValues[0]), instance.attribute(1).name());
+			dataset.addValue(instanceValues[2], String.valueOf(instanceValues[0]), instance.attribute(2).name());
+			dataset.addValue(instanceValues[3], String.valueOf(instanceValues[0]), instance.attribute(3).name());
+			dataset.addValue(instanceValues[4], String.valueOf(instanceValues[0]), instance.attribute(4).name());
+			dataset.addValue(instanceValues[5], String.valueOf(instanceValues[0]), instance.attribute(5).name());
+			dataset.addValue(instanceValues[6], String.valueOf(instanceValues[0]), instance.attribute(6).name());
 
-		XYChart.Series series3 = new XYChart.Series();
-		series3.setName("2005");
-		series3.getData().add(new XYChart.Data(austria, 45000.65));
-		series3.getData().add(new XYChart.Data(brazil, 44835.76));
-		series3.getData().add(new XYChart.Data(france, 18722.18));
-		series3.getData().add(new XYChart.Data(italy, 17557.31));
-		series3.getData().add(new XYChart.Data(usa, 92633.68));
-
-		Scene scene = new Scene(bc, 800, 600);
-		bc.getData().addAll(series1, series2, series3);
-		primaryStage.setScene(scene);
-		primaryStage.show();
+		}
+		return dataset;
 	}
 
 	@Override
 	public void plot(Instances instances) throws Exception {
-		launch();
+		this.instances = instances;
+		JFreeChart barChart = ChartFactory.createBarChart(
+				"",
+				"Categories",
+				"Values",
+				createDataset(),
+				PlotOrientation.VERTICAL,
+				true, true, false);
+
+		ChartPanel chartPanel = new ChartPanel(barChart);
+		chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+		setContentPane(chartPanel);
+
+		pack();
+		RefineryUtilities.centerFrameOnScreen(this);
+		setVisible(true);
 	}
+
+	@Override
+	public void windowClosing(java.awt.event.WindowEvent e) {
+		dispose();
+	}
+
 }

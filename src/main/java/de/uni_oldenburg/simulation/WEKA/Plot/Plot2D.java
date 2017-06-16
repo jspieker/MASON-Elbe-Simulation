@@ -10,23 +10,19 @@ import weka.gui.visualize.PlotData2D;
  */
 public class Plot2D implements Plot {
 
-	private final javax.swing.JFrame jf;
+	private javax.swing.JFrame jf;
 
-	public Plot2D() throws Exception {
+	@Override
+	public void plot(Instances instances) throws Exception {
 		jf = new javax.swing.JFrame();
 		jf.getContentPane().setLayout(new java.awt.BorderLayout());
 
 		jf.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				jf.dispose();
-				System.exit(0);
 			}
 		});
 		jf.setSize(800, 600);
-	}
-
-	@Override
-	public void plot(Instances instances) throws Exception {
 		weka.gui.visualize.Plot2D plot2D = new weka.gui.visualize.Plot2D();
 		plot2D.setInstances(instances);
 

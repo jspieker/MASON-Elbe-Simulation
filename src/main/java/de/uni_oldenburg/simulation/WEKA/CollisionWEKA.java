@@ -55,14 +55,12 @@ public class CollisionWEKA extends WEKA {
 		attributes.add(collisionsAttribute);
 
 		instances = new Instances("WaterLevels", attributes, 100000000);
-
 	}
 
 	@Override
 	public void plotWEKAEntries() {
 		try {
-			Plot plot = new BarPlot();
-			plot.plot(instances);
+			new BarPlot().plot(instances);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

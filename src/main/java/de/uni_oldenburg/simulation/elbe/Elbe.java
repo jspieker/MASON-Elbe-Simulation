@@ -48,6 +48,9 @@ public class Elbe extends SimState {
 	WaterLevelWEKA waterLevelWEKA;
 	CollisionWEKA collisionWEKA;
 
+	private final long highTidePeriod = 19670 / 60;
+	private final long lowTidePeriod = 24505 / 60;
+
 	public Elbe(long seed) {
 		super(seed);
 
@@ -72,7 +75,7 @@ public class Elbe extends SimState {
 		super.start(); // clear out the schedule
 
 		// Get some water
-		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, 19670 / 60, 24505 / 60, true, isTideActive);
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, highTidePeriod, lowTidePeriod, true, isTideActive);
 
 		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
@@ -83,11 +86,12 @@ public class Elbe extends SimState {
 					tidesMap.set(x, y, waterLevel);
 				}
 				// WEKA entries
-				if (schedule.getSteps() % 10 == 0 && x % 10 == 0)
+				if (x % 10 == 0)
 					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
 			// WEKA entries
-			collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), this.numContainerShip, this.numOtherShip, obs.getAlmostCollision(), obs.getCollision()});
+			if (schedule.getSteps() == 0 || schedule.getSteps() % (highTidePeriod + lowTidePeriod) == 0)
+				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), this.numContainerShip, this.numOtherShip, obs.getAlmostCollision(), obs.getCollision()});
 		}, 1);
 
 		vesselGrid.clear();

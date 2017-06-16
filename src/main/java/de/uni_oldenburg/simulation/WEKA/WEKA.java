@@ -1,5 +1,6 @@
 package de.uni_oldenburg.simulation.WEKA;
 
+import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 
@@ -16,6 +17,7 @@ public abstract class WEKA {
 	String path;
 
 	ArffSaver arffSaver;
+	Plot plot;
 
 	public WEKA(String path) {
 		arffSaver = new ArffSaver();
