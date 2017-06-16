@@ -45,17 +45,14 @@ public class Elbe extends SimState {
 	private int numOtherShip = 0; // TODO change name?
 
 	// WEKA
-	WaterLevelWEKA waterLevelWEKA;
-	CollisionWEKA collisionWEKA;
+	private WaterLevelWEKA waterLevelWEKA;
+	private CollisionWEKA collisionWEKA;
 
 	private final long highTidePeriod = 19670 / 60;
 	private final long lowTidePeriod = 24505 / 60;
 
 	public Elbe(long seed) {
 		super(seed);
-
-		waterLevelWEKA = new WaterLevelWEKA("src\\main\\resources\\");
-		collisionWEKA = new CollisionWEKA("src\\main\\resources\\");
 
 		calculateInitialValues();
 
@@ -229,6 +226,14 @@ public class Elbe extends SimState {
 		spawnPositionX = MARGIN;
 		dockyardPositionX = fairwayLengthTotal + MARGIN;
 	}
+
+	public void initWEKA(final String WEKAPath) {
+		waterLevelWEKA = new WaterLevelWEKA(WEKAPath);
+		collisionWEKA = new CollisionWEKA(WEKAPath);
+	}
+
+
+	// Geter and Setter
 
 	public int getDepthOfWaterBelowCD() {
 		return depthOfWaterBelowCD;
