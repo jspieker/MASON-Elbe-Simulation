@@ -1,6 +1,0 @@
-@relation WaterLevels
-
-@attribute WaterLevel numeric
-
-@data
-19

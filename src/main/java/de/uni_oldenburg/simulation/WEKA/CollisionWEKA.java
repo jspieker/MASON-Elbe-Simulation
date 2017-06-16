@@ -1,5 +1,7 @@
 package de.uni_oldenburg.simulation.WEKA;
 
+import de.uni_oldenburg.simulation.WEKA.Plot.BarPlot;
+import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
@@ -22,10 +24,12 @@ public class CollisionWEKA extends WEKA {
 		long timeRun = (long) wekaEntry[0];
 		boolean isTideActive = (boolean) wekaEntry[1];
 		boolean isElbeWidened = (boolean) wekaEntry[2];
-		int almostCollisions = (int) wekaEntry[3];
-		int collisions = (int) wekaEntry[4];
+		int numContainerShip = (int) wekaEntry[3];
+		int numOtherShip = (int) wekaEntry[4];
+		int almostCollisions = (int) wekaEntry[5];
+		int collisions = (int) wekaEntry[6];
 
-		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeWidened ? 1 : 0), almostCollisions, collisions};
+		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeWidened ? 1 : 0), numContainerShip, numOtherShip, almostCollisions, collisions};
 		DenseInstance denseInstance = new DenseInstance(1.0, rowValuesData);
 		return instances.add(denseInstance);
 	}
@@ -36,12 +40,17 @@ public class CollisionWEKA extends WEKA {
 		Attribute timeRunAttribute = new Attribute("TimeRun");
 		Attribute isTideActiveAttribute = new Attribute("isTideActive");
 		Attribute isElbeWidenedAttribute = new Attribute("IsElbeWidened");
+		// TODO num of ships normal or heavy ship
+		Attribute numContainerShipAttribute = new Attribute("numContainerShip");
+		Attribute numOtherShipAttribute = new Attribute("numOtherShip");
 		Attribute almostCollisionsAttribute = new Attribute("AlmostCollisions");
 		Attribute collisionsAttribute = new Attribute("Collisions");
 
 		attributes.add(timeRunAttribute);
 		attributes.add(isTideActiveAttribute);
 		attributes.add(isElbeWidenedAttribute);
+		attributes.add(numContainerShipAttribute);
+		attributes.add(numOtherShipAttribute);
 		attributes.add(almostCollisionsAttribute);
 		attributes.add(collisionsAttribute);
 
@@ -50,21 +59,10 @@ public class CollisionWEKA extends WEKA {
 	}
 
 	@Override
-	public void writeWEKAEntries() {
-		File file = new File(path);
-		try {
-			arffSaver.setFile(file);
-			arffSaver.writeBatch();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
 	public void plotWEKAEntries() {
 		try {
-			Plot plot = new Plot(instances);
-			plot.plotChart(instances);
+			Plot plot = new BarPlot();
+			plot.plot(instances);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

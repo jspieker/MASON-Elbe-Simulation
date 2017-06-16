@@ -41,6 +41,8 @@ public class Elbe extends SimState {
 	private final int DOCKYARD_POINT_ID = 3;
 
 	private Observer obs;
+	private int numContainerShip = 0;
+	private int numOtherShip = 0; // TODO change name?
 
 	// WEKA
 	WaterLevelWEKA waterLevelWEKA;
@@ -49,8 +51,8 @@ public class Elbe extends SimState {
 	public Elbe(long seed) {
 		super(seed);
 
-		waterLevelWEKA = new WaterLevelWEKA("C:\\Users\\Icebreaker\\Desktop\\git\\Elbe\\Simulation\\src\\main\\resources\\");
-		collisionWEKA = new CollisionWEKA("C:\\Users\\Icebreaker\\Desktop\\git\\Elbe\\Simulation\\src\\main\\resources\\");
+		waterLevelWEKA = new WaterLevelWEKA("src\\main\\resources\\");
+		collisionWEKA = new CollisionWEKA("src\\main\\resources\\");
 
 		calculateInitialValues();
 
@@ -81,10 +83,11 @@ public class Elbe extends SimState {
 					tidesMap.set(x, y, waterLevel);
 				}
 				// WEKA entries
-				if (schedule.getSteps() % 10 == 0 && x % 10 == 0) waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
+				if (schedule.getSteps() % 10 == 0 && x % 10 == 0)
+					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
 			// WEKA entries
-			collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), obs.getAlmostCollision(), obs.getCollision()});
+			collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), this.numContainerShip, this.numOtherShip, obs.getAlmostCollision(), obs.getCollision()});
 		}, 1);
 
 		vesselGrid.clear();
@@ -99,6 +102,11 @@ public class Elbe extends SimState {
 				AbstractVessel newVessel = getNewVessel(true);
 				vesselGrid.setObjectLocation(newVessel, new Double2D(0, 380));
 				schedule.scheduleRepeating(newVessel, 1);
+				if (newVessel instanceof ContainerShip) {
+					numContainerShip++;
+				} else {
+					numOtherShip++; // TODO improve if else with other ships
+				}
 			}
 
 			// Spawn vessels coming from docks
@@ -106,6 +114,11 @@ public class Elbe extends SimState {
 				AbstractVessel newVessel = getNewVessel(false);
 				vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth - 1, 170));
 				schedule.scheduleRepeating(newVessel, 1);
+				if (newVessel instanceof ContainerShip) {
+					numContainerShip++;
+				} else {
+					numOtherShip++; // TODO improve if else with other ships
+				}
 			}
 		}, 1);
 	}

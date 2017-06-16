@@ -1,5 +1,7 @@
 package de.uni_oldenburg.simulation.WEKA;
 
+import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
+import de.uni_oldenburg.simulation.WEKA.Plot.Plot2D;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
@@ -44,25 +46,13 @@ public class WaterLevelWEKA extends WEKA {
 	}
 
 	@Override
-	public void writeWEKAEntries() {
-		File file = new File(path);
-		try {
-			arffSaver.setFile(file);
-			arffSaver.writeBatch();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
 	public void plotWEKAEntries() {
 		try {
-			Plot plot = new Plot(instances);
+			Plot plot = new Plot2D();
+			plot.plot(instances);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-
 
 
 	}

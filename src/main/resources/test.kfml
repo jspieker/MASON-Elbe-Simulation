@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE object
+[
+   <!ELEMENT object (#PCDATA|object)*>
+   <!ATTLIST object name      CDATA #REQUIRED>
+   <!ATTLIST object class     CDATA #REQUIRED>
+   <!ATTLIST object primitive CDATA "no">
+   <!ATTLIST object array     CDATA "no">   <!-- the dimensions of the array; no=0, yes=1 -->
+   <!ATTLIST object null      CDATA "no">
+   <!ATTLIST object version   CDATA "3.8.0">
+]
+>
+
+<object class="java.util.Vector" name="__root__" version="3.8.0">
+   <object class="java.util.Vector" name="0">
+      <object class="weka.gui.beans.BeanInstance" name="0">
+         <object class="int" name="id" primitive="yes">0</object>
+         <object class="int" name="x" primitive="yes">128</object>
+         <object class="int" name="y" primitive="yes">94</object>
+         <object class="java.lang.String" name="custom_name">ArffLoader</object>
+         <object class="weka.gui.beans.Loader" name="bean">
+            <object class="weka.core.converters.ArffLoader" name="wrappedAlgorithm">
+               <object class="java.lang.String" name="file">C:/Users/Icebreaker/Desktop/Elbe/Simulation/src/main/resources/collision.arff</object>
+               <object class="boolean" name="useRelativePath" primitive="yes">false</object>
+            </object>
+            <object class="java.beans.beancontext.BeanContextSupport" name="beanContext">
+               <object class="boolean" name="designTime" primitive="yes">true</object>
+               <object class="null" name="beanContext" null="yes"/>
+            </object>
+         </object>
+      </object>
+      <object class="weka.gui.beans.BeanInstance" name="1">
+         <object class="int" name="id" primitive="yes">1</object>
+         <object class="int" name="x" primitive="yes">305</object>
+         <object class="int" name="y" primitive="yes">94</object>
+         <object class="java.lang.String" name="custom_name">AttributeSummarizer</object>
+         <object class="weka.gui.beans.AttributeSummarizer" name="bean">
+            <object class="weka.gui.beans.BeanVisual" name="visual">
+               <object class="null" name="name" null="yes"/>
+               <object class="java.lang.String" name="text">AttributeSummarizer</object>
+               <object class="java.lang.String" name="iconPath">weka/gui/beans/icons/AttributeSummarizer.gif</object>
+               <object class="java.lang.String" name="animatedIconPath">weka/gui/beans/icons/AttributeSummarizer_animated.gif</object>
+            </object>
+            <object class="null" name="name" null="yes"/>
+            <object class="java.lang.String" name="offscreenRendererName">Weka Chart Renderer</object>
+            <object class="int" name="coloringIndex" primitive="yes">-1</object>
+            <object class="java.lang.String" name="offscreenHeight">400</object>
+            <object class="int" name="maxPlots" primitive="yes">100</object>
+            <object class="int" name="gridWidth" primitive="yes">4</object>
+            <object class="java.lang.String" name="customName">AttributeSummarizer</object>
+            <object class="java.lang.String" name="offscreenYAxis"/>
+            <object class="java.beans.beancontext.BeanContextSupport" name="beanContext">
+               <object class="boolean" name="designTime" primitive="yes">true</object>
+               <object class="null" name="beanContext" null="yes"/>
+            </object>
+            <object class="java.lang.String" name="offscreenWidth">500</object>
+            <object class="java.lang.String" name="offscreenAdditionalOpts">-color=/kast</object>
+            <object class="java.lang.String" name="offscreenXAxis">${=::Collision}</object>
+         </object>
+      </object>
+      <object class="weka.gui.beans.BeanInstance" name="2">
+         <object class="int" name="id" primitive="yes">2</object>
+         <object class="int" name="x" primitive="yes">463</object>
+         <object class="int" name="y" primitive="yes">94</object>
+         <object class="java.lang.String" name="custom_name">ImageSaver</object>
+         <object class="weka.gui.beans.ImageSaver" name="bean">
+            <object class="java.lang.String" name="filename">C:\Users\Icebreaker\Desktop\Elbe\Simulation\src\main\resources\test.png</object>
+            <object class="null" name="name" null="yes"/>
+            <object class="weka.gui.beans.BeanVisual" name="visual">
+               <object class="null" name="name" null="yes"/>
+               <object class="java.lang.String" name="text">ImageSaver</object>
+               <object class="java.lang.String" name="iconPath">weka/gui/beans/icons/SerializedModelSaver.gif</object>
+               <object class="java.lang.String" name="animatedIconPath">weka/gui/beans/icons/SerializedModelSaver_animated.gif</object>
+            </object>
+            <object class="java.lang.String" name="customName">ImageSaver</object>
+         </object>
+      </object>
+   </object>
+   <object class="java.util.Vector" name="1">
+      <object class="weka.gui.beans.BeanConnection" name="0">
+         <object class="int" name="source_id" primitive="yes">0</object>
+         <object class="int" name="target_id" primitive="yes">1</object>
+         <object class="java.lang.String" name="eventname">dataSet</object>
+         <object class="boolean" name="hidden" primitive="yes">false</object>
+      </object>
+      <object class="weka.gui.beans.BeanConnection" name="1">
+         <object class="int" name="source_id" primitive="yes">1</object>
+         <object class="int" name="target_id" primitive="yes">2</object>
+         <object class="java.lang.String" name="eventname">image</object>
+         <object class="boolean" name="hidden" primitive="yes">false</object>
+      </object>
+   </object>
+</object>
