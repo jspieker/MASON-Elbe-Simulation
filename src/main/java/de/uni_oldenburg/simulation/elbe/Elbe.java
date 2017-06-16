@@ -81,7 +81,7 @@ public class Elbe extends SimState {
 					tidesMap.set(x, y, waterLevel);
 				}
 				// WEKA entries
-				waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
+				if (schedule.getSteps() % 10 == 0 && x % 10 == 0) waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
 			// WEKA entries
 			collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), obs.getAlmostCollision(), obs.getCollision()});
@@ -130,6 +130,8 @@ public class Elbe extends SimState {
 
 		waterLevelWEKA.writeWEKAEntries();
 		collisionWEKA.writeWEKAEntries();
+		waterLevelWEKA.plotWEKAEntries();
+		collisionWEKA.plotWEKAEntries();
 		System.out.println("Beinahe zusammenstöße: " + obs.getAlmostCollision() + " zusammenstöße: " + obs.getCollision());
 	}
 

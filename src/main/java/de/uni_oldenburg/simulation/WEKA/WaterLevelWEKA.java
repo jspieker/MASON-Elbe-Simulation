@@ -35,6 +35,7 @@ public class WaterLevelWEKA extends WEKA {
 		Attribute xCoordinateAttribute = new Attribute("xCoordinate");
 		Attribute timeAttribute = new Attribute("Time");
 
+
 		attributes.add(timeAttribute);
 		attributes.add(xCoordinateAttribute);
 		attributes.add(waterLevelAttribute);
@@ -51,6 +52,19 @@ public class WaterLevelWEKA extends WEKA {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void plotWEKAEntries() {
+		try {
+			Plot plot = new Plot(instances);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+
+
 	}
 
 }

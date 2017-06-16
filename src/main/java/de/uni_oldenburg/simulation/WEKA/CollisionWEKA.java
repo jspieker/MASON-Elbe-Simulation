@@ -60,6 +60,16 @@ public class CollisionWEKA extends WEKA {
 		}
 	}
 
+	@Override
+	public void plotWEKAEntries() {
+		try {
+			Plot plot = new Plot(instances);
+			plot.plotChart(instances);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	// use waterlevel, collision, xCoordinate, time and tideSet
 
 }

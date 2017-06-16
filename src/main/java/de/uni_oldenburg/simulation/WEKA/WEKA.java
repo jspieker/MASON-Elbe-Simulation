@@ -27,4 +27,6 @@ public abstract class WEKA {
 
 	public abstract void writeWEKAEntries();
 
+	public abstract void plotWEKAEntries();
+
 }
