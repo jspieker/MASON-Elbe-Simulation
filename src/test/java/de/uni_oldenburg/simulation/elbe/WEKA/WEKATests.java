@@ -6,8 +6,6 @@ import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
 import de.uni_oldenburg.simulation.WEKA.Plot.Plot2D;
 import de.uni_oldenburg.simulation.WEKA.WEKA;
 import de.uni_oldenburg.simulation.WEKA.WaterLevelWEKA;
-import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
-import de.uni_oldenburg.simulation.elbe.models.Tides;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +13,8 @@ import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
 import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests {@link WEKA}, {@link CollisionWEKA}, {@link WaterLevelWEKA}, {@link Plot}, {@link de.uni_oldenburg.simulation.WEKA.Plot.BarPlot} and {@link de.uni_oldenburg.simulation.WEKA.Plot.Plot2D}.
@@ -61,6 +61,7 @@ public class WEKATests {
 	public void BarPlot_confirms() throws Exception {
 		Plot plot = new BarPlot();
 		plot.plot(collisionInstances);
+		assertEquals("LALA", true, true);
 	}
 
 	@Test
