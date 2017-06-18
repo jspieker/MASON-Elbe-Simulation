@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests {@link WEKA}, {@link CollisionWEKA}, {@link WaterLevelWEKA}, {@link Plot}, {@link de.uni_oldenburg.simulation.WEKA.Plot.BarPlot} and {@link de.uni_oldenburg.simulation.WEKA.Plot.Plot2D}.
  */
-public class WEKATests {
+public class WEKATest {
 
 	private WEKA weka;
 	private Plot plot;
