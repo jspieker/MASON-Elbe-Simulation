@@ -106,8 +106,15 @@ public class Elbe extends SimState {
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
-		// TODO: Implement selection of random vessel type
-		return new ContainerShip(directionHamburg, obs);
+
+		double randomValue = random.nextDouble();
+
+		// Configure the propabilities for some vessel types
+		if (randomValue < 0.5) {
+			return new ContainerShip(directionHamburg, obs);
+		} else {
+			return new Tanker(directionHamburg, obs);
+		}
 	}
 
 	@Override
@@ -115,14 +122,15 @@ public class Elbe extends SimState {
 		// TODO Auto-generated method stub
 		super.finish();
 
-		System.out.println("Beinahe zusammenstöße: " + obs.getAlmostCollision() + " zusammenstöße: " + obs.getCollision());
+		System.out.println("Beinahe Zusammenstöße: " + obs.getAlmostCollision() + " Zusammenstöße: " + obs.getCollision());
 	}
 
 	/**
 	 * Draws the Elbe, the boat spawn area and the Hamburg dockyard onto the simulation map
 	 */
 	private void drawObjects() {
-		// Draw Elbe area
+
+		// Init Elbe area
 		int tempLengthHelper = 0;
 		int tempWidthHelper = 0;
 		for (int elbeSection = 0; elbeSection < FAIRWAY_LENGTH.length; elbeSection++) {
@@ -131,14 +139,14 @@ public class Elbe extends SimState {
 			} catch (ArrayIndexOutOfBoundsException ignored) {
 			}
 
-			// Draw blocks for elbe sections
+			// Init blocks for elbe sections
 			for (int i = MARGIN + tempLengthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i++) { // from left to right
 				for (int j = ((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN; j < (((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[elbeSection]); j++) { // from top to bottom
 					elbeMap.field[i][j] = FAIRWAY_ID;
 				}
 			}
 
-			// Draw transitions
+			// Calculate width transitions
 			int tempTopIndex = ((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN;
 			int tempBottomIndex = FAIRWAY_WIDTH[elbeSection] - tempWidthHelper;
 			for (int i = (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]); i++) {
@@ -157,14 +165,14 @@ public class Elbe extends SimState {
 			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
 		}
 
-		// Draw spawn area
+		// Init spawn area
 		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN + FAIRWAY_WIDTH[0]); i++) {
 			for (int j = 0; j < MARGIN; j++) {
 				elbeMap.field[spawnPositionX - (j + 1)][i] = SEA_POINT_ID;
 			}
 		}
 
-		// Draw dockyard
+		// Init dockyard
 		int lastTransitionWidth = (FAIRWAY_WIDTH[FAIRWAY_WIDTH.length - 2] - FAIRWAY_WIDTH[FAIRWAY_WIDTH.length - 1]) / 2;
 		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN + lastTransitionWidth; i < (((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN + FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) - lastTransitionWidth; i++) {
 			for (int j = 0; j < MARGIN; j++) {

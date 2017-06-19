@@ -231,11 +231,19 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		double yaw;
 
+		Bag neighbors = elbe.vesselGrid.getNeighborsWithinDistance(currentPosition, getLength());
+
+		// Check neighbors
+		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
+			AbstractVessel vessel = (AbstractVessel) neighbors.get(neighborId);
+			//if (vessel)
+		}
+
 		if (directionHamburg) {
 			// look forward one ship length
 			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth())) == 0) {
-				// near to coast (< half ship width), turn left
-				yaw = 0.785398; // 45 deg
+				// near to coast (< half ship width)
+				yaw = 0.785398; // 45 deg, turn left
 			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth()*1.5)) == 0) {
 				// just about right
 				yaw = 1.5708; // 90 deg
