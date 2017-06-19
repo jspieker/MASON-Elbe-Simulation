@@ -59,9 +59,8 @@ public class WEKATest {
 
 	@Test
 	public void BarPlot_confirms() throws Exception {
-		Plot plot = new BarPlot();
+		//Plot plot = new BarPlot();
 		//plot.plot(collisionInstances);
-		assertEquals("LALA", true, true);
 	}
 
 	@Test
