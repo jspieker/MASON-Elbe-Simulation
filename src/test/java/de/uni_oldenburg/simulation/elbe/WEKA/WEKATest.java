@@ -46,7 +46,7 @@ public class WEKATest {
 		weka = new WaterLevelWEKA("src/test/resources/");
 		weka.addWEKAEntry(new Object[]{1L, 10, 1.0});
 		weka.writeWEKAEntries();
-		weka.plotWEKAEntries();
+		//weka.plotWEKAEntries();
 	}
 
 	@Test
@@ -54,19 +54,19 @@ public class WEKATest {
 		weka = new CollisionWEKA("src/test/resources/");
 		weka.addWEKAEntry(new Object[]{1L, false, true, 10, 1, 10, 1});
 		weka.writeWEKAEntries();
-		weka.plotWEKAEntries();
+		//weka.plotWEKAEntries();
 	}
 
 	@Test
 	public void BarPlot_confirms() throws Exception {
 		Plot plot = new BarPlot();
-		plot.plot(collisionInstances);
+		//plot.plot(collisionInstances);
 		assertEquals("LALA", true, true);
 	}
 
 	@Test
 	public void Plot2D_confirms() throws Exception {
 		Plot plot = new Plot2D();
-		plot.plot(waterLevelInstances);
+		//plot.plot(waterLevelInstances);
 	}
 }
