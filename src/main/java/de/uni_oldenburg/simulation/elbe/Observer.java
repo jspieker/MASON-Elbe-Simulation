@@ -64,6 +64,8 @@ public  class Observer {
 				countCollision();
 			}
 		}
+
+		// TODO remove vessel
 		
 	}
 	

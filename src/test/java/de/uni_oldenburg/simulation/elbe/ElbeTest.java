@@ -21,6 +21,7 @@ public class ElbeTest {
 	public void setUp() throws Exception {
 		long seed = System.currentTimeMillis();
 		instance = new Elbe(seed);
+		instance.initWEKA("src/main/resources/");
 	}
 
 	@After

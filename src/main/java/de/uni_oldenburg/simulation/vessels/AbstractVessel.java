@@ -16,7 +16,7 @@ import java.awt.*;
  * The AbstractVessel combines the properties of all vessels
  */
 public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
-	
+
 	// Properties
 	final private double weight;
 	final private double length;
@@ -34,22 +34,22 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	//observation area
 	final private double distance = 50;
-	
+
 	Observer observer;
 
 	/**
 	 * Constructor
 	 *
-	 * @param weight Height of the vessel
-	 * @param length Length of the vessel
-	 * @param width Width of the vessel
-	 * @param targetSpeed Target speed of the vessel
+	 * @param weight           Height of the vessel
+	 * @param length           Length of the vessel
+	 * @param width            Width of the vessel
+	 * @param targetSpeed      Target speed of the vessel
 	 * @param directionHamburg True if moving towards docks, else false
 	 * @param observer
 	 */
 	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, Observer observer) {
 
-		super(new double[] {-length/2/100, length/4/100, length/2/100, length/4/100, -length/2/100}, new double[] {-width/2, -width/2, 0, width/2, width/2}, new Color(255, 255, 0), 1, true);
+		super(new double[]{-length / 2 / 100, length / 4 / 100, length / 2 / 100, length / 4 / 100, -length / 2 / 100}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
 		this.weight = weight;
 		this.length = length;
@@ -58,7 +58,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		this.directionHamburg = directionHamburg;
 		this.observer = observer;
 		maxSpeed = 20;
-		
+
 		observationField = new Network();
 		observationField.addNode(this);
 	}
@@ -67,15 +67,19 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	public double getWeight() {
 		return weight;
 	}
+
 	public double getLength() {
 		return length;
 	}
+
 	public double getWidth() {
 		return width;
 	}
+
 	public double getTargetSpeed() {
 		return targetSpeed;
 	}
+
 	public boolean getDirectionHamburg() {
 		return directionHamburg;
 	}
@@ -96,8 +100,10 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		// Remove vessel when arrived at destination
 		if ((directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 3) ||
-			(!directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 2)) {
+				(!directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 2)) {
 			elbe.vesselGrid.remove(this);
+			// remove from the counter
+			elbe.decreaseShipCount(this);
 			return;
 		}
 
@@ -105,16 +111,16 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		currentSpeed = getTargetSpeed();
 
 		// Transform km/h to 10m/min, calculate new position
-		Double2D forwardMotion = new Double2D(0, -currentSpeed*60/100); // course north on (0 deg)
+		Double2D forwardMotion = new Double2D(0, -currentSpeed * 60 / 100); // course north on (0 deg)
 		forwardMotion = forwardMotion.rotate(getTargetYaw());
 		Double2D newPosition = currentPosition.add(forwardMotion);
 
 		elbe.vesselGrid.setObjectLocation(this, newPosition);
 	}
 
-	
+
 	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw) {
-		
+
 		Bag vesselBag = observationField.getAllNodes();
 		vesselBag.remove(this);
 
@@ -124,30 +130,30 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 				Edge e = observationField.getEdge(this, vessel);
 				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
 				Double2D myPosition = elbe.vesselGrid.getObjectLocation(this);
-				
+
 				//forward
-				if ((this.getDirectionHamburg() && d.getX() > prePosition.getX()) ^ 
+				if ((this.getDirectionHamburg() && d.getX() > prePosition.getX()) ^
 						(!this.getDirectionHamburg() && d.getX() < prePosition.x)) {
-					if((double) e.getInfo() < otherPos.distance(prePosition)){
-					//reduce speed	
-						do{
+					if ((double) e.getInfo() < otherPos.distance(prePosition)) {
+						//reduce speed
+						do {
 							targetSpeed -= 1;
 							prePosition = predictPosition(myPosition, yaw);
-						}while((double) e.getInfo() <= otherPos.distance(prePosition));
+						} while ((double) e.getInfo() <= otherPos.distance(prePosition));
 
-					}else if((double) e.getInfo() > otherPos.distance(prePosition)){
+					} else if ((double) e.getInfo() > otherPos.distance(prePosition)) {
 						//rise speed
-						do{
+						do {
 							targetSpeed += 1;
 							prePosition = predictPosition(myPosition, yaw);
-						}while((double) e.getInfo() > otherPos.distance(prePosition) || targetSpeed == maxSpeed);
+						} while ((double) e.getInfo() > otherPos.distance(prePosition) || targetSpeed == maxSpeed);
 					}
 				}
 			}
 		}
 	}
 
-	private  void observNearSpace(Elbe elbe, Double2D myPosition){
+	private void observNearSpace(Elbe elbe, Double2D myPosition) {
 		//new Obersvation field all Vessel
 		Bag vesselBag = elbe.vesselGrid.getAllObjects();//getNeighborsExactlyWithinDistance(myPosition, distance, true);
 		vesselBag.remove(this);
@@ -156,7 +162,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 			MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
 
-			if(otherPos.distance(myPosition) > distance){
+			if (otherPos.distance(myPosition) > distance) {
 
 				vesselBag.remove(vessel);
 			}
@@ -165,7 +171,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		for (Object newVessel : vesselBag) {
 			boolean isNew = true;
 			for (Object vessel : observationField.getAllNodes()) {
-				if(vessel.equals(newVessel)){
+				if (vessel.equals(newVessel)) {
 					isNew = false;
 					break;
 				}
@@ -174,17 +180,17 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
 
 				//delete vessel from Observation Network
-				if(otherPos.distance(myPosition) > distance){
+				if (otherPos.distance(myPosition) > distance) {
 					observationField.removeEdge(observationField.getEdge(this, vessel));
 					observationField.removeNode(vessel);
 				}
 			}
 
 			//add vessel to Observation Network
-			if(isNew){
+			if (isNew) {
 				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(newVessel));
 				observationField.addNode(newVessel);
-				observationField.addEdge(this, newVessel, otherPos.distance(myPosition) );
+				observationField.addEdge(this, newVessel, otherPos.distance(myPosition));
 			}
 		}
 
@@ -198,27 +204,27 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			}
 		}
 	}
-	
-	private Double2D predictPosition(Double2D myPosition, double yaw){
-		
+
+	private Double2D predictPosition(Double2D myPosition, double yaw) {
+
 		double x = myPosition.getX();
 		double y = myPosition.getY();
-		
+
 		double xNew;
 		double yNew;
-		
+
 		Double2D positionNew;
-		
+
 		if (!directionHamburg) {
 			yaw += 180;
 		}
-		
+
 		// compute position in coordiante
 		yNew = sin(toRadians(yaw)) * targetSpeed + y;
 		xNew = cos(toRadians(yaw)) * targetSpeed + x;
-		
+
 		positionNew = new Double2D(xNew, yNew);
-		
+
 		return positionNew;
 	}
 
@@ -231,12 +237,20 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		double yaw;
 
+		Bag neighbors = elbe.vesselGrid.getNeighborsWithinDistance(currentPosition, getLength());
+
+		// Check neighbors
+		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
+			AbstractVessel vessel = (AbstractVessel) neighbors.get(neighborId);
+			//if (vessel)
+		}
+
 		if (directionHamburg) {
 			// look forward one ship length
-			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth())) == 0) {
-				// near to coast (< half ship width), turn left
-				yaw = 0.785398; // 45 deg
-			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x+getLength()/10), (int) Math.ceil(currentPosition.y+getWidth()*1.5)) == 0) {
+			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x + getLength() / 10), (int) Math.ceil(currentPosition.y + getWidth())) == 0) {
+				// near to coast (< half ship width)
+				yaw = 0.785398; // 45 deg, turn left
+			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x + getLength() / 10), (int) Math.ceil(currentPosition.y + getWidth() * 1.5)) == 0) {
 				// just about right
 				yaw = 1.5708; // 90 deg
 			} else {
@@ -246,10 +260,10 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			return yaw;
 		} else {
 			// look forward one ship length
-			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x-getLength()/10), (int) Math.ceil(currentPosition.y-getWidth())) == 0) {
+			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x - getLength() / 10), (int) Math.ceil(currentPosition.y - getWidth())) == 0) {
 				// near to coast (< half ship width), turn left
 				yaw = 3.92699; // 225 deg
-			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x-getLength()/10), (int) Math.ceil(currentPosition.y-getWidth()*1.5)) == 0) {
+			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x - getLength() / 10), (int) Math.ceil(currentPosition.y - getWidth() * 1.5)) == 0) {
 				// just about right
 				yaw = 4.71239; // 270 deg
 			} else {

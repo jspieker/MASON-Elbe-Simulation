@@ -31,8 +31,9 @@ public class ElbeWithUI extends GUIState {
 	/**
 	 * Start the Simulation at time 0
 	 */
-	public ElbeWithUI() {
+	public ElbeWithUI(final String WEKAPath) {
 		super(new Elbe(System.currentTimeMillis()));
+		((Elbe)this.state).initWEKA(WEKAPath);
 	}
 
 	public ElbeWithUI(Display2D display, JFrame jFrame) {
@@ -144,4 +145,6 @@ public class ElbeWithUI extends GUIState {
 		displayFrame = null;  // let gc
 		display = null;       // let gc
 	}
+
+
 }

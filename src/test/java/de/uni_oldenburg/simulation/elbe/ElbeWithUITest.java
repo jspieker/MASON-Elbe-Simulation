@@ -16,7 +16,7 @@ public class ElbeWithUITest {
 
 	@Before
 	public void setUp() {
-		elbeWithUI = new ElbeWithUI();
+		elbeWithUI = new ElbeWithUI("src/main/resources/");
 	}
 
 	@Test

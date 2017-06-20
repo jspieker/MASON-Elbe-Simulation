@@ -1,0 +1,12 @@
+@relation WaterLevels
+
+@attribute TimeRun numeric
+@attribute isTideActive numeric
+@attribute IsElbeWidened numeric
+@attribute numContainerShip numeric
+@attribute numOtherShip numeric
+@attribute AlmostCollisions numeric
+@attribute Collisions numeric
+
+@data
+1,0,1,10,1,10,1
