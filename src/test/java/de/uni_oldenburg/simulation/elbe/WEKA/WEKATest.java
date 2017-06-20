@@ -30,9 +30,9 @@ public class WEKATest {
 	@Before
 	public void setUp() throws Exception {
 		ArffLoader arffLoader = new ArffLoader();
-		arffLoader.setFile(new File("src/main/resources/collision.arff"));
+		arffLoader.setFile(new File("src/main/resources/collision0.arff"));
 		collisionInstances = arffLoader.getDataSet();
-		arffLoader.setFile(new File("src/main/resources/waterLevel.arff"));
+		arffLoader.setFile(new File("src/main/resources/waterLevel0.arff"));
 		waterLevelInstances = arffLoader.getDataSet();
 	}
 
@@ -52,7 +52,7 @@ public class WEKATest {
 	@Test
 	public void CollisionWEKA_confirms() throws Exception {
 		weka = new CollisionWEKA("src/test/resources/");
-		weka.addWEKAEntry(new Object[]{1L, false, true, 10, 1, 10, 1});
+		weka.addWEKAEntry(new Object[]{1L, false, true, true, 10, 20, 1, 10, 1});
 		weka.writeWEKAEntries();
 		//weka.plotWEKAEntries();
 	}
