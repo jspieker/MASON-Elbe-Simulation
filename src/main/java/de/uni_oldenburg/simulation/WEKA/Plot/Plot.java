@@ -5,7 +5,7 @@ import weka.core.Instances;
 /**
  * Interface to plot the results given the {@link Instances} providing the data.
  *
- * @see BarPlot
+ * @see CollisionBarPlot
  * @see Plot2D
  * @see WEKAExplorer
  */

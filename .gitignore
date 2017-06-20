@@ -4,6 +4,9 @@
 
 # Eclipse
 
+# WEKA *.arff file creation
+*.arff
+
 # Build related
 target/*
 out/*

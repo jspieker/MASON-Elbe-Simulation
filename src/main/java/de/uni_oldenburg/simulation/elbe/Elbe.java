@@ -30,6 +30,7 @@ public class Elbe extends SimState {
 
 
 	private boolean isExtended = false;
+	private boolean isDeepened = false;
 	private int fairwayLengthTotal;
 	private int fairwayWidthMax;
 	private int spawnPositionX;
@@ -42,6 +43,7 @@ public class Elbe extends SimState {
 
 	private Observer obs;
 	private int numContainerShip = 0;
+	private int numTankerShip = 0;
 	private int numOtherShip = 0; // TODO change name?
 
 	// WEKA
@@ -88,7 +90,7 @@ public class Elbe extends SimState {
 			}
 			// WEKA entries
 			if (schedule.getSteps() == 0 || schedule.getSteps() % (highTidePeriod + lowTidePeriod) == 0)
-				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), this.numContainerShip, this.numOtherShip, obs.getAlmostCollision(), obs.getCollision()});
+				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), isDeepened(), this.numContainerShip, this.numTankerShip, this.numOtherShip, obs.getAlmostCollision(), obs.getCollision()});
 		}, 1);
 
 		vesselGrid.clear();
@@ -103,11 +105,7 @@ public class Elbe extends SimState {
 				AbstractVessel newVessel = getNewVessel(true);
 				vesselGrid.setObjectLocation(newVessel, new Double2D(0, 380));
 				schedule.scheduleRepeating(newVessel, 1);
-				if (newVessel instanceof ContainerShip) {
-					numContainerShip++;
-				} else {
-					numOtherShip++; // TODO improve if else with other ships
-				}
+				increaseShipCount(newVessel);
 			}
 
 			// Spawn vessels coming from docks
@@ -115,11 +113,7 @@ public class Elbe extends SimState {
 				AbstractVessel newVessel = getNewVessel(false);
 				vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth - 1, 170));
 				schedule.scheduleRepeating(newVessel, 1);
-				if (newVessel instanceof ContainerShip) {
-					numContainerShip++;
-				} else {
-					numOtherShip++; // TODO improve if else with other ships
-				}
+				increaseShipCount(newVessel);
 			}
 		}, 1);
 	}
@@ -133,8 +127,15 @@ public class Elbe extends SimState {
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
-		// TODO: Implement selection of random vessel type
-		return new ContainerShip(directionHamburg, obs);
+
+		double randomValue = random.nextDouble();
+
+		// Configure the propabilities for some vessel types
+		if (randomValue < 0.5) {
+			return new ContainerShip(directionHamburg, obs);
+		} else {
+			return new Tanker(directionHamburg, obs);
+		}
 	}
 
 	@Override
@@ -146,14 +147,15 @@ public class Elbe extends SimState {
 		collisionWEKA.writeWEKAEntries();
 		waterLevelWEKA.plotWEKAEntries();
 		collisionWEKA.plotWEKAEntries();
-		System.out.println("Beinahe zusammenstöße: " + obs.getAlmostCollision() + " zusammenstöße: " + obs.getCollision());
+		System.out.println("Beinahe Zusammenstöße: " + obs.getAlmostCollision() + " Zusammenstöße: " + obs.getCollision());
 	}
 
 	/**
 	 * Draws the Elbe, the boat spawn area and the Hamburg dockyard onto the simulation map
 	 */
 	private void drawObjects() {
-		// Draw Elbe area
+
+		// Init Elbe area
 		int tempLengthHelper = 0;
 		int tempWidthHelper = 0;
 		for (int elbeSection = 0; elbeSection < FAIRWAY_LENGTH.length; elbeSection++) {
@@ -162,14 +164,14 @@ public class Elbe extends SimState {
 			} catch (ArrayIndexOutOfBoundsException ignored) {
 			}
 
-			// Draw blocks for elbe sections
+			// Init blocks for elbe sections
 			for (int i = MARGIN + tempLengthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i++) { // from left to right
 				for (int j = ((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN; j < (((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[elbeSection]); j++) { // from top to bottom
 					elbeMap.field[i][j] = FAIRWAY_ID;
 				}
 			}
 
-			// Draw transitions
+			// Calculate width transitions
 			int tempTopIndex = ((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN;
 			int tempBottomIndex = FAIRWAY_WIDTH[elbeSection] - tempWidthHelper;
 			for (int i = (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]); i++) {
@@ -188,14 +190,14 @@ public class Elbe extends SimState {
 			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
 		}
 
-		// Draw spawn area
+		// Init spawn area
 		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN; i < (((fairwayWidthMax - FAIRWAY_WIDTH[0]) / 2) + MARGIN + FAIRWAY_WIDTH[0]); i++) {
 			for (int j = 0; j < MARGIN; j++) {
 				elbeMap.field[spawnPositionX - (j + 1)][i] = SEA_POINT_ID;
 			}
 		}
 
-		// Draw dockyard
+		// Init dockyard
 		int lastTransitionWidth = (FAIRWAY_WIDTH[FAIRWAY_WIDTH.length - 2] - FAIRWAY_WIDTH[FAIRWAY_WIDTH.length - 1]) / 2;
 		for (int i = ((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN + lastTransitionWidth; i < (((fairwayWidthMax - FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) / 2) + MARGIN + FAIRWAY_WIDTH[(FAIRWAY_WIDTH.length - 1)]) - lastTransitionWidth; i++) {
 			for (int j = 0; j < MARGIN; j++) {
@@ -232,6 +234,26 @@ public class Elbe extends SimState {
 		collisionWEKA = new CollisionWEKA(WEKAPath);
 	}
 
+	public void increaseShipCount(AbstractVessel vessel) {
+		if (vessel instanceof ContainerShip) {
+			numContainerShip++;
+		} else if (vessel instanceof Tanker) {
+			numTankerShip++;
+		} else {
+			numOtherShip++; // TODO improve if else with other ships
+		}
+	}
+
+	public void decreaseShipCount(AbstractVessel vessel) {
+		if (vessel instanceof ContainerShip) {
+			numContainerShip--;
+		} else if (vessel instanceof Tanker) {
+			numTankerShip--;
+		} else {
+			numOtherShip--; // TODO improve if else with other ships
+		}
+	}
+
 
 	// Geter and Setter
 
@@ -241,6 +263,14 @@ public class Elbe extends SimState {
 
 	public void setDepthOfWaterBelowCD(int newDepth) {
 		depthOfWaterBelowCD = newDepth;
+	}
+
+	public boolean isDeepened() {
+		return isDeepened;
+	}
+
+	public void setDeepened(boolean deepened) {
+		isDeepened = deepened;
 	}
 
 	public boolean getIsExtended() {

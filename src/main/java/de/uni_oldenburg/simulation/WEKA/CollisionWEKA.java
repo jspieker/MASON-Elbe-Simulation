@@ -1,13 +1,11 @@
 package de.uni_oldenburg.simulation.WEKA;
 
-import de.uni_oldenburg.simulation.WEKA.Plot.BarPlot;
-import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
+import de.uni_oldenburg.simulation.WEKA.Plot.CollisionBarPlot;
+import de.uni_oldenburg.simulation.WEKA.Plot.CollisionWithShipsBarPlot;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -16,7 +14,7 @@ import java.util.ArrayList;
 public class CollisionWEKA extends WEKA {
 
 	public CollisionWEKA(String path) {
-		super(path + "collision.arff");
+		super(path, "collision");
 	}
 
 	@Override
@@ -24,12 +22,14 @@ public class CollisionWEKA extends WEKA {
 		long timeRun = (long) wekaEntry[0];
 		boolean isTideActive = (boolean) wekaEntry[1];
 		boolean isElbeWidened = (boolean) wekaEntry[2];
-		int numContainerShip = (int) wekaEntry[3];
-		int numOtherShip = (int) wekaEntry[4];
-		int almostCollisions = (int) wekaEntry[5];
-		int collisions = (int) wekaEntry[6];
+		boolean isElbeDeepened = (boolean) wekaEntry[3];
+		int numContainerShip = (int) wekaEntry[4];
+		int numTankerShip = (int) wekaEntry[5];
+		int numOtherShip = (int) wekaEntry[6];
+		int almostCollisions = (int) wekaEntry[7];
+		int collisions = (int) wekaEntry[8];
 
-		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeWidened ? 1 : 0), numContainerShip, numOtherShip, almostCollisions, collisions};
+		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeWidened ? 1 : 0), (isElbeDeepened ? 1 : 0), numContainerShip, numTankerShip, numOtherShip, almostCollisions, collisions};
 		DenseInstance denseInstance = new DenseInstance(1.0, rowValuesData);
 		return instances.add(denseInstance);
 	}
@@ -39,9 +39,11 @@ public class CollisionWEKA extends WEKA {
 		ArrayList<Attribute> attributes = new ArrayList<>();
 		Attribute timeRunAttribute = new Attribute("TimeRun");
 		Attribute isTideActiveAttribute = new Attribute("isTideActive");
-		Attribute isElbeWidenedAttribute = new Attribute("IsElbeWidened");
+		Attribute isElbeWidenedAttribute = new Attribute("isElbeWidened");
+		Attribute isElbeDeepenedAttribute = new Attribute("isElbeDeepended");
 		// TODO num of ships normal or heavy ship
 		Attribute numContainerShipAttribute = new Attribute("numContainerShip");
+		Attribute numTankerShipAttribute = new Attribute("numTankerShip");
 		Attribute numOtherShipAttribute = new Attribute("numOtherShip");
 		Attribute almostCollisionsAttribute = new Attribute("AlmostCollisions");
 		Attribute collisionsAttribute = new Attribute("Collisions");
@@ -49,18 +51,21 @@ public class CollisionWEKA extends WEKA {
 		attributes.add(timeRunAttribute);
 		attributes.add(isTideActiveAttribute);
 		attributes.add(isElbeWidenedAttribute);
+		attributes.add(isElbeDeepenedAttribute);
 		attributes.add(numContainerShipAttribute);
+		attributes.add(numTankerShipAttribute);
 		attributes.add(numOtherShipAttribute);
 		attributes.add(almostCollisionsAttribute);
 		attributes.add(collisionsAttribute);
 
-		instances = new Instances("WaterLevels", attributes, 100000000);
+		instances = new Instances("WaterLevels", attributes, 10000000);
 	}
 
 	@Override
 	public void plotWEKAEntries() {
 		try {
-			new BarPlot().plot(instances);
+			new CollisionBarPlot().plot(instances);
+			new CollisionWithShipsBarPlot().plot(instances);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

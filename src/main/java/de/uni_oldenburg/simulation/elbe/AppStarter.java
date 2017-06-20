@@ -10,11 +10,11 @@ public class AppStarter {
 	 * Enter the program here
 	 */
 	public static void main(String[] args) {
-		if (args == null || args[0] == null) {
-			System.out.println("You have to pass the WEKA path to specify where to store the *.arff files.");
-		} else {
-			System.out.println(args[0]);
+		try {
+			System.out.println("Using " + args[0] + " as *.arff storage dir.");
 			new ElbeWithUI(args[0]).createController();
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println("You have to pass the WEKA path to specify where to store the *.arff files. E.g. \"src/main/resources/\" (without quotation marks)");
 		}
 	}
 }

@@ -9,25 +9,38 @@ import java.io.IOException;
 
 /**
  * {@link weka.Run} wrapper.
+ *
+ * @see CollisionWEKA
+ * @see WaterLevelWEKA
  */
 public abstract class WEKA {
 
 	Instances instances;
 
 	String path;
+	String wekaName;
 
 	ArffSaver arffSaver;
 	Plot plot;
 
-	public WEKA(String path) {
+	int fileNumberCounter;
+
+	public WEKA(String path, String WEKAname) {
 		arffSaver = new ArffSaver();
 		prepareWEKAEntry();
 		arffSaver.setInstances(instances);
 		this.path = path;
+		this.wekaName = WEKAname;
+		fileNumberCounter = 0;
 	}
 
 	public void writeWEKAEntries() {
-		File file = new File(path);
+		File file;
+		String pathCopy = path + wekaName + String.valueOf(fileNumberCounter) + ".arff";
+		while ((file = new File(pathCopy)).isFile()) { // prevent overriding
+			pathCopy = path + wekaName + String.valueOf(++fileNumberCounter) + ".arff";
+		}
+
 		try {
 			arffSaver.setFile(file);
 			arffSaver.writeBatch();
@@ -39,7 +52,6 @@ public abstract class WEKA {
 	public abstract boolean addWEKAEntry(Object[] wekaEntry);
 
 	abstract void prepareWEKAEntry();
-
 
 	public abstract void plotWEKAEntries();
 

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class WaterLevelWEKA extends WEKA {
 
 	public WaterLevelWEKA(String path) {
-		super(path + "waterLevel.arff");
+		super(path, "waterLevel");
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class WaterLevelWEKA extends WEKA {
 		attributes.add(xCoordinateAttribute);
 		attributes.add(waterLevelAttribute);
 
-		instances = new Instances("WaterLevels", attributes, 100000000);
+		instances = new Instances("WaterLevels", attributes, 10000000);
 		try {
 			plot = new Plot2D();
 		} catch (Exception e) {

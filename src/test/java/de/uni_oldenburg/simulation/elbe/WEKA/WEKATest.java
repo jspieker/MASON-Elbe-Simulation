@@ -1,7 +1,7 @@
 package de.uni_oldenburg.simulation.elbe.WEKA;
 
 import de.uni_oldenburg.simulation.WEKA.CollisionWEKA;
-import de.uni_oldenburg.simulation.WEKA.Plot.BarPlot;
+import de.uni_oldenburg.simulation.WEKA.Plot.CollisionBarPlot;
 import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
 import de.uni_oldenburg.simulation.WEKA.Plot.Plot2D;
 import de.uni_oldenburg.simulation.WEKA.WEKA;
@@ -17,7 +17,7 @@ import java.io.File;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests {@link WEKA}, {@link CollisionWEKA}, {@link WaterLevelWEKA}, {@link Plot}, {@link de.uni_oldenburg.simulation.WEKA.Plot.BarPlot} and {@link de.uni_oldenburg.simulation.WEKA.Plot.Plot2D}.
+ * Tests {@link WEKA}, {@link CollisionWEKA}, {@link WaterLevelWEKA}, {@link Plot}, {@link CollisionBarPlot} and {@link de.uni_oldenburg.simulation.WEKA.Plot.Plot2D}.
  */
 public class WEKATest {
 
@@ -59,7 +59,7 @@ public class WEKATest {
 
 	@Test
 	public void BarPlot_confirms() throws Exception {
-		//Plot plot = new BarPlot();
+		//Plot plot = new CollisionBarPlot();
 		//plot.plot(collisionInstances);
 	}
 
