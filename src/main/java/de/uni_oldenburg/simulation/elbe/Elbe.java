@@ -43,8 +43,12 @@ public class Elbe extends SimState {
 
 	private Observer obs;
 	private int numContainerShip = 0;
+	private int numContainerShipSinceLastMeasurement = 0;
 	private int numTankerShip = 0;
+	private int numTankerShipSinceLastMeasurement = 0;
 	private int numOtherShip = 0; // TODO change name?
+	private int numOtherShipSinceLastMeasurement = 0;
+
 
 	// WEKA
 	private WaterLevelWEKA waterLevelWEKA;
@@ -89,8 +93,16 @@ public class Elbe extends SimState {
 					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
 			// WEKA entries
-			if (schedule.getSteps() == 0 || schedule.getSteps() % (highTidePeriod + lowTidePeriod) == 0)
-				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), isDeepened(), this.numContainerShip, this.numTankerShip, this.numOtherShip, obs.getAlmostCollision(), obs.getCollision()});
+			if (schedule.getSteps() == 0 || schedule.getSteps() % (highTidePeriod + lowTidePeriod) == 0) {
+				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), isDeepened(),
+						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
+						numOtherShip + numOtherShipSinceLastMeasurement, obs.getAlmostCollision(), obs.getCollision()});
+				System.out.println(numContainerShip + " " + numContainerShipSinceLastMeasurement + " " + numTankerShip + " " + numTankerShipSinceLastMeasurement + " " +
+						numOtherShip + " " + numOtherShipSinceLastMeasurement);
+				numContainerShipSinceLastMeasurement = 0;
+				numTankerShipSinceLastMeasurement = 0;
+				numOtherShipSinceLastMeasurement = 0;
+			}
 		}, 1);
 
 		vesselGrid.clear();
@@ -247,10 +259,13 @@ public class Elbe extends SimState {
 	public void decreaseShipCount(AbstractVessel vessel) {
 		if (vessel instanceof ContainerShip) {
 			numContainerShip--;
+			numContainerShipSinceLastMeasurement++;
 		} else if (vessel instanceof Tanker) {
 			numTankerShip--;
+			numTankerShipSinceLastMeasurement++;
 		} else {
 			numOtherShip--; // TODO improve if else with other ships
+			numOtherShipSinceLastMeasurement++;
 		}
 	}
 
