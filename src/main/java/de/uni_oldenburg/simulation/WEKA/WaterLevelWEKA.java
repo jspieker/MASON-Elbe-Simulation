@@ -33,9 +33,9 @@ public class WaterLevelWEKA extends WEKA {
 	@Override
 	void prepareWEKAEntry() {
 		ArrayList<Attribute> attributes = new ArrayList<>();
-		Attribute waterLevelAttribute = new Attribute("WaterLevel");
+		Attribute waterLevelAttribute = new Attribute("waterLevel");
 		Attribute xCoordinateAttribute = new Attribute("xCoordinate");
-		Attribute timeAttribute = new Attribute("Time");
+		Attribute timeAttribute = new Attribute("time");
 
 
 		attributes.add(timeAttribute);

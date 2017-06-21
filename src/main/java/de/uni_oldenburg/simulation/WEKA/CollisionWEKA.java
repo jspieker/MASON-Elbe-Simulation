@@ -37,16 +37,16 @@ public class CollisionWEKA extends WEKA {
 	@Override
 	void prepareWEKAEntry() {
 		ArrayList<Attribute> attributes = new ArrayList<>();
-		Attribute timeRunAttribute = new Attribute("TimeRun");
-		Attribute isTideActiveAttribute = new Attribute("isTideActive");
-		Attribute isElbeWidenedAttribute = new Attribute("isElbeWidened");
-		Attribute isElbeDeepenedAttribute = new Attribute("isElbeDeepended");
+		Attribute timeRunAttribute = new Attribute("time");
+		Attribute isTideActiveAttribute = new Attribute("tideActive");
+		Attribute isElbeWidenedAttribute = new Attribute("elbeWidened");
+		Attribute isElbeDeepenedAttribute = new Attribute("elbeDeepened");
 		// TODO num of ships normal or heavy ship
-		Attribute numContainerShipAttribute = new Attribute("numContainerShip");
-		Attribute numTankerShipAttribute = new Attribute("numTankerShip");
-		Attribute numOtherShipAttribute = new Attribute("numOtherShip");
-		Attribute almostCollisionsAttribute = new Attribute("AlmostCollisions");
-		Attribute collisionsAttribute = new Attribute("Collisions");
+		Attribute numContainerShipAttribute = new Attribute("containerShip");
+		Attribute numTankerShipAttribute = new Attribute("tankerShip");
+		Attribute numOtherShipAttribute = new Attribute("otherShip");
+		Attribute almostCollisionsAttribute = new Attribute("almostCollisions");
+		Attribute collisionsAttribute = new Attribute("collisions");
 
 		attributes.add(timeRunAttribute);
 		attributes.add(isTideActiveAttribute);
