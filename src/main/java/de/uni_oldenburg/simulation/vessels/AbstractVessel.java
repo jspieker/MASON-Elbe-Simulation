@@ -110,8 +110,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		// TODO: dynamically adopt speed (with respect to vessel weight)
 		currentSpeed = getTargetSpeed();
 
-		// Transform km/h to 10m/min, calculate new position
-		Double2D forwardMotion = new Double2D(0, -currentSpeed * 60 / 100); // course north on (0 deg)
+		// Transform km/h to 100m/min, calculate new position
+		Double2D forwardMotion = new Double2D(0, -currentSpeed / 6.0); // course north (0 deg)
 		forwardMotion = forwardMotion.rotate(getTargetYaw());
 		Double2D newPosition = currentPosition.add(forwardMotion);
 
