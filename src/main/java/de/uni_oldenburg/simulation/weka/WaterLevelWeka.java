@@ -1,21 +1,18 @@
-package de.uni_oldenburg.simulation.WEKA;
+package de.uni_oldenburg.simulation.weka;
 
-import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
-import de.uni_oldenburg.simulation.WEKA.Plot.Plot2D;
+import de.uni_oldenburg.simulation.weka.plot.Plot2D;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Implements {@link WEKA}.
+ * Implements {@link Weka}.
  */
-public class WaterLevelWEKA extends WEKA {
+public class WaterLevelWeka extends Weka {
 
-	public WaterLevelWEKA(String path) {
+	public WaterLevelWeka(String path) {
 		super(path, "waterLevel");
 	}
 

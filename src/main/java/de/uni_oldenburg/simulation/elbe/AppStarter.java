@@ -11,8 +11,8 @@ public class AppStarter {
 	 */
 	public static void main(String[] args) {
 
+		// Optionally specify weka path by argument
 		String wekaPath = "";
-
 		if (args.length >= 1) {
 			wekaPath = args[0];
 		}

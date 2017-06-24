@@ -1,7 +1,7 @@
 package de.uni_oldenburg.simulation.elbe;
 
-import de.uni_oldenburg.simulation.WEKA.CollisionWEKA;
-import de.uni_oldenburg.simulation.WEKA.WaterLevelWEKA;
+import de.uni_oldenburg.simulation.weka.CollisionWeka;
+import de.uni_oldenburg.simulation.weka.WaterLevelWeka;
 import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
 import de.uni_oldenburg.simulation.vessels.*;
 import sim.field.continuous.Continuous2D;
@@ -50,9 +50,9 @@ public class Elbe extends SimState {
 	private int numOtherShipSinceLastMeasurement = 0;
 
 
-	// WEKA
-	private WaterLevelWEKA waterLevelWEKA;
-	private CollisionWEKA collisionWEKA;
+	// weka
+	private WaterLevelWeka waterLevelWEKA;
+	private CollisionWeka collisionWEKA;
 
 	private final long highTidePeriod = 19670 / 60;
 	private final long lowTidePeriod = 24505 / 60;
@@ -88,11 +88,11 @@ public class Elbe extends SimState {
 				for (int y = 0; y < gridHeight; y++) {
 					tidesMap.set(x, y, waterLevel);
 				}
-				// WEKA entries
+				// weka entries
 				if (x % 10 == 0)
 					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
-			// WEKA entries
+			// weka entries
 			if (schedule.getSteps() == 0 || schedule.getSteps() % (highTidePeriod + lowTidePeriod) == 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), isDeepened(),
 						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
@@ -242,8 +242,8 @@ public class Elbe extends SimState {
 	}
 
 	public void initWEKA(final String WEKAPath) {
-		waterLevelWEKA = new WaterLevelWEKA(WEKAPath);
-		collisionWEKA = new CollisionWEKA(WEKAPath);
+		waterLevelWEKA = new WaterLevelWeka(WEKAPath);
+		collisionWEKA = new CollisionWeka(WEKAPath);
 	}
 
 	public void increaseShipCount(AbstractVessel vessel) {

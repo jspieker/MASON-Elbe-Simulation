@@ -1,7 +1,7 @@
-package de.uni_oldenburg.simulation.WEKA;
+package de.uni_oldenburg.simulation.weka;
 
-import de.uni_oldenburg.simulation.WEKA.Plot.CollisionBarPlot;
-import de.uni_oldenburg.simulation.WEKA.Plot.CollisionWithShipsBarPlot;
+import de.uni_oldenburg.simulation.weka.plot.CollisionBarPlot;
+import de.uni_oldenburg.simulation.weka.plot.CollisionWithShipsBarPlot;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
@@ -9,11 +9,11 @@ import weka.core.Instances;
 import java.util.ArrayList;
 
 /**
- * Implements {@link WEKA}.
+ * Implements {@link Weka}.
  */
-public class CollisionWEKA extends WEKA {
+public class CollisionWeka extends Weka {
 
-	public CollisionWEKA(String path) {
+	public CollisionWeka(String path) {
 		super(path, "collision");
 	}
 
