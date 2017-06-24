@@ -49,7 +49,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 */
 	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, Observer observer) {
 
-		super(new double[]{-length / 2 / 100, length / 4 / 100, length / 2 / 100, length / 4 / 100, -length / 2 / 100}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
+		super(new double[]{-length / 2.0 / 100.0, length / 4.0 / 100.0, length / 2.0 / 100.0, length / 4.0 / 100.0, -length / 2.0 / 100.0}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
 		this.weight = weight;
 		this.length = length;
@@ -246,11 +246,11 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		}
 
 		if (directionHamburg) {
-			// look forward one ship length
-			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x + getLength() / 10), (int) Math.ceil(currentPosition.y + getWidth())) == 0) {
+			// look forward
+			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y + getWidth())) == 0) {
 				// near to coast (< half ship width)
 				yaw = 0.785398; // 45 deg, turn left
-			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x + getLength() / 10), (int) Math.ceil(currentPosition.y + getWidth() * 1.5)) == 0) {
+			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y + getWidth() * 1.1)) == 0) {
 				// just about right
 				yaw = 1.5708; // 90 deg
 			} else {
@@ -259,11 +259,11 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			}
 			return yaw;
 		} else {
-			// look forward one ship length
-			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x - getLength() / 10), (int) Math.ceil(currentPosition.y - getWidth())) == 0) {
+			// look forward
+			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y - getWidth())) == 0) {
 				// near to coast (< half ship width), turn left
 				yaw = 3.92699; // 225 deg
-			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x - getLength() / 10), (int) Math.ceil(currentPosition.y - getWidth() * 1.5)) == 0) {
+			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y - getWidth() * 1.1)) == 0) {
 				// just about right
 				yaw = 4.71239; // 270 deg
 			} else {
