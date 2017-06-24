@@ -109,7 +109,7 @@ public class Elbe extends SimState {
 
 		obs = new Observer(this);
 
-		// Dynamically spawn new customers
+		// Dynamically spawn new vessels
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
 
 			// Spawn vessels coming from sea
@@ -131,11 +131,11 @@ public class Elbe extends SimState {
 	}
 
 	private boolean newShipArrivedFromSea() {
-		return random.nextBoolean(0.1);
+		return random.nextBoolean(0.01);
 	}
 
 	private boolean newShipArrivedFromDocks() {
-		return random.nextBoolean(0.1);
+		return random.nextBoolean(0.01);
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
