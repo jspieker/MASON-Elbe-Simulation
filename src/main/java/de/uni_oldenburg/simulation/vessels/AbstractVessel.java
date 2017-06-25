@@ -1,12 +1,8 @@
 package de.uni_oldenburg.simulation.vessels;
 
-import static java.lang.Math.*;
-
 import de.uni_oldenburg.simulation.elbe.Elbe;
-import de.uni_oldenburg.simulation.elbe.Observer;
 import sim.engine.*;
-import sim.field.network.Edge;
-import sim.field.network.Network;
+import sim.portrayal.inspector.StableDouble2D;
 import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
@@ -27,15 +23,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	private double currentSpeed;
 	public double currentYaw;
 	private Double2D currentPosition;
-
-	Elbe elbe;
-
-	private Network observationField;
-
-	//observation area
-	final private double distance = 50;
-
-	Observer observer;
+	private Elbe elbe;
 
 	/**
 	 * Constructor
@@ -45,9 +33,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 * @param width            Width of the vessel
 	 * @param targetSpeed      Target speed of the vessel
 	 * @param directionHamburg True if moving towards docks, else false
-	 * @param observer
 	 */
-	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, Observer observer) {
+	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg) {
 
 		super(new double[]{-length / 2.0 / 100.0, length / 4.0 / 100.0, length / 2.0 / 100.0, length / 4.0 / 100.0, -length / 2.0 / 100.0}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
@@ -56,13 +43,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		this.width = width;
 		this.targetSpeed = targetSpeed;
 		this.directionHamburg = directionHamburg;
-		this.observer = observer;
-
-		observationField = new Network();
-		observationField.addNode(this);
 	}
 
-	// Getters (no setters needed)
 	public double getWeight() {
 		return weight;
 	}
@@ -85,8 +67,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	/**
 	 * Move one simulation step (1 min)
-	 *
-	 * @param state
+	 * @param state The current sim state
 	 */
 	@Override
 	public void step(SimState state) {
@@ -126,7 +107,12 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		return currentPosition.add(forwardMotion);
 	}
 
+	/**
+	 * Returns true if another vessels is in sight, so that this vessel has to overtake
+	 * @return true if overtaking needed
+	 */
 	public boolean vesselInFront() {
+
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
 		double observationRadius = getLength()/100*15;
 
@@ -134,24 +120,29 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
 			if (nearVessel != this && nearVessel != null && nearVessel.currentPosition != null) {
 				if (directionHamburg) {
-					if (nearVessel.currentPosition.x - currentPosition.x < observationRadius && nearVessel.currentPosition.x - currentPosition.x > 0
-							&& nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth() && currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth()) {
-						this.paint = new Color(255, 0, 0);
+					if (nearVessel.currentPosition.x - currentPosition.x < observationRadius
+							&& nearVessel.currentPosition.x - currentPosition.x > 0
+							&& nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth()
+							&& currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth()) {
 						return true;
 					}
 				} else {
-					if (currentPosition.x - nearVessel.currentPosition.x < observationRadius && currentPosition.x - nearVessel.currentPosition.x> 0
-							&& currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth() && nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth()) {
-						this.paint = new Color(255, 0, 0);
+					if (currentPosition.x - nearVessel.currentPosition.x < observationRadius
+							&& currentPosition.x - nearVessel.currentPosition.x> 0
+							&& currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth()
+							&& nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth()) {
 						return true;
 					}
 				}
 			}
 		}
-		this.paint = new Color(255, 255, 0);
 		return false;
 	}
 
+	/**
+	 * Returns true if another vessel is to the right, so that this vessel can't go there
+	 * @return true if starboard course is currently not possible
+	 */
 	public boolean vesselToTheRight() {
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
@@ -162,27 +153,25 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
 			if (nearVessel != this && nearVessel != null && nearVessel.currentPosition != null) {
 				if (directionHamburg) {
-					if (nearVessel.currentPosition.y - currentPosition.y > 0 && nearVessel.currentPosition.y - currentPosition.y < observationRadiusY
+					if (nearVessel.currentPosition.y - currentPosition.y > 0
+							&& nearVessel.currentPosition.y - currentPosition.y < observationRadiusY
 							&& Math.abs(nearVessel.currentPosition.x - currentPosition.x) < observationRadiusX) {
-						this.paint = new Color(0, 255, 0);
 						return true;
 					}
 				} else {
-					if (currentPosition.y - nearVessel.currentPosition.y > 0 && currentPosition.y - nearVessel.currentPosition.y < observationRadiusY
+					if (currentPosition.y - nearVessel.currentPosition.y > 0
+							&& currentPosition.y - nearVessel.currentPosition.y < observationRadiusY
 							&& Math.abs(currentPosition.x - nearVessel.currentPosition.x) < observationRadiusX) {
-						this.paint = new Color(0, 255, 0);
 						return true;
 					}
 				}
 			}
 		}
-		this.paint = new Color(255, 255, 0);
 		return false;
 	}
 
 	/**
 	 * Get the best yaw according to the destination and the current environment
-	 *
 	 * @return yaw in rad from the normal yaw
 	 */
 	public double getTargetYaw() {
