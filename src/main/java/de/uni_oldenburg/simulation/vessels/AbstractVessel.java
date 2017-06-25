@@ -133,10 +133,18 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
 			if (nearVessel != this && nearVessel != null && nearVessel.currentPosition != null) {
-				if (nearVessel.currentPosition.x - currentPosition.x < observationRadius && nearVessel.currentPosition.x - currentPosition.x > 0
-						&& nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth() && currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth()) {
-					this.paint = new Color(255, 0, 0);
-					return true;
+				if (directionHamburg) {
+					if (nearVessel.currentPosition.x - currentPosition.x < observationRadius && nearVessel.currentPosition.x - currentPosition.x > 0
+							&& nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth() && currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth()) {
+						this.paint = new Color(255, 0, 0);
+						return true;
+					}
+				} else {
+					if (currentPosition.x - nearVessel.currentPosition.x < observationRadius && currentPosition.x - nearVessel.currentPosition.x> 0
+							&& currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth() && nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth()) {
+						this.paint = new Color(255, 0, 0);
+						return true;
+					}
 				}
 			}
 		}
@@ -147,16 +155,24 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	public boolean vesselToTheRight() {
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
-		double observationRadius = getWidth()*2;
+		double observationRadiusY = getWidth()*2;
 		double observationRadiusX = getLength()/100*15;
 
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
 			if (nearVessel != this && nearVessel != null && nearVessel.currentPosition != null) {
-				if (nearVessel.currentPosition.y - currentPosition.y > 0 && nearVessel.currentPosition.y - currentPosition.y < observationRadius
-						&& Math.abs(nearVessel.currentPosition.x - currentPosition.x) < observationRadiusX) {
-					this.paint = new Color(0, 255, 0);
-					return true;
+				if (directionHamburg) {
+					if (nearVessel.currentPosition.y - currentPosition.y > 0 && nearVessel.currentPosition.y - currentPosition.y < observationRadiusY
+							&& Math.abs(nearVessel.currentPosition.x - currentPosition.x) < observationRadiusX) {
+						this.paint = new Color(0, 255, 0);
+						return true;
+					}
+				} else {
+					if (currentPosition.y - nearVessel.currentPosition.y > 0 && currentPosition.y - nearVessel.currentPosition.y < observationRadiusY
+							&& Math.abs(currentPosition.x - nearVessel.currentPosition.x) < observationRadiusX) {
+						this.paint = new Color(0, 255, 0);
+						return true;
+					}
 				}
 			}
 		}
