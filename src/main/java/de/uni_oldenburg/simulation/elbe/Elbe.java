@@ -131,11 +131,11 @@ public class Elbe extends SimState {
 	}
 
 	private boolean newShipArrivedFromSea() {
-		return random.nextBoolean(0.01);
+		return random.nextBoolean(0.02);
 	}
 
 	private boolean newShipArrivedFromDocks() {
-		return random.nextBoolean(0.01);
+		return random.nextBoolean(0.00);
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {

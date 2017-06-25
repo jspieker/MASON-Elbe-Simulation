@@ -11,7 +11,6 @@ import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 
 /**
  * The AbstractVessel combines the properties of all vessels
@@ -23,7 +22,6 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	final private double length;
 	final private double width;
 	final private boolean directionHamburg;
-	final private double maxSpeed;
 
 	private double targetSpeed;
 	private double currentSpeed;
@@ -59,7 +57,6 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		this.targetSpeed = targetSpeed;
 		this.directionHamburg = directionHamburg;
 		this.observer = observer;
-		maxSpeed = 20;
 
 		observationField = new Network();
 		observationField.addNode(this);
@@ -113,157 +110,57 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		currentSpeed = getTargetSpeed();
 		currentYaw = getTargetYaw();
 
+		elbe.vesselGrid.setObjectLocation(this, getTargetPosition());
+	}
+
+
+	/**
+	 * Returns the predicted position within 1 step (=1 minute) with the current speed and yaw
+	 * @return The calculated position
+	 */
+	public Double2D getTargetPosition() {
+
 		// Transform km/h to 100m/min, calculate new position
 		Double2D forwardMotion = new Double2D(0, -currentSpeed / 6.0); // course north (0 deg)
 		forwardMotion = forwardMotion.rotate(currentYaw);
-		Double2D newPosition = currentPosition.add(forwardMotion);
-
-		elbe.vesselGrid.setObjectLocation(this, newPosition);
+		return currentPosition.add(forwardMotion);
 	}
 
+	public boolean vesselInFront() {
+		Bag neighbors = elbe.vesselGrid.getAllObjects();
+		double observationRadius = getLength()/100*15;
 
-	private void adaptSpeed(Elbe elbe, Double2D prePosition, double yaw) {
-
-		Bag vesselBag = observationField.getAllNodes();
-		vesselBag.remove(this);
-
-		for (Object vessel : vesselBag) {
-			Double2D d = elbe.vesselGrid.getObjectLocation(vessel);
-			if (((AbstractVessel) vessel).getDirectionHamburg() == this.getDirectionHamburg()) {
-				Edge e = observationField.getEdge(this, vessel);
-				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-				Double2D myPosition = elbe.vesselGrid.getObjectLocation(this);
-
-				//forward
-				if ((this.getDirectionHamburg() && d.getX() > prePosition.getX()) ^
-						(!this.getDirectionHamburg() && d.getX() < prePosition.x)) {
-					if ((double) e.getInfo() < otherPos.distance(prePosition)) {
-						//reduce speed
-						do {
-							targetSpeed -= 1;
-							prePosition = predictPosition(myPosition, yaw);
-						} while ((double) e.getInfo() <= otherPos.distance(prePosition));
-
-					} else if ((double) e.getInfo() > otherPos.distance(prePosition)) {
-						//rise speed
-						do {
-							targetSpeed += 1;
-							prePosition = predictPosition(myPosition, yaw);
-						} while ((double) e.getInfo() > otherPos.distance(prePosition) || targetSpeed == maxSpeed);
-					}
-				}
-			}
-		}
-	}
-
-	private void observNearSpace(Elbe elbe, Double2D myPosition) {
-		//new Obersvation field all Vessel
-		Bag vesselBag = elbe.vesselGrid.getAllObjects();//getNeighborsExactlyWithinDistance(myPosition, distance, true);
-		vesselBag.remove(this);
-
-		for (Object vessel : vesselBag) {
-
-			MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-
-			if (otherPos.distance(myPosition) > distance) {
-
-				vesselBag.remove(vessel);
-			}
-		}
-
-		for (Object newVessel : vesselBag) {
-			boolean isNew = true;
-			for (Object vessel : observationField.getAllNodes()) {
-				if (vessel.equals(newVessel)) {
-					isNew = false;
-					break;
-				}
-
-				//if vessel vector too long delete from Network
-				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-
-				//delete vessel from Observation Network
-				if (otherPos.distance(myPosition) > distance) {
-					observationField.removeEdge(observationField.getEdge(this, vessel));
-					observationField.removeNode(vessel);
-				}
-			}
-
-			//add vessel to Observation Network
-			if (isNew) {
-				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(newVessel));
-				observationField.addNode(newVessel);
-				observationField.addEdge(this, newVessel, otherPos.distance(myPosition));
-			}
-		}
-
-		//update already known distances
-		for (Object vessel : observationField.getAllNodes()) {
-
-			if (!this.equals(vessel)) {
-				Edge e = observationField.getEdge(this, vessel);
-				MutableDouble2D otherPos = new MutableDouble2D(elbe.vesselGrid.getObjectLocation(vessel));
-				e.setInfo(otherPos.distance(myPosition));
-			}
-		}
-	}
-
-	private Double2D predictPosition(Double2D myPosition, double yaw) {
-
-		double x = myPosition.getX();
-		double y = myPosition.getY();
-
-		double xNew;
-		double yNew;
-
-		Double2D positionNew;
-
-		if (!directionHamburg) {
-			yaw += 180;
-		}
-
-		// compute position in coordiante
-		yNew = sin(toRadians(yaw)) * targetSpeed + y;
-		xNew = cos(toRadians(yaw)) * targetSpeed + x;
-
-		positionNew = new Double2D(xNew, yNew);
-
-		return positionNew;
-	}
-
-	public boolean nearDangerousNeighbors() {
-
-		// Find neighbors
-		Bag neighbors = elbe.vesselGrid.getNeighborsWithinDistance(currentPosition, getLength()/100*15);
-
-		// Check neighbors
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
-			if (nearVessel == this) break;
-			Double2D targetPoint = new Double2D(0, -getLength()/100*7.5).rotate(currentYaw);
-			Rectangle2D dangerZone = this.shape.getBounds2D();
-			dangerZone.add(targetPoint.x, targetPoint.y);
-			if (nearVessel.shape.intersects(dangerZone)) {
-				return true;
+			if (nearVessel != this && nearVessel != null && nearVessel.currentPosition != null) {
+				if (nearVessel.currentPosition.x - currentPosition.x < observationRadius && nearVessel.currentPosition.x - currentPosition.x > 0
+						&& nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth() && currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth()) {
+					this.paint = new Color(255, 0, 0);
+					return true;
+				}
 			}
 		}
+		this.paint = new Color(255, 255, 0);
 		return false;
 	}
 
-	public boolean currentlyOvertaking() {
+	public boolean vesselToTheRight() {
 
-		// Find neighbors
-		Bag neighbors = elbe.vesselGrid.getNeighborsWithinDistance(currentPosition, getLength()/100*15);
+		Bag neighbors = elbe.vesselGrid.getAllObjects();
+		double observationRadius = getWidth()*2;
+		double observationRadiusX = getLength()/100*15;
 
-		// Check neighbors
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
-			if (nearVessel == this) break;
-			Double2D targetPoint = new Double2D(0, -getWidth()).rotate(currentYaw).rotate(1.5708);
-			if (nearVessel.shape.intersects(targetPoint.x, targetPoint.y, getLength()/100*15, getWidth())) {
-				return true;
+			if (nearVessel != this && nearVessel != null && nearVessel.currentPosition != null) {
+				if (nearVessel.currentPosition.y - currentPosition.y > 0 && nearVessel.currentPosition.y - currentPosition.y < observationRadius
+						&& Math.abs(nearVessel.currentPosition.x - currentPosition.x) < observationRadiusX) {
+					this.paint = new Color(0, 255, 0);
+					return true;
+				}
 			}
 		}
+		this.paint = new Color(255, 255, 0);
 		return false;
 	}
 
@@ -286,10 +183,10 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		// Look for land (half a ship width)
 		Double2D minRefPoint = currentPosition.add(new Double2D(0, -getWidth()).rotate(yaw).rotate(1.5708));
 		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.1).rotate(yaw).rotate(1.5708));
-		if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || nearDangerousNeighbors()) {
+		if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || vesselInFront()) {
 			// Too near to land
 			yaw -= 0.785398; // 45 deg, turn left
-		} else if (elbe.elbeMap.get((int) Math.round(maxRefPoint.x), (int) Math.round(maxRefPoint.y)) == 1 && !currentlyOvertaking()) {
+		} else if (elbe.elbeMap.get((int) Math.round(maxRefPoint.x), (int) Math.round(maxRefPoint.y)) == 1 && !vesselToTheRight()) {
 			// No land in sight
 			yaw += 0.785398; // 45 deg, turn right
 		}
