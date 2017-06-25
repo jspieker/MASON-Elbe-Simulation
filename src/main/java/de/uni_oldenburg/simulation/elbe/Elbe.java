@@ -25,7 +25,9 @@ public class Elbe extends SimState {
 	private final int MARGIN = 25;
 
 	private DynamicWaterLevel dynamicWaterLevel;
-	private int depthOfWaterBelowCD = 15; // sample value
+	private final double DEPTH_REGULAR = 16.98;
+	private final double DEPTH_DEEPENED = 17.4;
+	private double depthOfWaterBelowCD = DEPTH_REGULAR;
 	private boolean isTideActive = true;
 
 
@@ -264,7 +266,7 @@ public class Elbe extends SimState {
 
 	// Geter and Setter
 
-	public int getDepthOfWaterBelowCD() {
+	public double getDepthOfWaterBelowCD() {
 		return depthOfWaterBelowCD;
 	}
 
@@ -278,6 +280,11 @@ public class Elbe extends SimState {
 
 	public void setDeepened(boolean deepened) {
 		isDeepened = deepened;
+		if (isDeepened) {
+			depthOfWaterBelowCD = DEPTH_DEEPENED;
+		} else {
+			depthOfWaterBelowCD = DEPTH_REGULAR;
+		}
 	}
 
 	public boolean getIsExtended() {
