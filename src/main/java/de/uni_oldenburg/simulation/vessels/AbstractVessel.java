@@ -11,6 +11,7 @@ import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 /**
  * The AbstractVessel combines the properties of all vessels
@@ -26,6 +27,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	private double targetSpeed;
 	private double currentSpeed;
+	public double currentYaw;
 	private Double2D currentPosition;
 
 	Elbe elbe;
@@ -109,10 +111,11 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		// TODO: dynamically adopt speed (with respect to vessel weight)
 		currentSpeed = getTargetSpeed();
+		currentYaw = getTargetYaw();
 
 		// Transform km/h to 100m/min, calculate new position
 		Double2D forwardMotion = new Double2D(0, -currentSpeed / 6.0); // course north (0 deg)
-		forwardMotion = forwardMotion.rotate(getTargetYaw());
+		forwardMotion = forwardMotion.rotate(currentYaw);
 		Double2D newPosition = currentPosition.add(forwardMotion);
 
 		elbe.vesselGrid.setObjectLocation(this, newPosition);
@@ -228,6 +231,42 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		return positionNew;
 	}
 
+	public boolean nearDangerousNeighbors() {
+
+		// Find neighbors
+		Bag neighbors = elbe.vesselGrid.getNeighborsWithinDistance(currentPosition, getLength()/100*15);
+
+		// Check neighbors
+		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
+			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
+			if (nearVessel == this) break;
+			Double2D targetPoint = new Double2D(0, -getLength()/100*7.5).rotate(currentYaw);
+			Rectangle2D dangerZone = this.shape.getBounds2D();
+			dangerZone.add(targetPoint.x, targetPoint.y);
+			if (nearVessel.shape.intersects(dangerZone)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean currentlyOvertaking() {
+
+		// Find neighbors
+		Bag neighbors = elbe.vesselGrid.getNeighborsWithinDistance(currentPosition, getLength()/100*15);
+
+		// Check neighbors
+		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
+			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
+			if (nearVessel == this) break;
+			Double2D targetPoint = new Double2D(0, -getWidth()).rotate(currentYaw).rotate(1.5708);
+			if (nearVessel.shape.intersects(targetPoint.x, targetPoint.y, getLength()/100*15, getWidth())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Get the best yaw according to the destination and the current environment
 	 *
@@ -237,41 +276,24 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		double yaw;
 
-		Bag neighbors = elbe.vesselGrid.getNeighborsWithinDistance(currentPosition, getLength());
-
-		// Check neighbors
-		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
-			AbstractVessel vessel = (AbstractVessel) neighbors.get(neighborId);
-			//if (vessel)
-		}
-
+		// Normal yaw (without obstructions)
 		if (directionHamburg) {
-			// look forward
-			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y + getWidth())) == 0) {
-				// near to coast (< half ship width)
-				yaw = 0.785398; // 45 deg, turn left
-			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y + getWidth() * 1.1)) == 0) {
-				// just about right
-				yaw = 1.5708; // 90 deg
-			} else {
-				// off coast (> 1 ship width), turn right
-				yaw = 2.35619; // 135 deg
-			}
-			return yaw;
+			yaw = 1.5708; // 90 deg
 		} else {
-			// look forward
-			if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y - getWidth())) == 0) {
-				// near to coast (< half ship width), turn left
-				yaw = 3.92699; // 225 deg
-			} else if (elbe.elbeMap.get((int) Math.ceil(currentPosition.x), (int) Math.ceil(currentPosition.y - getWidth() * 1.1)) == 0) {
-				// just about right
-				yaw = 4.71239; // 270 deg
-			} else {
-				// off coast (> 1 ship width), turn right
-				yaw = 5.49779; // 135 deg
-			}
-			return yaw;
+			yaw = 4.71239; // 270 deg
 		}
 
+		// Look for land (half a ship width)
+		Double2D minRefPoint = currentPosition.add(new Double2D(0, -getWidth()).rotate(yaw).rotate(1.5708));
+		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.1).rotate(yaw).rotate(1.5708));
+		if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || nearDangerousNeighbors()) {
+			// Too near to land
+			yaw -= 0.785398; // 45 deg, turn left
+		} else if (elbe.elbeMap.get((int) Math.round(maxRefPoint.x), (int) Math.round(maxRefPoint.y)) == 1 && !currentlyOvertaking()) {
+			// No land in sight
+			yaw += 0.785398; // 45 deg, turn right
+		}
+
+		return yaw;
 	}
 }
