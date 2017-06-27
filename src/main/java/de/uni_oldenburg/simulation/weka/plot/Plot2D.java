@@ -1,4 +1,4 @@
-package de.uni_oldenburg.simulation.WEKA.Plot;
+package de.uni_oldenburg.simulation.weka.plot;
 
 import weka.core.Instances;
 import weka.gui.beans.ModelPerformanceChart;

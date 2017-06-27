@@ -1,4 +1,4 @@
-package de.uni_oldenburg.simulation.WEKA.Plot;
+package de.uni_oldenburg.simulation.weka.plot;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

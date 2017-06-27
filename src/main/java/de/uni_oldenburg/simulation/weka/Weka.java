@@ -1,6 +1,6 @@
-package de.uni_oldenburg.simulation.WEKA;
+package de.uni_oldenburg.simulation.weka;
 
-import de.uni_oldenburg.simulation.WEKA.Plot.Plot;
+import de.uni_oldenburg.simulation.weka.plot.Plot;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 
@@ -10,10 +10,10 @@ import java.io.IOException;
 /**
  * {@link weka.Run} wrapper.
  *
- * @see CollisionWEKA
- * @see WaterLevelWEKA
+ * @see CollisionWeka
+ * @see WaterLevelWeka
  */
-public abstract class WEKA {
+public abstract class Weka {
 
 	Instances instances;
 
@@ -25,7 +25,7 @@ public abstract class WEKA {
 
 	int fileNumberCounter;
 
-	public WEKA(String path, String WEKAname) {
+	public Weka(String path, String WEKAname) {
 		arffSaver = new ArffSaver();
 		prepareWEKAEntry();
 		arffSaver.setInstances(instances);

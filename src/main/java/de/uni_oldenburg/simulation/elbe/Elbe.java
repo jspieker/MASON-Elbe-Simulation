@@ -1,7 +1,7 @@
 package de.uni_oldenburg.simulation.elbe;
 
-import de.uni_oldenburg.simulation.WEKA.CollisionWEKA;
-import de.uni_oldenburg.simulation.WEKA.WaterLevelWEKA;
+import de.uni_oldenburg.simulation.weka.CollisionWeka;
+import de.uni_oldenburg.simulation.weka.WaterLevelWeka;
 import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
 import de.uni_oldenburg.simulation.vessels.*;
 import sim.field.continuous.Continuous2D;
@@ -43,21 +43,21 @@ public class Elbe extends SimState {
 	private final int SEA_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
 
-	private Observer obs;
 	private int numContainerShip = 0;
 	private int numContainerShipSinceLastMeasurement = 0;
 	private int numTankerShip = 0;
 	private int numTankerShipSinceLastMeasurement = 0;
-	private int numOtherShip = 0; // TODO change name?
+	private int numOtherShip = 0;
 	private int numOtherShipSinceLastMeasurement = 0;
+	private int collisionCount = 0;
 
 
-	// WEKA
-	private WaterLevelWEKA waterLevelWEKA;
-	private CollisionWEKA collisionWEKA;
+	// weka
+	private WaterLevelWeka waterLevelWEKA;
+	private CollisionWeka collisionWEKA;
 
-	private final long highTidePeriod = 19670 / 60;
-	private final long lowTidePeriod = 24505 / 60;
+	private final long HIGHT_TIDE_PERIOD = 19670 / 60;
+	private final long LOW_TIDE_PERIOD = 24505 / 60;
 
 	public Elbe(long seed) {
 		super(seed);
@@ -80,7 +80,7 @@ public class Elbe extends SimState {
 		super.start(); // clear out the schedule
 
 		// Get some water
-		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, highTidePeriod, lowTidePeriod, true, isTideActive);
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, HIGHT_TIDE_PERIOD, LOW_TIDE_PERIOD, true, isTideActive);
 
 		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
@@ -90,17 +90,15 @@ public class Elbe extends SimState {
 				for (int y = 0; y < gridHeight; y++) {
 					tidesMap.set(x, y, waterLevel);
 				}
-				// WEKA entries
+				// weka entries
 				if (x % 10 == 0)
 					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
-			// WEKA entries
-			if (schedule.getSteps() == 0 || schedule.getSteps() % (highTidePeriod + lowTidePeriod) == 0) {
+			// weka entries
+			if (schedule.getSteps() == 0 || schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), isDeepened(),
 						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
-						numOtherShip + numOtherShipSinceLastMeasurement, obs.getAlmostCollision(), obs.getCollision()});
-				System.out.println(numContainerShip + " " + numContainerShipSinceLastMeasurement + " " + numTankerShip + " " + numTankerShipSinceLastMeasurement + " " +
-						numOtherShip + " " + numOtherShipSinceLastMeasurement);
+						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, collisionCount});
 				numContainerShipSinceLastMeasurement = 0;
 				numTankerShipSinceLastMeasurement = 0;
 				numOtherShipSinceLastMeasurement = 0;
@@ -109,9 +107,7 @@ public class Elbe extends SimState {
 
 		vesselGrid.clear();
 
-		obs = new Observer(this);
-
-		// Dynamically spawn new customers
+		// Dynamically spawn new vessels
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
 
 			// Spawn vessels coming from sea
@@ -133,11 +129,11 @@ public class Elbe extends SimState {
 	}
 
 	private boolean newShipArrivedFromSea() {
-		return random.nextBoolean(0.1);
+		return random.nextBoolean(0.02);
 	}
 
 	private boolean newShipArrivedFromDocks() {
-		return random.nextBoolean(0.1);
+		return random.nextBoolean(0.02);
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
@@ -146,9 +142,9 @@ public class Elbe extends SimState {
 
 		// Configure the propabilities for some vessel types
 		if (randomValue < 0.5) {
-			return new ContainerShip(directionHamburg, obs);
+			return new ContainerShip(directionHamburg);
 		} else {
-			return new Tanker(directionHamburg, obs);
+			return new Tanker(directionHamburg);
 		}
 	}
 
@@ -161,7 +157,6 @@ public class Elbe extends SimState {
 		collisionWEKA.writeWEKAEntries();
 		waterLevelWEKA.plotWEKAEntries();
 		collisionWEKA.plotWEKAEntries();
-		System.out.println("Beinahe Zusammenstöße: " + obs.getAlmostCollision() + " Zusammenstöße: " + obs.getCollision());
 	}
 
 	/**
@@ -196,9 +191,6 @@ public class Elbe extends SimState {
 					}
 					tempTopIndex++;
 					tempBottomIndex -= 2;
-				} else if (tempWidthHelper < 0) {
-					// Draw transitions if the following elbeSection is wider than the previous one
-					System.out.println("Das hier wird nicht ausgeführt, da MASON mit veränderten Variablen nicht klarkommt"); // TODO
 				}
 			}
 			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
@@ -244,8 +236,8 @@ public class Elbe extends SimState {
 	}
 
 	public void initWEKA(final String WEKAPath) {
-		waterLevelWEKA = new WaterLevelWEKA(WEKAPath);
-		collisionWEKA = new CollisionWEKA(WEKAPath);
+		waterLevelWEKA = new WaterLevelWeka(WEKAPath);
+		collisionWEKA = new CollisionWeka(WEKAPath);
 	}
 
 	public void increaseShipCount(AbstractVessel vessel) {
