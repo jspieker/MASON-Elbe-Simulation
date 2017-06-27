@@ -14,7 +14,7 @@ import java.awt.*;
 public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
 
 	// Properties
-	final private double weight;
+	final private double draught;
 	final private double length;
 	final private double width;
 	final private boolean directionHamburg;
@@ -38,15 +38,15 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		super(new double[]{-length / 2.0 / 100.0, length / 4.0 / 100.0, length / 2.0 / 100.0, length / 4.0 / 100.0, -length / 2.0 / 100.0}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
-		this.weight = weight;
+		this.draught = weight;
 		this.length = length;
 		this.width = width;
 		this.targetSpeed = targetSpeed;
 		this.directionHamburg = directionHamburg;
 	}
 
-	public double getWeight() {
-		return weight;
+	public double getDraught() {
+		return draught;
 	}
 
 	public double getLength() {

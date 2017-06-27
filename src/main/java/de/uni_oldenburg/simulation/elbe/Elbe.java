@@ -141,155 +141,149 @@ public class Elbe extends SimState {
 		double randomValue = random.nextDouble();
 		double randomVesselType = random.nextDouble(false,true) * 100;
 		
-		double weight, length, width, targetSpeed;
+		double draught, length, width, targetSpeed;
 
 		// Configure the propabilities for some vessel types
 		//Tanker oder Cargo
 		/* Cargo
-		 * 3x 	400x60 3%
-		 * 10x 	365x50 10%
-		 * 16x 	300x30 17%
-		 * 18x 	210x30 19%
-		 * 21x	155x25 22%
-		 * 24x	110x17 26%
+		 * 3x 	16x400x60 	22kn 3%
+		 * 10x 	15.5x365x50 24kn 10%
+		 * 16x 	15x300x30	24kn 17%
+		 * 18x 	15x210x30	14kn 19%
+		 * 21x	10x155x25	 	 22%
+		 * 24x	6x110x17 	13kn26%
 		 * 
-		 * Tanker
-		 * 1x 250x45 4%
-		 * 3x 180x29 12%
-		 * 3x 138x21 12%
-		 * 7x 117x17 28%
-		 * 6x 100x16 24%
-		 * 5x 70x12 20%
+		
 		 */
 		
 		if (randomValue < 0.79) {//79% of Vessels are Cargos
 			
-			weight = 100;
+			draught = 16;
 			
 			length = 400;
 			
 			width = 60;
 			
-			targetSpeed = 10;
+			targetSpeed = 35;
 			
 			if (3 < randomVesselType & randomVesselType <= 13) {
-				weight = 100;
+				draught = 15;
 				
 				length = 365;
 				
 				width = 50;
 				
-				targetSpeed = 10;
+				targetSpeed = 39;
 				
 			}else if(13 < randomVesselType & randomVesselType <= 30){
 
-				weight = 100;
+				draught = 15;
 				
 				length = 300;
 				
 				width = 30;
 				
-				targetSpeed = 10;
+				targetSpeed = 39;
 			}else if(30 < randomVesselType & randomVesselType <= 49){
 
-				weight = 100;
+				draught = 15;
 				
 				length = 210;
 				
 				width = 30;
 				
-				targetSpeed = 10;
+				targetSpeed = 24;
 			}else if(49 < randomVesselType & randomVesselType <= 71 ){
 
-				weight = 100;
+				draught = 10;
 				
 				length = 155;
 				
 				width = 25;
 				
-				targetSpeed = 10;
+				targetSpeed = 22;
 			}else if(71 < randomVesselType){
 
-				weight = 100;
+				draught = 6;
 				
 				length = 110;
 				
 				width = 17;
 				
-				targetSpeed = 10;
+				targetSpeed = 20;
 			}
 			
-			return new ContainerShip(weight, length, width, targetSpeed,directionHamburg);
+			return new ContainerShip(draught, length, width, targetSpeed,directionHamburg);
 			
 		} else {
 			/*
-			Tanker
-			 * 1x 250x45 4%
-			 * 3x 180x29 12%
-			 * 3x 138x21 12%
-			 * 7x 117x17 28%
-			 * 6x 100x16 24%
-			 * 5x 70x12 20%
+			 * Tanker
+			 * 1x 8x250x45		13kn 4%
+			 * 3x 12x180x29 	15kn 12%
+			 * 3x 6x138x21 		10kn 12%
+			 * 7x 6x117x17 		15kn 28%
+			 * 6x 7x100x16 		13kn 24%
+			 * 5x 4x70x12 		12kn 20%
 			 * */
 
-			weight = 100;
+			draught = 8;
 			
 			length = 250;
 			
 			width = 45;
 			
-			targetSpeed = 10;
+			targetSpeed = 20;
 				
 			if (4 < randomVesselType & randomVesselType <= 16) {
 
-				weight = 100;
+				draught = 12;
 				
 				length = 180;
 				
 				width = 29;
 				
-				targetSpeed = 10;
+				targetSpeed = 24;
 				
 			}else if(16 < randomVesselType & randomVesselType <= 28){
 
-				weight = 100;
+				draught = 6;
 				
 				length = 138;
 				
 				width = 21;
 				
-				targetSpeed = 10;
+				targetSpeed = 16;
 			}else if(28 < randomVesselType & randomVesselType <= 56){
 
-				weight = 100;
+				draught = 6;
 				
 				length = 117;
 				
 				width = 17;
 				
-				targetSpeed = 10;
+				targetSpeed = 24;
 				
 			}else if(56 < randomVesselType & randomVesselType <= 80){
 
-				weight = 100;
+				draught = 7;
 				
 				length = 100;
 				
 				width = 16;
 				
-				targetSpeed = 10;
+				targetSpeed = 20;
 			}else if(80 < randomVesselType){
 
-				weight = 100;
+				draught = 4;
 				
 				length = 70;
 				
 				width = 12;
 				
-				targetSpeed = 10;
+				targetSpeed = 19;
 			}
 			
-			return new Tanker(weight, length, width, targetSpeed,directionHamburg);
+			return new Tanker(draught, length, width, targetSpeed,directionHamburg);
 		}
 	}
 
