@@ -21,3 +21,5 @@ out/*
 /Scratchbook.jpage
 /.classpath
 /.project
+/src/
+/target/
