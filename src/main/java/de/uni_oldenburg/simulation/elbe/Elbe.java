@@ -60,10 +60,13 @@ public class Elbe extends SimState {
 	private final long HIGHT_TIDE_PERIOD = 19670 / 60;
 	private final long LOW_TIDE_PERIOD = 24505 / 60;
 
+	private static boolean RAN = false;
+
 
 	public Elbe(long seed) {
 		super(seed);
 
+		System.out.println("Elbe");
 		calculateInitialValues();
 
 		// Initialize empty grids
@@ -75,10 +78,23 @@ public class Elbe extends SimState {
 		drawObjects();
 	}
 
+	private ElbeWithUI elbeWithUI;
+
+	public void setElbeWithUI(ElbeWithUI elbeWithUI) {
+		this.elbeWithUI = elbeWithUI;
+
+	}
+
 	/**
 	 * Start the simulation
 	 */
 	public void start() {
+		System.out.println("start");
+		if (RAN) {
+			elbeWithUI.setupPortrayals();
+		} else {
+			RAN = true;
+		}
 		super.start(); // clear out the schedule
 
 		// Get some water
@@ -153,8 +169,8 @@ public class Elbe extends SimState {
 	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
+		System.out.println("finish");
 		super.finish();
-
 		if (evaluate) {
 			waterLevelWEKA.writeWEKAEntries();
 			collisionWEKA.writeWEKAEntries();
@@ -167,6 +183,7 @@ public class Elbe extends SimState {
 	 * Draws the Elbe, the boat spawn area and the Hamburg dockyard onto the simulation map
 	 */
 	private void drawObjects() {
+		System.out.println("drawObjects");
 
 		// Init Elbe area
 		int tempLengthHelper = 0;
@@ -220,6 +237,7 @@ public class Elbe extends SimState {
 	 * Calculates the initial distances, the grid dimensions and the source/target point based on their relation and the given values
 	 */
 	private void calculateInitialValues() {
+		System.out.println("CalculateInitialValues");
 		// fairwayWidthMax
 		for (int width : FAIRWAY_WIDTH) {
 			if (width > fairwayWidthMax) {
