@@ -22,10 +22,9 @@ public class Plot2D implements Plot {
 				jf.dispose();
 			}
 		});
-		jf.setSize(800, 600);
+		jf.setSize(width, height);
 		weka.gui.visualize.Plot2D plot2D = new weka.gui.visualize.Plot2D();
 		plot2D.setInstances(instances);
-
 		final ModelPerformanceChart as = new ModelPerformanceChart();
 		PlotData2D pd = new PlotData2D(instances);
 		pd.setPlotName(instances.relationName());
@@ -35,4 +34,5 @@ public class Plot2D implements Plot {
 
 		jf.setVisible(true);
 	}
+
 }

@@ -32,7 +32,6 @@ public class Elbe extends SimState {
 
 
 	private boolean isExtended = false;
-	private boolean isDeepened = false;
 	private int fairwayLengthTotal;
 	private int fairwayWidthMax;
 	private int spawnPositionX;
@@ -52,12 +51,15 @@ public class Elbe extends SimState {
 	private int collisionCount = 0;
 
 
-	// weka
+	// WEKA
 	private WaterLevelWeka waterLevelWEKA;
 	private CollisionWeka collisionWEKA;
+	private boolean evaluate = false;
 
+	// Tide
 	private final long HIGHT_TIDE_PERIOD = 19670 / 60;
 	private final long LOW_TIDE_PERIOD = 24505 / 60;
+
 
 	public Elbe(long seed) {
 		super(seed);
@@ -96,9 +98,9 @@ public class Elbe extends SimState {
 			}
 			// weka entries
 			if (schedule.getSteps() == 0 || schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
-				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(), isDeepened(),
+				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
 						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
-						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, collisionCount});
+						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount});
 				numContainerShipSinceLastMeasurement = 0;
 				numTankerShipSinceLastMeasurement = 0;
 				numOtherShipSinceLastMeasurement = 0;
@@ -153,10 +155,12 @@ public class Elbe extends SimState {
 		// TODO Auto-generated method stub
 		super.finish();
 
-		waterLevelWEKA.writeWEKAEntries();
-		collisionWEKA.writeWEKAEntries();
-		waterLevelWEKA.plotWEKAEntries();
-		collisionWEKA.plotWEKAEntries();
+		if (evaluate) {
+			waterLevelWEKA.writeWEKAEntries();
+			collisionWEKA.writeWEKAEntries();
+			waterLevelWEKA.plotWEKAEntries();
+			collisionWEKA.plotWEKAEntries();
+		}
 	}
 
 	/**
@@ -274,19 +278,6 @@ public class Elbe extends SimState {
 		depthOfWaterBelowCD = newDepth;
 	}
 
-	public boolean isDeepened() {
-		return isDeepened;
-	}
-
-	public void setDeepened(boolean deepened) {
-		isDeepened = deepened;
-		if (isDeepened) {
-			depthOfWaterBelowCD = DEPTH_DEEPENED;
-		} else {
-			depthOfWaterBelowCD = DEPTH_REGULAR;
-		}
-	}
-
 	public boolean getIsExtended() {
 		return isExtended;
 	}
@@ -295,8 +286,10 @@ public class Elbe extends SimState {
 		isExtended = newValue;
 		if (isExtended) {
 			FAIRWAY_WIDTH = FAIRWAY_WIDTH_EXTENDED;
+			depthOfWaterBelowCD = DEPTH_DEEPENED;
 		} else {
 			FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
+			depthOfWaterBelowCD = DEPTH_REGULAR;
 		}
 	}
 
@@ -358,5 +351,13 @@ public class Elbe extends SimState {
 	public void setTideActive(boolean tideActive) {
 		isTideActive = tideActive;
 		dynamicWaterLevel.setTideActive(this.isTideActive);
+	}
+
+	public boolean isEvaluate() {
+		return evaluate;
+	}
+
+	public void setEvaluate(boolean evaluate) {
+		this.evaluate = evaluate;
 	}
 }
