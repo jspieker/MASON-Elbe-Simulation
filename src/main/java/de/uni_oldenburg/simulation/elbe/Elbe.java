@@ -158,15 +158,11 @@ public class Elbe extends SimState {
 		
 		if (randomValue < 0.79) {//79% of Vessels are Cargos
 			
-			draught = 16;
-			
-			length = 400;
-			
-			width = 60;
-			
-			targetSpeed = 35;
-			
-			if (3 < randomVesselType & randomVesselType <= 13) {
+			if(randomVesselType <= 3){
+				
+				return new LargeContainer(directionHamburg);
+				
+			}else if (3 < randomVesselType & randomVesselType <= 13) {
 				draught = 15;
 				
 				length = 365;
@@ -174,6 +170,8 @@ public class Elbe extends SimState {
 				width = 50;
 				
 				targetSpeed = 39;
+				
+				return new LargeContainer(directionHamburg);
 				
 			}else if(13 < randomVesselType & randomVesselType <= 30){
 
@@ -184,6 +182,9 @@ public class Elbe extends SimState {
 				width = 30;
 				
 				targetSpeed = 39;
+				
+				return new LargeContainer(directionHamburg);
+				
 			}else if(30 < randomVesselType & randomVesselType <= 49){
 
 				draught = 15;
@@ -193,6 +194,8 @@ public class Elbe extends SimState {
 				width = 30;
 				
 				targetSpeed = 24;
+				
+				return new SmallContainer(directionHamburg);
 			}else if(49 < randomVesselType & randomVesselType <= 71 ){
 
 				draught = 10;
@@ -202,6 +205,8 @@ public class Elbe extends SimState {
 				width = 25;
 				
 				targetSpeed = 22;
+				
+				return new SmallContainer(directionHamburg);
 			}else if(71 < randomVesselType){
 
 				draught = 6;
@@ -211,9 +216,11 @@ public class Elbe extends SimState {
 				width = 17;
 				
 				targetSpeed = 20;
+				
+				return new SmallContainer(directionHamburg);
 			}
 			
-			return new ContainerShip(draught, length, width, targetSpeed,directionHamburg);
+			return new SmallContainer(directionHamburg);
 			
 		} else {
 			/*
@@ -226,6 +233,7 @@ public class Elbe extends SimState {
 			 * 5x 4x70x12 		12kn 20%
 			 * */
 
+			if(randomVesselType <= 4){
 			draught = 8;
 			
 			length = 250;
@@ -233,8 +241,10 @@ public class Elbe extends SimState {
 			width = 45;
 			
 			targetSpeed = 20;
+			
+			return new LargeTanker(directionHamburg);
 				
-			if (4 < randomVesselType & randomVesselType <= 16) {
+			}else if (4 < randomVesselType & randomVesselType <= 16) {
 
 				draught = 12;
 				
@@ -243,6 +253,8 @@ public class Elbe extends SimState {
 				width = 29;
 				
 				targetSpeed = 24;
+				
+				return new LargeTanker(directionHamburg);
 				
 			}else if(16 < randomVesselType & randomVesselType <= 28){
 
@@ -253,6 +265,9 @@ public class Elbe extends SimState {
 				width = 21;
 				
 				targetSpeed = 16;
+				
+				return new LargeTanker(directionHamburg);
+				
 			}else if(28 < randomVesselType & randomVesselType <= 56){
 
 				draught = 6;
@@ -263,6 +278,8 @@ public class Elbe extends SimState {
 				
 				targetSpeed = 24;
 				
+				return new LargeTanker(directionHamburg);
+				
 			}else if(56 < randomVesselType & randomVesselType <= 80){
 
 				draught = 7;
@@ -272,6 +289,9 @@ public class Elbe extends SimState {
 				width = 16;
 				
 				targetSpeed = 20;
+				
+				return new SmallTanker(directionHamburg);
+				
 			}else if(80 < randomVesselType){
 
 				draught = 4;
@@ -281,9 +301,11 @@ public class Elbe extends SimState {
 				width = 12;
 				
 				targetSpeed = 19;
+				
+				return new SmallTanker(directionHamburg);
 			}
 			
-			return new Tanker(draught, length, width, targetSpeed,directionHamburg);
+			return new SmallTanker(directionHamburg);
 		}
 	}
 

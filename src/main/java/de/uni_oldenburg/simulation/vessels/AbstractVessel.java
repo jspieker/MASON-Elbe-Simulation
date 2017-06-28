@@ -28,17 +28,17 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	/**
 	 * Constructor
 	 *
-	 * @param weight           Height of the vessel
+	 * @param draught           Height of the vessel
 	 * @param length           Length of the vessel
 	 * @param width            Width of the vessel
 	 * @param targetSpeed      Target speed of the vessel
 	 * @param directionHamburg True if moving towards docks, else false
 	 */
-	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg) {
+	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg) {
 
 		super(new double[]{-length / 2.0 / 100.0, length / 4.0 / 100.0, length / 2.0 / 100.0, length / 4.0 / 100.0, -length / 2.0 / 100.0}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
-		this.draught = weight;
+		this.draught = draught;
 		this.length = length;
 		this.width = width;
 		this.targetSpeed = targetSpeed;
