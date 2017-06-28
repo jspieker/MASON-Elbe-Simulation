@@ -15,7 +15,7 @@ import weka.core.Instances;
  * @see CollisionBarPlot
  * @see CollisionWithShipsBarPlot
  */
-public abstract class BarPlot extends ApplicationFrame implements Plot{
+public abstract class BarPlot extends ApplicationFrame implements Plot {
 
 	protected Instances instances;
 
@@ -37,7 +37,7 @@ public abstract class BarPlot extends ApplicationFrame implements Plot{
 				true, true, false);
 
 		ChartPanel chartPanel = new ChartPanel(barChart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+		chartPanel.setPreferredSize(new java.awt.Dimension(width, height));
 		setContentPane(chartPanel);
 
 		pack();

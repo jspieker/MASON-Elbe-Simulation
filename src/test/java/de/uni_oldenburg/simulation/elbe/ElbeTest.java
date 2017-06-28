@@ -1,6 +1,5 @@
 package de.uni_oldenburg.simulation.elbe;
 
-import de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,16 +16,17 @@ public class ElbeTest {
 	private long lowTidePeriod = 20000;
 	private int elbeLength = 507 + 230 + 230 + 200 + 48;
 
+	long seed = System.currentTimeMillis();
+
 	@Before
 	public void setUp() throws Exception {
-		long seed = System.currentTimeMillis();
 		instance = new Elbe(seed);
 		instance.initWEKA("src/main/resources/");
 	}
 
 	@After
 	public void finish() {
-		// nothing to do ...
+		instance = new Elbe(seed);
 	}
 
 	@Test
@@ -49,7 +49,6 @@ public class ElbeTest {
 
 	@Test
 	public void setAndGetIsTideActive_LowTidePassCorrectValues_confirms() throws Exception {
-
 		instance.start();
 		instance.executeStep();
 		instance.setTideActive(false);

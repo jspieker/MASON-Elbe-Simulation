@@ -55,4 +55,10 @@ public abstract class Weka {
 
 	public abstract void plotWEKAEntries();
 
+	public void resetWEKA() {
+		prepareWEKAEntry();
+		arffSaver = new ArffSaver();
+		arffSaver.setInstances(instances);
+	}
+
 }
