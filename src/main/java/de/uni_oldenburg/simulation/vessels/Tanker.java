@@ -9,7 +9,7 @@ package de.uni_oldenburg.simulation.vessels;
  */
 public class Tanker extends AbstractVessel {
 
-	public Tanker(double draught, double length, double width,double targetSpeed, boolean directionHamburg)  {
-		super(draught, length, width, targetSpeed, directionHamburg);
+	public Tanker(double draught, double length, double width,double targetSpeed, boolean directionHamburg,double humanErrorInShipLength, double scale)  {
+		super(draught, length, width, targetSpeed, directionHamburg, humanErrorInShipLength, scale);
 	}
 }

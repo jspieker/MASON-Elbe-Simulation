@@ -33,11 +33,14 @@ public class ElbeWithUI extends GUIState {
 	 */
 	public ElbeWithUI(final String WEKAPath) {
 		super(new Elbe(System.currentTimeMillis()));
-		((Elbe)this.state).initWEKA(WEKAPath);
+		((Elbe) this.state).initWEKA(WEKAPath);
+		((Elbe) this.state).setElbeWithUI(this);
 	}
 
-	public ElbeWithUI(Display2D display, JFrame jFrame) {
+	public ElbeWithUI(Display2D display, JFrame jFrame, final String WEKAPath) {
 		super(new Elbe(System.currentTimeMillis()));
+		((Elbe) this.state).initWEKA(WEKAPath);
+		((Elbe) this.state).setElbeWithUI(this);
 		this.display = display;
 		this.displayFrame = jFrame;
 	}
@@ -68,7 +71,7 @@ public class ElbeWithUI extends GUIState {
 	/**
 	 * Set up our views
 	 */
-	private void setupPortrayals() {
+	public void setupPortrayals() {
 
 		Elbe elbe = (Elbe) state;
 
@@ -81,10 +84,10 @@ public class ElbeWithUI extends GUIState {
 
 		// Set the colors for the Elbe map
 		Color[] colorMap = new Color[4];
-		colorMap[0] = new Color(203,230,163, 255); 		// landmass
-		colorMap[1] = new Color(0, 0, 0, 0);            	// transparent water (values given by tides)
-		colorMap[2] = new Color(90, 164, 255, 255); 		// water (open sea spawn point)
-		colorMap[3] = new Color(237, 65, 62, 255); 		// hamburg dockyard
+		colorMap[0] = new Color(203, 230, 163, 255);        // landmass
+		colorMap[1] = new Color(0, 0, 0, 0);                // transparent water (values given by tides)
+		colorMap[2] = new Color(90, 164, 255, 255);        // water (open sea spawn point)
+		colorMap[3] = new Color(237, 65, 62, 255);        // hamburg dockyard
 		elbePortrayal.setMap(new SimpleColorMap(colorMap));
 
 		// Map the vessels
@@ -99,6 +102,7 @@ public class ElbeWithUI extends GUIState {
 
 	/**
 	 * Load a specific state
+	 *
 	 * @param state The state to be simulated
 	 */
 	public void load(SimState state) {
@@ -109,6 +113,7 @@ public class ElbeWithUI extends GUIState {
 
 	/**
 	 * Initialize the view
+	 *
 	 * @param controller Initial controller
 	 */
 	public void init(Controller controller) {
@@ -116,7 +121,7 @@ public class ElbeWithUI extends GUIState {
 
 		// Make the Display2D. We'll have it display stuff later.
 		display = new Display2D(1200, 350, this); // At 10x510, we've got 10x10 per array position
-        display.setScale(scale);
+		display.setScale(scale);
 		displayFrame = display.createFrame();
 		controller.registerFrame(displayFrame);   // Register the frame so it appears in the "Display" list
 		displayFrame.setVisible(true);

@@ -18,6 +18,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	final private double length;
 	final private double width;
 	final private boolean directionHamburg;
+	final private double humanErrorInShipLength;
+	final private double shipScale;
 
 	private double targetSpeed;
 	private double currentSpeed;
@@ -34,15 +36,18 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 * @param targetSpeed      Target speed of the vessel
 	 * @param directionHamburg True if moving towards docks, else false
 	 */
-	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg) {
+	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
-		super(new double[]{-length / 2.0 / 100.0, length / 4.0 / 100.0, length / 2.0 / 100.0, length / 4.0 / 100.0, -length / 2.0 / 100.0}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
+
+		super(new double[]{-length / 2.0/ scale, length / 4.0/ scale, length / 2.0/ scale, length / 4.0/ scale, -length / 2.0/ scale}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
 		this.draught = draught;
 		this.length = length;
 		this.width = width;
 		this.targetSpeed = targetSpeed;
 		this.directionHamburg = directionHamburg;
+		this.humanErrorInShipLength = humanErrorInShipLength;
+		shipScale = scale;
 	}
 
 	public double getDraught() {
@@ -67,6 +72,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	/**
 	 * Move one simulation step (1 min)
+	 *
 	 * @param state The current sim state
 	 */
 	@Override
@@ -97,6 +103,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	/**
 	 * Returns the predicted position within 1 step (=1 minute) with the current speed and yaw
+	 *
 	 * @return The calculated position
 	 */
 	public Double2D getTargetPosition() {
@@ -109,12 +116,13 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	/**
 	 * Returns true if another vessels is in sight, so that this vessel has to overtake
+	 *
 	 * @return true if overtaking needed
 	 */
 	public boolean vesselInFront() {
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
-		double observationRadius = getLength()/100*15;
+		double observationRadius = getLength()/ shipScale * humanErrorInShipLength; // TODO adrian check this
 
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
@@ -128,7 +136,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 					}
 				} else {
 					if (currentPosition.x - nearVessel.currentPosition.x < observationRadius
-							&& currentPosition.x - nearVessel.currentPosition.x> 0
+							&& currentPosition.x - nearVessel.currentPosition.x > 0
 							&& currentPosition.y - nearVessel.currentPosition.y < nearVessel.getWidth() + getWidth()
 							&& nearVessel.currentPosition.y - currentPosition.y < nearVessel.getWidth() + getWidth()) {
 						return true;
@@ -141,13 +149,14 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	/**
 	 * Returns true if another vessel is to the right, so that this vessel can't go there
+	 *
 	 * @return true if starboard course is currently not possible
 	 */
 	public boolean vesselToTheRight() {
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
-		double observationRadiusY = getWidth()*2;
-		double observationRadiusX = getLength()/100*15;
+		double observationRadiusY = getWidth() * 2;
+		double observationRadiusX = getLength()/ shipScale * humanErrorInShipLength; // TODO adrian check this
 
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
@@ -172,6 +181,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 	/**
 	 * Get the best yaw according to the destination and the current environment
+	 *
 	 * @return yaw in rad from the normal yaw
 	 */
 	public double getTargetYaw() {
