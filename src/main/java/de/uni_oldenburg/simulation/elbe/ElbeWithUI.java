@@ -72,7 +72,6 @@ public class ElbeWithUI extends GUIState {
 	 * Set up our views
 	 */
 	public void setupPortrayals() {
-		System.out.println("setupPortrayals");
 
 		Elbe elbe = (Elbe) state;
 
@@ -107,7 +106,6 @@ public class ElbeWithUI extends GUIState {
 	 * @param state The state to be simulated
 	 */
 	public void load(SimState state) {
-		System.out.println("load");
 		super.load(state);
 		// we now have new grids. Set up the portrayals to reflect that
 		setupPortrayals();
@@ -119,7 +117,6 @@ public class ElbeWithUI extends GUIState {
 	 * @param controller Initial controller
 	 */
 	public void init(Controller controller) {
-		System.out.println("init");
 		super.init(controller);
 
 		// Make the Display2D. We'll have it display stuff later.
@@ -145,7 +142,6 @@ public class ElbeWithUI extends GUIState {
 	 * Quit the simulation
 	 */
 	public void quit() {
-		System.out.println("quit");
 		super.quit();
 
 		// disposing the displayFrame automatically calls quit() on the display,

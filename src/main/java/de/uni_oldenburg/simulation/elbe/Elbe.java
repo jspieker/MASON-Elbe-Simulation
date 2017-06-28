@@ -69,8 +69,6 @@ public class Elbe extends SimState {
 
 	public Elbe(long seed) {
 		super(seed);
-
-		System.out.println("Elbe");
 		renderElbe();
 	}
 
@@ -85,7 +83,6 @@ public class Elbe extends SimState {
 		numOtherShip = 0;
 		numOtherShipSinceLastMeasurement = 0;
 		collisionCount = 0;
-		System.out.println("start");
 		if (ranAlready) {
 			elbeWithUI.setupPortrayals();
 		} else {
@@ -136,7 +133,18 @@ public class Elbe extends SimState {
 				schedule.scheduleRepeating(newVessel, 1);
 				increaseShipCount(newVessel);
 			}
+
+			checkForCollision();
+
 		}, 1);
+	}
+
+	private void checkForCollision() {
+		// TODO check for collision with other ships or ships ashore
+		for (Object object : vesselGrid.getAllObjects()) {
+			AbstractVessel abstractVessel = (AbstractVessel) object;
+			System.out.println(abstractVessel.getWeight());
+		}
 	}
 
 	private boolean newShipArrivedFromSea() {
@@ -162,7 +170,6 @@ public class Elbe extends SimState {
 	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
-		System.out.println("finish");
 		if (evaluate) {
 			waterLevelWEKA.writeWEKAEntries();
 			collisionWEKA.writeWEKAEntries();
@@ -177,8 +184,6 @@ public class Elbe extends SimState {
 	 * Draws the Elbe, the boat spawn area and the Hamburg dockyard onto the simulation map
 	 */
 	private void drawObjects() {
-		System.out.println("drawObjects");
-
 		// Init Elbe area
 		int tempLengthHelper = 0;
 		int tempWidthHelper = 0;
@@ -231,7 +236,6 @@ public class Elbe extends SimState {
 	 * Calculates the initial distances, the grid dimensions and the source/target point based on their relation and the given values
 	 */
 	private void calculateInitialValues() {
-		System.out.println("CalculateInitialValues");
 		// fairwayWidthMax
 		for (int width : FAIRWAY_WIDTH) {
 			if (width > fairwayWidthMax) {
