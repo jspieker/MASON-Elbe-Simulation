@@ -12,6 +12,8 @@ import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.util.Double2D;
 
+import java.util.ArrayList;
+
 public class Elbe extends SimState {
 
 	public IntGrid2D elbeMap;
@@ -140,11 +142,63 @@ public class Elbe extends SimState {
 	}
 
 	private void checkForCollision() {
-		// TODO check for collision with other ships or ships ashore
+		ArrayList<AbstractVessel> vessels = new ArrayList<>();
+		ArrayList<AbstractVessel> toRemove = new ArrayList<>();
+		double delta = 0.5;
 		for (Object object : vesselGrid.getAllObjects()) {
 			AbstractVessel abstractVessel = (AbstractVessel) object;
-			System.out.println(abstractVessel.getWeight());
+			if (shipIsAshore(abstractVessel)) {
+				toRemove.add(abstractVessel);
+			} else {
+				vessels.add(abstractVessel);
+			}
 		}
+
+		for (AbstractVessel vessel1 : vessels) {
+			for (AbstractVessel vessel2 : vessels) {// TODO check with shape of the ship not its coordinate
+				if (vessel1 != null && vessel2 != null && vessel1.getCurrentPosition() != null && vessel2.getCurrentPosition() != null && !vessel1.equals(vessel2)
+						&& ((vessel1.getCurrentPosition().getY() >= vessel2.getCurrentPosition().getY()
+						&& vessel1.getCurrentPosition().getY() >= vessel2.getCurrentPosition().getY())
+						&& (vessel1.getCurrentPosition().getX() >= vessel2.getCurrentPosition().getX() + delta
+						&& vessel1.getCurrentPosition().getX() < vessel2.getCurrentPosition().getX() + delta))) {
+					toRemove.add(vessel1);
+					toRemove.add(vessel2);
+				}
+			}
+		}
+		for (AbstractVessel vessel : toRemove) {
+			vesselGrid.remove(vessel);
+			decreaseShipCount(vessel); // decrease from the counter
+			collisionCount++;
+			System.out.println(collisionCount);
+		}
+	}
+
+	private boolean shipIsAshore(AbstractVessel abstractVessel) {
+
+		Double2D double2D = abstractVessel.getCurrentPosition();
+		if (double2D != null) {
+			// System.out.println("Pos: " + double2D.getX() + "," +
+			double x = double2D.getX();
+			double y = double2D.getY();
+			if (x >= 0 && x <= FAIRWAY_LENGTH[0]) { // TODO check with shape of the ship not its coordinate
+				double gap = (gridHeight - FAIRWAY_WIDTH[0]) / 2;
+				if (y > FAIRWAY_WIDTH[0] + gap || y < gap) return true;
+			} else if (x > FAIRWAY_LENGTH[0] && x <= FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1]) {
+				double gap = (gridHeight - FAIRWAY_WIDTH[1]) / 2;
+				if (y > FAIRWAY_WIDTH[1] + gap || y < gap) return true;
+			} else if (x > FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] && x <= FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] + FAIRWAY_LENGTH[2]) {
+				double gap = (gridHeight - FAIRWAY_WIDTH[2]) / 2;
+				if (y > FAIRWAY_WIDTH[2] + gap || y < gap) return true;
+			} else if (x > FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] + FAIRWAY_LENGTH[2] && x <= FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] + FAIRWAY_LENGTH[2] + FAIRWAY_LENGTH[3]) {
+				double gap = (gridHeight - FAIRWAY_WIDTH[3]) / 2;
+				if (y > FAIRWAY_WIDTH[3] + gap || y < gap) return true;
+			} else { // if (x > FAIRWAY_WIDTH[3] && x <= FAIRWAY_WIDTH[4]) {
+				double gap = (gridHeight - FAIRWAY_WIDTH[4]) / 2;
+				if (y > FAIRWAY_WIDTH[4] + gap || y < gap) return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean newShipArrivedFromSea() {

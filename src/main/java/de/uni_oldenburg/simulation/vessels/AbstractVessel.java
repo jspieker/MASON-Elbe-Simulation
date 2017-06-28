@@ -39,7 +39,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 */
 	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
-		super(new double[]{-length / 2.0/ scale, length / 4.0/ scale, length / 2.0/ scale, length / 4.0/ scale, -length / 2.0/ scale}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
+		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
 		this.weight = weight;
 		this.length = length;
@@ -88,7 +88,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		if ((directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 3) ||
 				(!directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 2)) {
 			elbe.vesselGrid.remove(this);
-			// remove from the counter
+			// decrease from the counter
 			elbe.decreaseShipCount(this);
 			return;
 		}
@@ -114,6 +114,10 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		return currentPosition.add(forwardMotion);
 	}
 
+	public Double2D getCurrentPosition() {
+		return currentPosition;
+	}
+
 	/**
 	 * Returns true if another vessels is in sight, so that this vessel has to overtake
 	 *
@@ -122,7 +126,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	public boolean vesselInFront() {
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
-		double observationRadius = getLength()/ shipScale * humanErrorInShipLength; // TODO adrian check this
+		double observationRadius = getLength() / shipScale * humanErrorInShipLength; // TODO adrian check this
 
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
@@ -156,7 +160,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
 		double observationRadiusY = getWidth() * 2;
-		double observationRadiusX = getLength()/ shipScale * humanErrorInShipLength; // TODO adrian check this
+		double observationRadiusX = getLength() / shipScale * humanErrorInShipLength; // TODO adrian check this
 
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
