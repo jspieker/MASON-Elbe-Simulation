@@ -9,7 +9,7 @@ package de.uni_oldenburg.simulation.vessels;
  */
 public class ContainerShip extends AbstractVessel {
 	
-	public ContainerShip(boolean directionHamburg) {
-		super(100, 200, 30, 10, directionHamburg);
+	public ContainerShip(boolean directionHamburg, double humanErrorInShipLength, double scale) {
+		super(100, 200, 30, 10, directionHamburg, humanErrorInShipLength, scale);
 	}
 }

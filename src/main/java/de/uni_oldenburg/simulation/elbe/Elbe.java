@@ -42,6 +42,8 @@ public class Elbe extends SimState {
 	private final int SEA_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
 
+	private double humanErrorInShipLength = 15;
+
 	// WEKA
 	private WaterLevelWeka waterLevelWEKA;
 	private CollisionWeka collisionWEKA;
@@ -62,6 +64,8 @@ public class Elbe extends SimState {
 	// Auxiliary properties
 	private boolean ranAlready = false;
 	private ElbeWithUI elbeWithUI;
+	private final double elbeLengthToHamburg = 84900; // in meter
+	private double scale = 50;
 
 	public Elbe(long seed) {
 		super(seed);
@@ -105,7 +109,7 @@ public class Elbe extends SimState {
 			if (schedule.getSteps() == 0 || schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
 						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
-						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount});
+						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, humanErrorInShipLength});
 				numContainerShipSinceLastMeasurement = 0;
 				numTankerShipSinceLastMeasurement = 0;
 				numOtherShipSinceLastMeasurement = 0;
@@ -149,9 +153,9 @@ public class Elbe extends SimState {
 
 		// Configure the propabilities for some vessel types
 		if (randomValue < 0.5) {
-			return new ContainerShip(directionHamburg);
+			return new ContainerShip(directionHamburg, humanErrorInShipLength, scale);
 		} else {
-			return new Tanker(directionHamburg);
+			return new Tanker(directionHamburg, humanErrorInShipLength, scale);
 		}
 	}
 
@@ -403,5 +407,13 @@ public class Elbe extends SimState {
 
 	public void setElbeWithUI(ElbeWithUI elbeWithUI) {
 		this.elbeWithUI = elbeWithUI;
+	}
+
+	public double getHumanErrorInShipLength() {
+		return humanErrorInShipLength;
+	}
+
+	public void setHumanErrorInShipLength(double humanErrorInShipLength) {
+		this.humanErrorInShipLength = humanErrorInShipLength;
 	}
 }
