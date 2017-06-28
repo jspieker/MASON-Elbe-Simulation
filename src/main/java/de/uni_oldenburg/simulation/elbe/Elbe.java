@@ -60,7 +60,7 @@ public class Elbe extends SimState {
 	private final long LOW_TIDE_PERIOD = 24505 / 60;
 
 	// Auxiliary properties
-	private static boolean RAN = false;
+	private boolean ranAlready = false;
 	private ElbeWithUI elbeWithUI;
 
 	public Elbe(long seed) {
@@ -82,10 +82,10 @@ public class Elbe extends SimState {
 		numOtherShipSinceLastMeasurement = 0;
 		collisionCount = 0;
 		System.out.println("start");
-		if (RAN) {
+		if (ranAlready) {
 			elbeWithUI.setupPortrayals();
 		} else {
-			RAN = true;
+			ranAlready = true;
 		}
 		super.start(); // clear out the schedule
 
@@ -300,7 +300,7 @@ public class Elbe extends SimState {
 		// Initialize empty grids
 		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
 		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
-		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
+		//vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
 
 		// Draw Elbe, spawn area and dockyard to the map
 		drawObjects();
