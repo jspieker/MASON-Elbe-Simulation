@@ -20,7 +20,7 @@ public class Elbe extends SimState {
 
 	private final int[] FAIRWAY_LENGTH = {507, 230, 230, 200, 48}; // TODO find exact values in relation
 	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED = {400, 300, 250, 250, 230}; // TODO find exact values for #2 #3 #4 (#0 and #1 are correct, others mostly)
-	private final int[] FAIRWAY_WIDTH_EXTENDED = {400, 320, 380, 270, 250};
+	private final int[] FAIRWAY_WIDTH_EXTENDED = {400, 320, 380, 250, 250};
 	private int[] FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 	private final int MARGIN = 25;
 
@@ -42,53 +42,45 @@ public class Elbe extends SimState {
 	private final int SEA_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
 
-	private int numContainerShip = 0;
-	private int numContainerShipSinceLastMeasurement = 0;
-	private int numTankerShip = 0;
-	private int numTankerShipSinceLastMeasurement = 0;
-	private int numOtherShip = 0;
-	private int numOtherShipSinceLastMeasurement = 0;
-	private int collisionCount = 0;
-
-
 	// WEKA
 	private WaterLevelWeka waterLevelWEKA;
 	private CollisionWeka collisionWEKA;
 	private boolean evaluate = false;
 
+	private int numContainerShip;
+	private int numContainerShipSinceLastMeasurement;
+	private int numTankerShip;
+	private int numTankerShipSinceLastMeasurement;
+	private int numOtherShip;
+	private int numOtherShipSinceLastMeasurement;
+	private int collisionCount;
+
 	// Tide
 	private final long HIGHT_TIDE_PERIOD = 19670 / 60;
 	private final long LOW_TIDE_PERIOD = 24505 / 60;
 
+	// Auxiliary properties
 	private static boolean RAN = false;
-
+	private ElbeWithUI elbeWithUI;
 
 	public Elbe(long seed) {
 		super(seed);
 
 		System.out.println("Elbe");
-		calculateInitialValues();
-
-		// Initialize empty grids
-		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
-		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
-		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
-
-		// Draw Elbe, spawn area and dockyard to the map
-		drawObjects();
-	}
-
-	private ElbeWithUI elbeWithUI;
-
-	public void setElbeWithUI(ElbeWithUI elbeWithUI) {
-		this.elbeWithUI = elbeWithUI;
-
+		renderElbe();
 	}
 
 	/**
 	 * Start the simulation
 	 */
 	public void start() {
+		numContainerShip = 0;
+		numContainerShipSinceLastMeasurement = 0;
+		numTankerShip = 0;
+		numTankerShipSinceLastMeasurement = 0;
+		numOtherShip = 0;
+		numOtherShipSinceLastMeasurement = 0;
+		collisionCount = 0;
 		System.out.println("start");
 		if (RAN) {
 			elbeWithUI.setupPortrayals();
@@ -96,9 +88,6 @@ public class Elbe extends SimState {
 			RAN = true;
 		}
 		super.start(); // clear out the schedule
-
-		// Get some water
-		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, HIGHT_TIDE_PERIOD, LOW_TIDE_PERIOD, true, isTideActive);
 
 		// Schedule Tides
 		schedule.scheduleRepeating(Schedule.EPOCH, 1, (Steppable) (SimState state) -> {
@@ -170,13 +159,14 @@ public class Elbe extends SimState {
 	public void finish() {
 		// TODO Auto-generated method stub
 		System.out.println("finish");
-		super.finish();
 		if (evaluate) {
 			waterLevelWEKA.writeWEKAEntries();
 			collisionWEKA.writeWEKAEntries();
 			waterLevelWEKA.plotWEKAEntries();
 			collisionWEKA.plotWEKAEntries();
 		}
+		super.finish();
+		resetWEKA();
 	}
 
 	/**
@@ -262,6 +252,11 @@ public class Elbe extends SimState {
 		collisionWEKA = new CollisionWeka(WEKAPath);
 	}
 
+	public void resetWEKA() {
+		waterLevelWEKA.resetWEKA();
+		collisionWEKA.resetWEKA();
+	}
+
 	public void increaseShipCount(AbstractVessel vessel) {
 		if (vessel instanceof ContainerShip) {
 			numContainerShip++;
@@ -286,6 +281,31 @@ public class Elbe extends SimState {
 	}
 
 
+	private void renderElbe() {
+		calculateInitialValues();
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, HIGHT_TIDE_PERIOD, LOW_TIDE_PERIOD, true, isTideActive);
+
+		// Initialize empty grids
+		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
+		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
+		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
+
+		// Draw Elbe, spawn area and dockyard to the map
+		drawObjects();
+	}
+
+	private void renderElbeWithoutInit() {
+		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, HIGHT_TIDE_PERIOD, LOW_TIDE_PERIOD, true, isTideActive);
+
+		// Initialize empty grids
+		elbeMap = new IntGrid2D(gridWidth, gridHeight, 0);
+		tidesMap = new DoubleGrid2D(gridWidth, gridHeight, 0.0);
+		vesselGrid = new Continuous2D(1, gridWidth, gridHeight);
+
+		// Draw Elbe, spawn area and dockyard to the map
+		drawObjects();
+	}
+
 	// Geter and Setter
 
 	public double getDepthOfWaterBelowCD() {
@@ -309,6 +329,8 @@ public class Elbe extends SimState {
 			FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 			depthOfWaterBelowCD = DEPTH_REGULAR;
 		}
+		renderElbeWithoutInit();
+		elbeWithUI.setupPortrayals();
 	}
 
 	/**
@@ -377,5 +399,9 @@ public class Elbe extends SimState {
 
 	public void setEvaluate(boolean evaluate) {
 		this.evaluate = evaluate;
+	}
+
+	public void setElbeWithUI(ElbeWithUI elbeWithUI) {
+		this.elbeWithUI = elbeWithUI;
 	}
 }

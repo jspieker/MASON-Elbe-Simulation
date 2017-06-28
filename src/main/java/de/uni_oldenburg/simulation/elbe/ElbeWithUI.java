@@ -37,8 +37,10 @@ public class ElbeWithUI extends GUIState {
 		((Elbe) this.state).setElbeWithUI(this);
 	}
 
-	public ElbeWithUI(Display2D display, JFrame jFrame) {
+	public ElbeWithUI(Display2D display, JFrame jFrame, final String WEKAPath) {
 		super(new Elbe(System.currentTimeMillis()));
+		((Elbe) this.state).initWEKA(WEKAPath);
+		((Elbe) this.state).setElbeWithUI(this);
 		this.display = display;
 		this.displayFrame = jFrame;
 	}
