@@ -149,13 +149,14 @@ public class Elbe extends SimState {
 			AbstractVessel abstractVessel = (AbstractVessel) object;
 			if (shipIsAshore(abstractVessel)) {
 				toRemove.add(abstractVessel);
+				collisionCount++;
 			} else {
 				vessels.add(abstractVessel);
 			}
 		}
 
 		for (AbstractVessel vessel1 : vessels) {
-			for (AbstractVessel vessel2 : vessels) {// TODO check with shape of the ship not its coordinate
+			for (AbstractVessel vessel2 : vessels) {
 				double widthFromCenter1 = vessel1.getWidth() / 2 / scale;
 				double lengthFromCenter1 = vessel1.getLength() / 2 / scale;
 				double widthFromCenter2 = vessel2.getWidth() / 2 / scale;
@@ -172,14 +173,19 @@ public class Elbe extends SimState {
 					double y2LesserBound = vessel2.getCurrentPosition().getY() - widthFromCenter2;
 					double y2UpperBound = vessel2.getCurrentPosition().getY() + widthFromCenter2;
 
-					if (x1LesserBound <= x2UpperBound && x2LesserBound <= x1LesserBound
-							&& y1LesserBound <= y2UpperBound && y2LesserBound <= y1LesserBound) {
+					// TODO did I miss a case?
+					if (x1UpperBound >= x2LesserBound && x1UpperBound <= x2UpperBound
+							&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
+							|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
+							|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
+							|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // rear-end collision from hamburg
 						System.out.println("Collision with:\n" +
 								"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
 								"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
 						toRemove.add(vessel1);
 						toRemove.add(vessel2);
-					}
+						collisionCount++;
+					} // todo frontal collision
 				}
 
 
@@ -188,7 +194,6 @@ public class Elbe extends SimState {
 		for (AbstractVessel vessel : toRemove) {
 			vesselGrid.remove(vessel);
 			decreaseShipCount(vessel); // decrease from the counter
-			collisionCount++;
 			//System.out.println(collisionCount);
 		}
 	}
