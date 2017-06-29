@@ -45,6 +45,7 @@ public class Elbe extends SimState {
 	private final int DOCKYARD_POINT_ID = 3;
 
 	private double humanErrorInShipLength = 15;
+	private double securityLevelGroundToDraught = 2; // TODO is that correct?
 
 	// WEKA
 	private WaterLevelWeka waterLevelWEKA;
@@ -127,22 +128,44 @@ public class Elbe extends SimState {
 			// Spawn vessels coming from sea
 			if (newShipArrivedFromSea()) {
 				AbstractVessel newVessel = getNewVessel(true);
-				vesselGrid.setObjectLocation(newVessel, new Double2D(0, 380));
-				schedule.scheduleRepeating(newVessel, 1);
-				increaseShipCount(newVessel);
+				if (!vesselNeedsToWait(newVessel)) {
+					vesselGrid.setObjectLocation(newVessel, new Double2D(0, 380));
+					schedule.scheduleRepeating(newVessel, 1);
+					increaseShipCount(newVessel);
+				}
 			}
 
 			// Spawn vessels coming from docks
 			if (newShipArrivedFromDocks()) {
 				AbstractVessel newVessel = getNewVessel(false);
-				vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth - 1, 170));
-				schedule.scheduleRepeating(newVessel, 1);
-				increaseShipCount(newVessel);
+				if (!vesselNeedsToWait(newVessel)) {
+					vesselGrid.setObjectLocation(newVessel, new Double2D(gridWidth - 1, 170));
+					schedule.scheduleRepeating(newVessel, 1);
+					increaseShipCount(newVessel);
+				}
 			}
 
 			checkForCollision();
 
 		}, 1);
+	}
+
+	private boolean vesselNeedsToWait(AbstractVessel newVessel) {
+
+		// determine worstCaseTime
+		double averageDistanzAtStep = newVessel.getTargetSpeed() / 6.0; // TODO why 6.0?
+		double averageTimeNeeded = (double) gridWidth / averageDistanzAtStep;
+
+		for (double timeStep = 0; timeStep <= averageTimeNeeded; timeStep++) {
+			double expetedWaterLevelAtXAndTime = depthOfWaterBelowCD + dynamicWaterLevel.getFutureWaterLevelAtTimePosition((long) timeStep + schedule.getSteps(), (int) (averageDistanzAtStep * timeStep));
+			if (expetedWaterLevelAtXAndTime - securityLevelGroundToDraught < newVessel.getdraught()) {
+				System.out.println(newVessel.getClass().getSimpleName() + " needs to wait: ExpectedWaterLevel at (" + averageDistanzAtStep * timeStep + ", " + (timeStep + schedule.getSteps()) + ") (x,t) is " + expetedWaterLevelAtXAndTime + " with draught " + newVessel.getdraught() + " and securityLevel " + securityLevelGroundToDraught + " meters.");
+				waitingShipsCount++;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private void checkForCollision() {
@@ -255,7 +278,6 @@ public class Elbe extends SimState {
 
 	@Override
 	public void finish() {
-		// TODO Auto-generated method stub
 		if (evaluate) {
 			waterLevelWEKA.writeWEKAEntries();
 			collisionWEKA.writeWEKAEntries();
@@ -505,5 +527,14 @@ public class Elbe extends SimState {
 
 	public void setHumanErrorInShipLength(double humanErrorInShipLength) {
 		this.humanErrorInShipLength = humanErrorInShipLength;
+	}
+
+
+	public double getSecurityLevelGroundToDraught() {
+		return securityLevelGroundToDraught;
+	}
+
+	public void setSecurityLevelGroundToDraught(double securityLevelGroundToDraught) {
+		this.securityLevelGroundToDraught = securityLevelGroundToDraught;
 	}
 }

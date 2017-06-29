@@ -27,8 +27,9 @@ public class CollisionWeka extends Weka {
 		int numOtherShip = (int) wekaEntry[5];
 		int collisions = (int) wekaEntry[6];
 		double humanError = (double) wekaEntry[7];
+		int waitingShips = (int) wekaEntry[8];
 
-		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeExtended ? 1 : 0), numContainerShip, numTankerShip, numOtherShip, collisions, humanError};
+		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeExtended ? 1 : 0), numContainerShip, numTankerShip, numOtherShip, collisions, humanError, waitingShips};
 		DenseInstance denseInstance = new DenseInstance(1.0, rowValuesData);
 		return instances.add(denseInstance);
 	}

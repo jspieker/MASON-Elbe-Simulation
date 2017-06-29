@@ -13,7 +13,7 @@ import java.awt.*;
 public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
 
 	// Properties
-	final private double weight;
+	final private double draught;
 	final private double length;
 	final private double width;
 	final private boolean directionHamburg;
@@ -29,19 +29,19 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	/**
 	 * Constructor
 	 *
-	 * @param weight                 Height of the vessel
+	 * @param draught                Draught of the vessel
 	 * @param length                 Length of the vessel
 	 * @param width                  Width of the vessel
 	 * @param targetSpeed            Target speed of the vessel
 	 * @param directionHamburg       True if moving towards docks, else false
 	 * @param humanErrorInShipLength The human error in ship length
 	 */
-	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
+	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
 		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale},
 				new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true); // TODO why is -width added twice?
 
-		this.weight = weight;
+		this.draught = draught;
 		this.length = length;
 		this.width = width;
 		this.targetSpeed = targetSpeed;
@@ -50,8 +50,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		shipScale = scale;
 	}
 
-	public double getWeight() {
-		return weight;
+	public double getdraught() {
+		return draught;
 	}
 
 	public double getLength() {
@@ -93,7 +93,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			return;
 		}
 
-		// TODO: dynamically adopt speed (with respect to vessel weight)
+		// TODO: dynamically adopt speed (with respect to vessel draught)
 		currentSpeed = getTargetSpeed();
 		currentYaw = getTargetYaw();
 
