@@ -112,6 +112,7 @@ public class Elbe extends SimState {
 				numContainerShipSinceLastMeasurement = 0;
 				numTankerShipSinceLastMeasurement = 0;
 				numOtherShipSinceLastMeasurement = 0;
+				collisionCount = 0; // reset collisions
 			}
 		}, 1);
 
@@ -156,14 +157,24 @@ public class Elbe extends SimState {
 
 		for (AbstractVessel vessel1 : vessels) {
 			for (AbstractVessel vessel2 : vessels) {// TODO check with shape of the ship not its coordinate
-				if (vessel1 != null && vessel2 != null && vessel1.getCurrentPosition() != null && vessel2.getCurrentPosition() != null && !vessel1.equals(vessel2)
-						&& ((vessel1.getCurrentPosition().getY() >= vessel2.getCurrentPosition().getY()
-						&& vessel1.getCurrentPosition().getY() >= vessel2.getCurrentPosition().getY())
-						&& (vessel1.getCurrentPosition().getX() >= vessel2.getCurrentPosition().getX() + delta
-						&& vessel1.getCurrentPosition().getX() < vessel2.getCurrentPosition().getX() + delta))) {
-					toRemove.add(vessel1);
-					toRemove.add(vessel2);
+				double widthFromCenter1 = vessel1.getWidth() / 2;
+				double lengthFromCenter1 = vessel1.getLength() / 2;
+				double widthFromCenter2 = vessel2.getWidth() / 2;
+				double lengthFromCenter2 = vessel2.getLength() / 2;
+
+				if (vessel1.getCurrentPosition() != null && vessel2.getCurrentPosition() != null && !vessel1.equals(vessel2)) {
+					double x1 = vessel1.getCurrentPosition().getX();
+					double x2 = vessel2.getCurrentPosition().getX();
+					double y1 = vessel1.getCurrentPosition().getY();
+					double y2 = vessel2.getCurrentPosition().getY();
+					if (x1 - lengthFromCenter1 <= x2 - lengthFromCenter2 && x2 + lengthFromCenter2 <= x1 + lengthFromCenter1
+							&& y1 - widthFromCenter1 <= y2 - widthFromCenter2 && y2 + widthFromCenter2 <= y1 + widthFromCenter1) {
+						toRemove.add(vessel1);
+						toRemove.add(vessel2);
+					}
 				}
+
+
 			}
 		}
 		for (AbstractVessel vessel : toRemove) {
@@ -181,22 +192,12 @@ public class Elbe extends SimState {
 			// System.out.println("Pos: " + double2D.getX() + "," +
 			double x = double2D.getX();
 			double y = double2D.getY();
-			if (x >= 0 && x <= FAIRWAY_LENGTH[0]) { // TODO check with shape of the ship not its coordinate
-				double gap = (gridHeight - FAIRWAY_WIDTH[0]) / 2;
-				if (y > FAIRWAY_WIDTH[0] + gap || y < gap) return true;
-			} else if (x > FAIRWAY_LENGTH[0] && x <= FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1]) {
-				double gap = (gridHeight - FAIRWAY_WIDTH[1]) / 2;
-				if (y > FAIRWAY_WIDTH[1] + gap || y < gap) return true;
-			} else if (x > FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] && x <= FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] + FAIRWAY_LENGTH[2]) {
-				double gap = (gridHeight - FAIRWAY_WIDTH[2]) / 2;
-				if (y > FAIRWAY_WIDTH[2] + gap || y < gap) return true;
-			} else if (x > FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] + FAIRWAY_LENGTH[2] && x <= FAIRWAY_LENGTH[0] + FAIRWAY_LENGTH[1] + FAIRWAY_LENGTH[2] + FAIRWAY_LENGTH[3]) {
-				double gap = (gridHeight - FAIRWAY_WIDTH[3]) / 2;
-				if (y > FAIRWAY_WIDTH[3] + gap || y < gap) return true;
-			} else { // if (x > FAIRWAY_WIDTH[3] && x <= FAIRWAY_WIDTH[4]) {
-				double gap = (gridHeight - FAIRWAY_WIDTH[4]) / 2;
-				if (y > FAIRWAY_WIDTH[4] + gap || y < gap) return true;
-			}
+
+			double widthFromShipsCenter = abstractVessel.getWidth() / 2;
+			double lengthFromShipsCenter = abstractVessel.getLength() / 2;
+
+			if (elbeMap.get((int) x, (int) Math.ceil(y + widthFromShipsCenter)) == 0 || elbeMap.get((int) x, (int) Math.floor(y - widthFromShipsCenter)) == 0) // 0 is ashore
+				return true;
 		}
 		return false;
 	}

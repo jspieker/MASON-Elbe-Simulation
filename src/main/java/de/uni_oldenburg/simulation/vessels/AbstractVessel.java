@@ -2,7 +2,6 @@ package de.uni_oldenburg.simulation.vessels;
 
 import de.uni_oldenburg.simulation.elbe.Elbe;
 import sim.engine.*;
-import sim.portrayal.inspector.StableDouble2D;
 import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
@@ -39,7 +38,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 */
 	public AbstractVessel(double weight, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
-		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
+		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale},
+				new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true); // TODO why is -width added twice?
 
 		this.weight = weight;
 		this.length = length;
