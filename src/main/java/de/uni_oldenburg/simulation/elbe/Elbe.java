@@ -179,7 +179,6 @@ public class Elbe extends SimState {
 						double y2LesserBound = y2 - widthFromCenter2;
 						double y2UpperBound = y2 + widthFromCenter2;
 
-						// TODO did I miss a case?
 						if (x1UpperBound >= x2LesserBound && x1UpperBound <= x2UpperBound
 								&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
 								|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
