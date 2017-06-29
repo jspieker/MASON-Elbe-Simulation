@@ -12,6 +12,8 @@ import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.util.Double2D;
 
+import java.util.ArrayList;
+
 public class Elbe extends SimState {
 
 	public IntGrid2D elbeMap;
@@ -110,6 +112,7 @@ public class Elbe extends SimState {
 				numContainerShipSinceLastMeasurement = 0;
 				numTankerShipSinceLastMeasurement = 0;
 				numOtherShipSinceLastMeasurement = 0;
+				collisionCount = 0; // reset collisions
 			}
 		}, 1);
 
@@ -140,11 +143,91 @@ public class Elbe extends SimState {
 	}
 
 	private void checkForCollision() {
-		// TODO check for collision with other ships or ships ashore
+		ArrayList<AbstractVessel> vessels = new ArrayList<>();
+		ArrayList<AbstractVessel> toRemove = new ArrayList<>();
 		for (Object object : vesselGrid.getAllObjects()) {
 			AbstractVessel abstractVessel = (AbstractVessel) object;
-			System.out.println(abstractVessel.getWeight());
+			if (shipIsAshore(abstractVessel)) {
+				toRemove.add(abstractVessel);
+				collisionCount++;
+			} else {
+				vessels.add(abstractVessel);
+			}
 		}
+
+		for (AbstractVessel vessel1 : vessels) {
+			for (AbstractVessel vessel2 : vessels) {
+				if (!toRemove.contains(vessel1) && !toRemove.contains(vessel2)) {
+					double widthFromCenter1 = vessel1.getWidth() / 2;
+					double lengthFromCenter1 = vessel1.getLength() / 2 / scale;
+					double widthFromCenter2 = vessel2.getWidth() / 2;
+					double lengthFromCenter2 = vessel2.getLength() / 2 / scale;
+
+					if (vessel1.getCurrentPosition() != null && vessel2.getCurrentPosition() != null && !vessel1.equals(vessel2)) {
+						double x1 = vessel1.getCurrentPosition().getX();
+						double x2 = vessel2.getCurrentPosition().getX();
+						double y1 = vessel1.getCurrentPosition().getY();
+						double y2 = vessel2.getCurrentPosition().getY();
+
+						double x1LesserBound = x1 - lengthFromCenter1;
+						double x1UpperBound = x1 + lengthFromCenter1;
+						double x2LesserBound = x2 - lengthFromCenter2;
+						double x2UpperBound = x2 + lengthFromCenter2;
+
+						double y1LesserBound = y1 - widthFromCenter1;
+						double y1UpperBound = y1 + widthFromCenter1;
+						double y2LesserBound = y2 - widthFromCenter2;
+						double y2UpperBound = y2 + widthFromCenter2;
+
+						if (x1UpperBound >= x2LesserBound && x1UpperBound <= x2UpperBound
+								&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
+								|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
+								|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
+								|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // rear-end collision from wilhelmshaven
+							System.out.println("Collision with:\n" +
+									"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
+									"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
+							toRemove.add(vessel1);
+							toRemove.add(vessel2);
+							collisionCount++;
+						} else if (x1LesserBound <= x2UpperBound && x1LesserBound >= x2LesserBound
+								&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
+								|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
+								|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
+								|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // frontal collision1
+							System.out.println("Collision with:\n" +
+									"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
+									"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
+							toRemove.add(vessel1);
+							toRemove.add(vessel2);
+							collisionCount++;
+						}
+					}
+				}
+			}
+		}
+		for (AbstractVessel vessel : toRemove) {
+			vesselGrid.remove(vessel);
+			decreaseShipCount(vessel); // decrease from the counter
+			//System.out.println(collisionCount);
+		}
+	}
+
+	private boolean shipIsAshore(AbstractVessel abstractVessel) {
+
+		Double2D double2D = abstractVessel.getCurrentPosition();
+		if (double2D != null) {
+			// System.out.println("Pos: " + double2D.getX() + "," +
+			double x = double2D.getX();
+			double y = double2D.getY();
+
+			double widthFromShipsCenter = abstractVessel.getWidth() / 2;
+			double lengthFromShipsCenter = abstractVessel.getLength() / 2;
+
+			if (elbeMap.get((int) x, (int) Math.ceil(y + widthFromShipsCenter)) == 0 || elbeMap.get((int) x, (int) Math.floor(y - widthFromShipsCenter)) == 0) // 0 is ashore
+				return true;
+		}
+		return false;
 	}
 
 	private boolean newShipArrivedFromSea() {
