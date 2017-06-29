@@ -57,8 +57,9 @@ public class Elbe extends SimState {
 	private int numTankerShipSinceLastMeasurement;
 	private int numOtherShip;
 	private int numOtherShipSinceLastMeasurement;
-	private int collisionCount;
 
+	private int collisionCount;
+	private int waitingShipsCount;
 	// Tide
 	private final long HIGHT_TIDE_PERIOD = 19670 / 60;
 	private final long LOW_TIDE_PERIOD = 24505 / 60;
@@ -85,6 +86,7 @@ public class Elbe extends SimState {
 		numOtherShip = 0;
 		numOtherShipSinceLastMeasurement = 0;
 		collisionCount = 0;
+		waitingShipsCount = 0;
 		if (ranAlready) {
 			elbeWithUI.setupPortrayals();
 		} else {
@@ -108,11 +110,12 @@ public class Elbe extends SimState {
 			if (schedule.getSteps() == 0 || schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
 						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
-						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, humanErrorInShipLength});
+						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
 				numContainerShipSinceLastMeasurement = 0;
 				numTankerShipSinceLastMeasurement = 0;
 				numOtherShipSinceLastMeasurement = 0;
 				collisionCount = 0; // reset collisions
+				waitingShipsCount = 0; // reset waitingShips
 			}
 		}, 1);
 

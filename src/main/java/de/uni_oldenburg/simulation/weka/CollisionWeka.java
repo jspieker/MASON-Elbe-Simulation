@@ -45,7 +45,7 @@ public class CollisionWeka extends Weka {
 		Attribute numOtherShipAttribute = new Attribute("otherShip");
 		Attribute collisionsAttribute = new Attribute("collisions");
 		Attribute humanErrorInShipLength = new Attribute("humanError");
-
+		Attribute waitingShips = new Attribute("waitingShips");
 
 		attributes.add(timeRunAttribute);
 		attributes.add(isTideActiveAttribute);
@@ -55,6 +55,7 @@ public class CollisionWeka extends Weka {
 		attributes.add(numOtherShipAttribute);
 		attributes.add(collisionsAttribute);
 		attributes.add(humanErrorInShipLength);
+		attributes.add(waitingShips);
 
 		instances = new Instances("BarPlotValues", attributes, 10000000);
 	}
