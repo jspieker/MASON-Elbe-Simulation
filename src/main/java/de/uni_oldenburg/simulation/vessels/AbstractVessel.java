@@ -212,4 +212,12 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		return yaw;
 	}
+
+	public Shape getShape() {
+		return super.shape;
+	}
+
+	public boolean isDirectionHamburg() {
+		return directionHamburg;
+	}
 }

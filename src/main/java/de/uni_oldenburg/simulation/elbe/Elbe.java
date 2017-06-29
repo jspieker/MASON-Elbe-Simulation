@@ -157,50 +157,54 @@ public class Elbe extends SimState {
 
 		for (AbstractVessel vessel1 : vessels) {
 			for (AbstractVessel vessel2 : vessels) {
-				double widthFromCenter1 = vessel1.getWidth() / 2 / scale;
-				double lengthFromCenter1 = vessel1.getLength() / 2 / scale;
-				double widthFromCenter2 = vessel2.getWidth() / 2 / scale;
-				double lengthFromCenter2 = vessel2.getLength() / 2 / scale;
+				if (!toRemove.contains(vessel1) && !toRemove.contains(vessel2)) {
+					double widthFromCenter1 = vessel1.getWidth() / 2;
+					double lengthFromCenter1 = vessel1.getLength() / 2 / scale;
+					double widthFromCenter2 = vessel2.getWidth() / 2;
+					double lengthFromCenter2 = vessel2.getLength() / 2 / scale;
 
-				if (vessel1.getCurrentPosition() != null && vessel2.getCurrentPosition() != null && !vessel1.equals(vessel2)) {
-					double x1LesserBound = vessel1.getCurrentPosition().getX() - lengthFromCenter1;
-					double x1UpperBound = vessel1.getCurrentPosition().getX() + lengthFromCenter1;
-					double x2LesserBound = vessel2.getCurrentPosition().getX() - lengthFromCenter2;
-					double x2UpperBound = vessel2.getCurrentPosition().getX() + lengthFromCenter2;
+					if (vessel1.getCurrentPosition() != null && vessel2.getCurrentPosition() != null && !vessel1.equals(vessel2)) {
+						double x1 = vessel1.getCurrentPosition().getX();
+						double x2 = vessel2.getCurrentPosition().getX();
+						double y1 = vessel1.getCurrentPosition().getY();
+						double y2 = vessel2.getCurrentPosition().getY();
 
-					double y1LesserBound = vessel1.getCurrentPosition().getY() - widthFromCenter1;
-					double y1UpperBound = vessel1.getCurrentPosition().getY() + widthFromCenter1;
-					double y2LesserBound = vessel2.getCurrentPosition().getY() - widthFromCenter2;
-					double y2UpperBound = vessel2.getCurrentPosition().getY() + widthFromCenter2;
+						double x1LesserBound = x1 - lengthFromCenter1;
+						double x1UpperBound = x1 + lengthFromCenter1;
+						double x2LesserBound = x2 - lengthFromCenter2;
+						double x2UpperBound = x2 + lengthFromCenter2;
 
-					// TODO did I miss a case?
-					if (x1UpperBound >= x2LesserBound && x1UpperBound <= x2UpperBound
-							&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
-							|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
-							|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
-							|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // rear-end collision from wilhelmshaven
-						System.out.println("Collision with:\n" +
-								"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
-								"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
-						toRemove.add(vessel1);
-						toRemove.add(vessel2);
-						collisionCount++;
-					} else if (x1LesserBound <= x2UpperBound && x1LesserBound >= x2LesserBound
-							&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
-							|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
-							|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
-							|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // frontal collision1
-						System.out.println("Collision with:\n" +
-								"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
-								"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
-						toRemove.add(vessel1);
-						toRemove.add(vessel2);
-						collisionCount++;
-					}// todo frontal collision
+						double y1LesserBound = y1 - widthFromCenter1;
+						double y1UpperBound = y1 + widthFromCenter1;
+						double y2LesserBound = y2 - widthFromCenter2;
+						double y2UpperBound = y2 + widthFromCenter2;
 
+						// TODO did I miss a case?
+						if (x1UpperBound >= x2LesserBound && x1UpperBound <= x2UpperBound
+								&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
+								|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
+								|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
+								|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // rear-end collision from wilhelmshaven
+							System.out.println("Collision with:\n" +
+									"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
+									"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
+							toRemove.add(vessel1);
+							toRemove.add(vessel2);
+							collisionCount++;
+						} else if (x1LesserBound <= x2UpperBound && x1LesserBound >= x2LesserBound
+								&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
+								|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
+								|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
+								|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // frontal collision1
+							System.out.println("Collision with:\n" +
+									"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
+									"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
+							toRemove.add(vessel1);
+							toRemove.add(vessel2);
+							collisionCount++;
+						}
+					}
 				}
-
-
 			}
 		}
 		for (AbstractVessel vessel : toRemove) {
