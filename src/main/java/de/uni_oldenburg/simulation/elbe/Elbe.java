@@ -178,14 +178,26 @@ public class Elbe extends SimState {
 							&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
 							|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
 							|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
-							|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // rear-end collision from hamburg
+							|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // rear-end collision from wilhelmshaven
 						System.out.println("Collision with:\n" +
 								"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
 								"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
 						toRemove.add(vessel1);
 						toRemove.add(vessel2);
 						collisionCount++;
-					} // todo frontal collision
+					} else if (x1LesserBound <= x2UpperBound && x1LesserBound >= x2LesserBound
+							&& ((y2LesserBound <= y1LesserBound && y1LesserBound <= y2UpperBound)
+							|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
+							|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
+							|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) {
+						System.out.println("Collision with:\n" +
+								"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
+								"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
+						toRemove.add(vessel1);
+						toRemove.add(vessel2);
+						collisionCount++;
+					}// todo frontal collision
+
 				}
 
 
