@@ -45,7 +45,7 @@ public class Elbe extends SimState {
 	private final int DOCKYARD_POINT_ID = 3;
 
 	private double humanErrorInShipLength = 15;
-	private double securityLevelGroundToDraught = 2; // TODO is that correct?
+	private double securityLevelGroundToDraught = 2.5; // TODO is that correct?
 
 	// WEKA
 	private WaterLevelWeka waterLevelWEKA;
@@ -108,7 +108,7 @@ public class Elbe extends SimState {
 					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
 			// weka entries
-			if (schedule.getSteps() == 0 || schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
+			if (schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
 						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
 						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
@@ -157,9 +157,9 @@ public class Elbe extends SimState {
 		double averageTimeNeeded = (double) gridWidth / averageDistanzAtStep;
 
 		for (double timeStep = 0; timeStep <= averageTimeNeeded; timeStep++) {
-			double expetedWaterLevelAtXAndTime = depthOfWaterBelowCD + dynamicWaterLevel.getFutureWaterLevelAtTimePosition((long) timeStep + schedule.getSteps(), (int) (averageDistanzAtStep * timeStep));
+			double expetedWaterLevelAtXAndTime = depthOfWaterBelowCD + dynamicWaterLevel.getFutureWaterLevelAtTimePosition((long) (timeStep + schedule.getSteps()), (int) (averageDistanzAtStep * timeStep));
 			if (expetedWaterLevelAtXAndTime - securityLevelGroundToDraught < newVessel.getdraught()) {
-				System.out.println(newVessel.getClass().getSimpleName() + " needs to wait: ExpectedWaterLevel at (" + averageDistanzAtStep * timeStep + ", " + (timeStep + schedule.getSteps()) + ") (x,t) is " + expetedWaterLevelAtXAndTime + " with draught " + newVessel.getdraught() + " and securityLevel " + securityLevelGroundToDraught + " meters.");
+				//System.out.println(newVessel.getClass().getSimpleName() + " needs to wait: ExpectedWaterLevel at (" + averageDistanzAtStep * timeStep + ", " + (timeStep + schedule.getSteps()) + ") (x,t) is " + expetedWaterLevelAtXAndTime + " with SCN " + depthOfWaterBelowCD + " and draught " + newVessel.getdraught() + " and securityLevel " + securityLevelGroundToDraught + " meters.");
 				waitingShipsCount++;
 				return true;
 			}
@@ -210,9 +210,9 @@ public class Elbe extends SimState {
 								|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
 								|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
 								|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // rear-end collision from wilhelmshaven
-							System.out.println("Collision with:\n" +
-									"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
-									"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
+							//System.out.println("Collision with:\n" +
+							//		"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
+							//		"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
 							toRemove.add(vessel1);
 							toRemove.add(vessel2);
 							collisionCount++;
@@ -221,9 +221,9 @@ public class Elbe extends SimState {
 								|| (y2LesserBound <= y1UpperBound && y1UpperBound <= y2UpperBound)
 								|| (y1LesserBound <= y2LesserBound && y2LesserBound <= y1UpperBound)
 								|| (y1LesserBound <= y2UpperBound && y2UpperBound <= y1UpperBound))) { // frontal collision1
-							System.out.println("Collision with:\n" +
-									"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
-									"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
+							//System.out.println("Collision with:\n" +
+							//		"x1_less: " + x1LesserBound + ", x1_upper: " + x1UpperBound + " to x2_less: " + x2LesserBound + ", x2_upper: " + x2UpperBound + "\n" +
+							//		"y1_less: " + y1LesserBound + ", y1_upper: " + y1UpperBound + " to y2_less: " + y2LesserBound + ", y2_upper: " + y2UpperBound + "\n");
 							toRemove.add(vessel1);
 							toRemove.add(vessel2);
 							collisionCount++;
