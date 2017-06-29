@@ -27,8 +27,9 @@ public class CollisionWeka extends Weka {
 		int numOtherShip = (int) wekaEntry[5];
 		int collisions = (int) wekaEntry[6];
 		double humanError = (double) wekaEntry[7];
+		int waitingShips = (int) wekaEntry[8];
 
-		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeExtended ? 1 : 0), numContainerShip, numTankerShip, numOtherShip, collisions, humanError};
+		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeExtended ? 1 : 0), numContainerShip, numTankerShip, numOtherShip, collisions, humanError, waitingShips};
 		DenseInstance denseInstance = new DenseInstance(1.0, rowValuesData);
 		return instances.add(denseInstance);
 	}
@@ -45,7 +46,7 @@ public class CollisionWeka extends Weka {
 		Attribute numOtherShipAttribute = new Attribute("otherShip");
 		Attribute collisionsAttribute = new Attribute("collisions");
 		Attribute humanErrorInShipLength = new Attribute("humanError");
-
+		Attribute waitingShips = new Attribute("waitingShips");
 
 		attributes.add(timeRunAttribute);
 		attributes.add(isTideActiveAttribute);
@@ -55,6 +56,7 @@ public class CollisionWeka extends Weka {
 		attributes.add(numOtherShipAttribute);
 		attributes.add(collisionsAttribute);
 		attributes.add(humanErrorInShipLength);
+		attributes.add(waitingShips);
 
 		instances = new Instances("BarPlotValues", attributes, 10000000);
 	}

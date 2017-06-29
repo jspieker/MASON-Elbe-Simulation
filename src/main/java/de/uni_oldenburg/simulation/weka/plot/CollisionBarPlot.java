@@ -25,6 +25,7 @@ public class CollisionBarPlot extends BarPlot {
 			//dataset.addValue(instanceValues[5], String.valueOf(instanceValues[0]), instance.attribute(5).name()); // TODO enable other ship types
 			dataset.addValue(instanceValues[6], String.valueOf(instanceValues[0]), instance.attribute(6).name()); // numCollisions
 			dataset.addValue(instanceValues[7], String.valueOf(instanceValues[0]), instance.attribute(7).name()); // humanError
+			dataset.addValue(instanceValues[8], String.valueOf(instanceValues[0]), instance.attribute(8).name()); // ships waiting
 
 
 		}

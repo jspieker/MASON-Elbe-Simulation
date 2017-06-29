@@ -71,4 +71,8 @@ public class DynamicWaterLevel {
 		tides.setTideActive(tideActive);
 	}
 
+	public double getFutureWaterLevelAtTimePosition(long time, int xCoordinate) {
+		return tides.computeWaterLevel(time, xCoordinate);
+	}
+
 }
