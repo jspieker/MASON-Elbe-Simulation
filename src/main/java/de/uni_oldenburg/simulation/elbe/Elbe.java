@@ -72,6 +72,7 @@ public class Elbe extends SimState {
 	private ElbeWithUI elbeWithUI;
 	private final double elbeLengthToHamburg = 84900; // in meter
 	private double scale = 50;
+	private double minimumShips = 10;
 
 	public Elbe(long seed) {
 		super(seed);
@@ -112,7 +113,7 @@ public class Elbe extends SimState {
 					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
 			// weka entries
-			if (schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
+			if (schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0 && schedule.getSteps() != 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
 						numLargeContainerShips + numLargeContainerShipsSinceLastMeasurement, numSmallContainerShips + numSmallContainerShipsSinceLastMeasurement, numLargeTanker + numLargeTankerSinceLastMeasurement,
 						numSmallTanker + numSmallTankerSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
@@ -262,11 +263,11 @@ public class Elbe extends SimState {
 	}
 
 	private boolean newShipArrivedFromSea() {
-		return random.nextBoolean(0.02);
+		return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
 	}
 
 	private boolean newShipArrivedFromDocks() {
-		return random.nextBoolean(0.02);
+		return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
@@ -580,12 +581,19 @@ public class Elbe extends SimState {
 		this.humanErrorInShipLength = humanErrorInShipLength;
 	}
 
-
 	public double getSecurityLevelGroundToDraught() {
 		return securityLevelGroundToDraught;
 	}
 
 	public void setSecurityLevelGroundToDraught(double securityLevelGroundToDraught) {
 		this.securityLevelGroundToDraught = securityLevelGroundToDraught;
+	}
+
+	public double getMinimumShips() {
+		return minimumShips;
+	}
+
+	public void setMinimumShips(double minimumShips) {
+		this.minimumShips = minimumShips;
 	}
 }

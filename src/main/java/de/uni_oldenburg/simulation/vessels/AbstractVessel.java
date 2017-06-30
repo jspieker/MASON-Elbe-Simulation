@@ -26,7 +26,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	private Double2D currentPosition;
 	private Elbe elbe;
 
-	private final double speedConstant = 30.8666666664;//1 kt = 30.8666666664 m/min
+	private final double speedConstant = 30.8666666664; //1 kt = 30.8666666664 m/min
+	private final double speedScale = 1.0; // additional scale to prevent the ships from beaming through the elbe! // TODO maybe we need this scale to adapt the speed.
 
 	/**
 	 * Constructor
@@ -91,7 +92,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	public Double2D getTargetPosition() {
 
 		// Transform knots to 100m/min, calculate new position
-		Double2D forwardMotion = new Double2D(0, -currentSpeed / shipScale); // course north (0 deg)
+		Double2D forwardMotion = new Double2D(0, -currentSpeed / shipScale / speedScale); // course north (0 deg)
 		forwardMotion = forwardMotion.rotate(currentYaw);
 		return currentPosition.add(forwardMotion);
 	}
