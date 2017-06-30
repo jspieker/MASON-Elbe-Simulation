@@ -2,6 +2,7 @@ package de.uni_oldenburg.simulation.vessels;
 
 import de.uni_oldenburg.simulation.elbe.Elbe;
 import sim.engine.*;
+import sim.portrayal.Orientable2D;
 import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
@@ -10,7 +11,7 @@ import java.awt.*;
 /**
  * The AbstractVessel combines the properties of all vessels
  */
-public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
+public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable, Orientable2D {
 
 	// Properties
 	final private double draught;
@@ -81,6 +82,14 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		currentYaw = getTargetYaw();
 
 		elbe.vesselGrid.setObjectLocation(this, getTargetPosition());
+	}
+
+	public double orientation2D() {
+		return 0.7;
+	}
+
+	public void setOrientation2D(double orientation) {
+
 	}
 
 
