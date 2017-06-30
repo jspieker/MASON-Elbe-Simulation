@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel</OriginalElement>
+  <nodes>
+    <node x="1677.828696246676" y="564.0">sim.portrayal.SimplePortrayal2D</node>
+    <node x="1390.828696246676" y="643.0">de.uni_oldenburg.simulation.vessels.SmallTanker</node>
+    <node x="1728.328696246676" y="455.0">sim.portrayal.Portrayal2D</node>
+    <node x="763.4171308143916" y="643.0">de.uni_oldenburg.simulation.weka.WaterLevelWeka</node>
+    <node x="1679.828696246676" y="772.0">sim.portrayal.simple.ShapePortrayal2D</node>
+    <node x="1523.828696246676" y="643.0">de.uni_oldenburg.simulation.vessels.LargeTanker</node>
+    <node x="840.250464147725" y="346.0">javax.swing.TransferHandler.HasGetTransferHandler</node>
+    <node x="823.1671308143916" y="564.0">de.uni_oldenburg.simulation.weka.plot.Plot2D</node>
+    <node x="1317.3092679010492" y="772.0">de.uni_oldenburg.simulation.elbe.AppStarter</node>
+    <node x="499.9004641477252" y="0.0">java.awt.image.ImageObserver</node>
+    <node x="149.0" y="643.0">de.uni_oldenburg.simulation.vessels.SmallContainer</node>
+    <node x="926.1671308143916" y="564.0">de.uni_oldenburg.simulation.elbe.models.Tides</node>
+    <node x="348.6504641477252" y="158.0">java.awt.event.WindowListener</node>
+    <node x="1299.828696246676" y="564.0">sim.display.GUIState</node>
+    <node x="501.6504641477252" y="158.0">java.awt.Container</node>
+    <node x="972.5384345677157" y="772.0">de.uni_oldenburg.simulation.elbe.Elbe</node>
+    <node x="863.5364230518343" y="455.0">javax.swing.JFrame</node>
+    <node x="0.0" y="643.0">de.uni_oldenburg.simulation.vessels.LargeContainer</node>
+    <node x="574.2504641477251" y="346.0">java.awt.Frame</node>
+    <node x="1475.6009345677157" y="455.0">sim.engine.Steppable</node>
+    <node x="1429.7259345677157" y="871.0">de.uni_oldenburg.simulation.vessels.AbstractVessel</node>
+    <node x="554.6504641477252" y="237.0">java.awt.Window</node>
+    <node x="370.9640410958908" y="564.0">org.jfree.ui.ApplicationFrame</node>
+    <node x="1032.2504641477249" y="346.0">javax.swing.RootPaneContainer</node>
+    <node x="1657.828696246676" y="643.0">sim.portrayal.simple.AbstractShapePortrayal2D</node>
+    <node x="305.4004641477252" y="0.0">java.awt.MenuContainer</node>
+    <node x="1264.828696246676" y="643.0">de.uni_oldenburg.simulation.elbe.ElbeWithUI</node>
+    <node x="1022.1671308143916" y="564.0">de.uni_oldenburg.simulation.elbe.models.WaterLevel</node>
+    <node x="944.500464147725" y="158.0">javax.accessibility.Accessible</node>
+    <node x="507.9004641477252" y="79.0">java.awt.Component</node>
+    <node x="662.6671308143916" y="564.0">de.uni_oldenburg.simulation.weka.Weka</node>
+    <node x="1427.078089718501" y="0.0">java.io.Serializable</node>
+    <node x="356.1504641477252" y="79.0">java.util.EventListener</node>
+    <node x="1240.703696246676" y="455.0">sim.engine.SimState</node>
+    <node x="547.6015410958908" y="455.0">de.uni_oldenburg.simulation.weka.plot.Plot</node>
+    <node x="1735.328696246676" y="346.0">sim.portrayal.Portrayal</node>
+    <node x="620.4171308143916" y="643.0">de.uni_oldenburg.simulation.weka.CollisionWeka</node>
+    <node x="298.0" y="643.0">de.uni_oldenburg.simulation.weka.plot.BarPlot</node>
+    <node x="675.2504641477251" y="346.0">javax.swing.WindowConstants</node>
+    <node x="960.4171308143916" y="643.0">de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="de.uni_oldenburg.simulation.weka.plot.Plot2D" target="javax.swing.JFrame">
+      <point x="0.0" y="-14.5" />
+      <point x="864.6671308143916" y="534.0" />
+      <point x="895.4114230518343" y="534.0" />
+      <point x="-10.625" y="14.5" />
+    </edge>
+    <edge source="sim.portrayal.SimplePortrayal2D" target="sim.portrayal.Portrayal2D">
+      <point x="36.25" y="-14.5" />
+      <point x="1786.578696246676" y="544.0" />
+      <point x="1782.828696246676" y="544.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.ElbeWithUI" target="de.uni_oldenburg.simulation.elbe.Elbe">
+      <point x="0.0" y="14.5" />
+      <point x="1317.828696246676" y="732.0" />
+      <point x="1029.0768961061774" y="732.0" />
+      <point x="21.538461538461547" y="-14.5" />
+    </edge>
+    <edge source="sim.portrayal.Portrayal2D" target="sim.portrayal.Portrayal">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="java.awt.Window" target="java.awt.event.WindowListener">
+      <point x="-34.5" y="-14.5" />
+      <point x="566.1504641477252" y="217.0" />
+      <point x="448.4004641477252" y="217.0" />
+      <point x="33.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.weka.WaterLevelWeka" target="de.uni_oldenburg.simulation.weka.Weka">
+      <point x="-33.75" y="-14.5" />
+      <point x="797.1671308143916" y="623.0" />
+      <point x="720.4171308143916" y="623.0" />
+      <point x="19.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.weka.CollisionWeka">
+      <point x="-21.538461538461547" y="-14.5" />
+      <point x="985.9999730292543" y="732.0" />
+      <point x="651.1671308143916" y="732.0" />
+      <point x="-30.75" y="14.5" />
+    </edge>
+    <edge source="java.awt.Component" target="java.awt.image.ImageObserver">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="sim.engine.SimState" target="java.io.Serializable">
+      <point x="0.0" y="-14.5" />
+      <point x="1287.703696246676" y="59.0" />
+      <point x="1466.828089718501" y="59.0" />
+      <point x="-13.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.vessels.SmallContainer" target="de.uni_oldenburg.simulation.vessels.AbstractVessel">
+      <point x="-32.25" y="14.5" />
+      <point x="181.25" y="841.0" />
+      <point x="1456.2973631391444" y="841.0" />
+      <point x="-35.428571428571445" y="-14.5" />
+    </edge>
+    <edge source="sim.display.GUIState" target="sim.engine.SimState">
+      <point x="-23.25" y="-14.5" />
+      <point x="1323.078696246676" y="544.0" />
+      <point x="1311.203696246676" y="544.0" />
+      <point x="23.5" y="14.5" />
+    </edge>
+    <edge source="sim.portrayal.simple.ShapePortrayal2D" target="sim.portrayal.simple.AbstractShapePortrayal2D">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel" target="de.uni_oldenburg.simulation.elbe.models.Tides">
+      <point x="-57.375" y="-14.5" />
+      <point x="979.5421308143916" y="623.0" />
+      <point x="945.1671308143916" y="623.0" />
+      <point x="-19.0" y="14.5" />
+    </edge>
+    <edge source="sim.portrayal.simple.AbstractShapePortrayal2D" target="sim.portrayal.SimplePortrayal2D">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="java.awt.Frame" target="java.awt.Window">
+      <point x="27.0" y="-14.5" />
+      <point x="641.7504641477251" y="326.0" />
+      <point x="637.4504641477251" y="326.0" />
+      <point x="36.80000000000001" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.weka.WaterLevelWeka">
+      <point x="-10.769230769230717" y="-14.5" />
+      <point x="996.769203798485" y="712.0" />
+      <point x="797.1671308143916" y="712.0" />
+      <point x="-33.75" y="14.5" />
+    </edge>
+    <edge source="sim.display.GUIState" target="sim.engine.Steppable">
+      <point x="23.25" y="-14.5" />
+      <point x="1369.578696246676" y="544.0" />
+      <point x="1500.6009345677157" y="544.0" />
+      <point x="-25.0" y="14.5" />
+    </edge>
+    <edge source="java.awt.Window" target="java.awt.Component">
+      <point x="11.5" y="-14.5" />
+      <point x="612.1504641477252" y="133.0" />
+      <point x="610.5671308143919" y="133.0" />
+      <point x="46.666666666666686" y="14.5" />
+    </edge>
+    <edge source="java.awt.Frame" target="java.awt.MenuContainer">
+      <point x="-27.0" y="-14.5" />
+      <point x="587.7504641477251" y="326.0" />
+      <point x="338.1504641477252" y="326.0" />
+      <point x="-32.75" y="14.5" />
+    </edge>
+    <edge source="javax.swing.JFrame" target="javax.accessibility.Accessible">
+      <point x="16.999999999999943" y="-14.5" />
+      <point x="923.0364230518342" y="425.0" />
+      <point x="1021.750464147725" y="425.0" />
+      <point x="25.75" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.elbe.ElbeWithUI">
+      <point x="16.15384615384619" y="-14.5" />
+      <point x="1023.6922807215619" y="722.0" />
+      <point x="1282.4953629133424" y="722.0" />
+      <point x="-35.333333333333314" y="14.5" />
+    </edge>
+    <edge source="java.awt.Window" target="javax.accessibility.Accessible">
+      <point x="34.5" y="-14.5" />
+      <point x="635.1504641477252" y="217.0" />
+      <point x="970.250464147725" y="217.0" />
+      <point x="-25.75" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.vessels.LargeContainer">
+      <point x="-32.307692307692264" y="-14.5" />
+      <point x="975.2307422600236" y="752.0" />
+      <point x="96.75" y="752.0" />
+      <point x="32.25" y="14.5" />
+    </edge>
+    <edge source="java.awt.Component" target="java.io.Serializable">
+      <point x="37.333333333333314" y="-14.5" />
+      <point x="601.2337974810584" y="49.0" />
+      <point x="1440.328089718501" y="49.0" />
+      <point x="-39.75" y="14.5" />
+    </edge>
+    <edge source="sim.portrayal.SimplePortrayal2D" target="java.io.Serializable">
+      <point x="-36.25" y="-14.5" />
+      <point x="1714.078696246676" y="544.0" />
+      <point x="1717.828696246676" y="544.0" />
+      <point x="1717.828696246676" y="49.0" />
+      <point x="1519.828089718501" y="49.0" />
+      <point x="39.75" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.weka.plot.BarPlot" target="org.jfree.ui.ApplicationFrame">
+      <point x="21.5" y="-14.5" />
+      <point x="362.5" y="623.0" />
+      <point x="441.9640410958908" y="623.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.vessels.SmallTanker" target="de.uni_oldenburg.simulation.vessels.AbstractVessel">
+      <point x="28.25" y="14.5" />
+      <point x="1475.578696246676" y="821.0" />
+      <point x="1491.7259345677157" y="821.0" />
+      <point x="0.0" y="-14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.vessels.SmallTanker">
+      <point x="26.923076923076906" y="-14.5" />
+      <point x="1034.4615114907926" y="742.0" />
+      <point x="1419.078696246676" y="742.0" />
+      <point x="-28.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.vessels.LargeContainer" target="de.uni_oldenburg.simulation.vessels.AbstractVessel">
+      <point x="-32.25" y="14.5" />
+      <point x="32.25" y="851.0" />
+      <point x="1438.5830774248586" y="851.0" />
+      <point x="-53.14285714285711" y="-14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.weka.plot.BarPlot" target="de.uni_oldenburg.simulation.weka.plot.Plot">
+      <point x="-21.5" y="-14.5" />
+      <point x="319.5" y="623.0" />
+      <point x="312.1384345677159" y="623.0" />
+      <point x="312.1384345677159" y="514.0" />
+      <point x="559.1015410958908" y="514.0" />
+      <point x="-23.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.vessels.AbstractVessel" target="sim.portrayal.simple.ShapePortrayal2D">
+      <point x="53.14285714285711" y="-14.5" />
+      <point x="1544.8687917105729" y="851.0" />
+      <point x="1750.328696246676" y="851.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.vessels.LargeTanker">
+      <point x="32.307692307692264" y="-14.5" />
+      <point x="1039.8461268754081" y="752.0" />
+      <point x="1552.078696246676" y="752.0" />
+      <point x="-28.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.vessels.AbstractVessel" target="sim.engine.Steppable">
+      <point x="35.428571428571445" y="-14.5" />
+      <point x="1527.1545059962873" y="841.0" />
+      <point x="1647.328696246676" y="841.0" />
+      <point x="1647.328696246676" y="544.0" />
+      <point x="1550.6009345677157" y="544.0" />
+      <point x="25.0" y="14.5" />
+    </edge>
+    <edge source="org.jfree.ui.ApplicationFrame" target="java.awt.event.WindowListener">
+      <point x="-35.5" y="-14.5" />
+      <point x="406.4640410958908" y="504.0" />
+      <point x="327.1504641477252" y="504.0" />
+      <point x="327.1504641477252" y="217.0" />
+      <point x="381.9004641477252" y="217.0" />
+      <point x="-33.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.vessels.AbstractVessel" target="de.uni_oldenburg.simulation.elbe.Elbe">
+      <point x="-17.714285714285666" y="-14.5" />
+      <point x="1474.0116488534302" y="831.0" />
+      <point x="1007.5384345677157" y="831.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.vessels.LargeTanker" target="de.uni_oldenburg.simulation.vessels.AbstractVessel">
+      <point x="28.25" y="14.5" />
+      <point x="1608.578696246676" y="831.0" />
+      <point x="1509.4402202820015" y="831.0" />
+      <point x="17.71428571428578" y="-14.5" />
+    </edge>
+    <edge source="sim.engine.Steppable" target="java.io.Serializable">
+      <point x="0.0" y="-14.5" />
+      <point x="1525.6009345677157" y="59.0" />
+      <point x="1493.328089718501" y="59.0" />
+      <point x="13.25" y="14.5" />
+    </edge>
+    <edge source="javax.swing.JFrame" target="javax.swing.RootPaneContainer">
+      <point x="33.99999999999994" y="-14.5" />
+      <point x="940.0364230518342" y="435.0" />
+      <point x="1107.7504641477249" y="435.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel" target="de.uni_oldenburg.simulation.elbe.models.WaterLevel">
+      <point x="57.375" y="-14.5" />
+      <point x="1094.2921308143916" y="623.0" />
+      <point x="1101.6671308143916" y="623.0" />
+      <point x="26.5" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.weka.plot.Plot2D" target="de.uni_oldenburg.simulation.weka.plot.Plot">
+      <point x="-27.666666666666686" y="-14.5" />
+      <point x="837.000464147725" y="504.0" />
+      <point x="605.1015410958908" y="504.0" />
+      <point x="23.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.vessels.SmallContainer">
+      <point x="-26.923076923076906" y="-14.5" />
+      <point x="980.6153576446388" y="742.0" />
+      <point x="245.75" y="742.0" />
+      <point x="32.25" y="14.5" />
+    </edge>
+    <edge source="java.awt.Component" target="java.awt.Container">
+      <point x="28.0" y="14.5" />
+      <point x="40.0" y="-14.5" />
+    </edge>
+    <edge source="java.awt.event.WindowListener" target="java.util.EventListener">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="sim.engine.SimState">
+      <point x="10.769230769230717" y="-14.5" />
+      <point x="1018.3076653369465" y="712.0" />
+      <point x="1254.328696246676" y="712.0" />
+      <point x="1254.328696246676" y="544.0" />
+      <point x="1264.203696246676" y="544.0" />
+      <point x="-23.5" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.weka.CollisionWeka" target="de.uni_oldenburg.simulation.weka.Weka">
+      <point x="0.0" y="-14.5" />
+      <point x="-19.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.weka.WaterLevelWeka" target="de.uni_oldenburg.simulation.weka.plot.Plot2D">
+      <point x="33.75" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="java.awt.Window" target="java.awt.Container">
+      <point x="-11.5" y="-14.5" />
+      <point x="589.1504641477252" y="207.0" />
+      <point x="551.6504641477252" y="207.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="java.awt.Component" target="java.awt.MenuContainer">
+      <point x="-37.33333333333334" y="-14.5" />
+      <point x="526.5671308143918" y="59.0" />
+      <point x="403.6504641477252" y="59.0" />
+      <point x="32.75" y="14.5" />
+    </edge>
+    <edge source="javax.swing.JFrame" target="java.awt.Frame">
+      <point x="-34.00000000000006" y="-14.5" />
+      <point x="872.0364230518342" y="435.0" />
+      <point x="635.0004641477251" y="435.0" />
+      <point x="20.25" y="14.5" />
+    </edge>
+    <edge source="java.awt.Window" target="java.awt.Window">
+      <point x="-36.80000000000001" y="14.5" />
+      <point x="563.8504641477251" y="286.0" />
+      <point x="534.6504641477252" y="286.0" />
+      <point x="534.6504641477252" y="261.16666666666663" />
+      <point x="-46.0" y="9.666666666666629" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.Elbe" target="de.uni_oldenburg.simulation.elbe.models.DynamicWaterLevel">
+      <point x="5.384615384615358" y="-14.5" />
+      <point x="1012.9230499523312" y="702.0" />
+      <point x="1075.1671308143916" y="702.0" />
+      <point x="38.25" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.weka.Weka" target="de.uni_oldenburg.simulation.weka.plot.Plot">
+      <point x="0.0" y="-14.5" />
+      <point x="701.1671308143916" y="514.0" />
+      <point x="582.1015410958908" y="514.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="javax.swing.JFrame" target="javax.swing.WindowConstants">
+      <point x="-17.000000000000057" y="-14.5" />
+      <point x="889.0364230518342" y="425.0" />
+      <point x="747.7504641477251" y="425.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.ElbeWithUI" target="javax.swing.JFrame">
+      <point x="-26.5" y="-14.5" />
+      <point x="1291.328696246676" y="623.0" />
+      <point x="1289.328696246676" y="623.0" />
+      <point x="1289.328696246676" y="534.0" />
+      <point x="937.9114230518342" y="534.0" />
+      <point x="31.874999999999943" y="14.5" />
+    </edge>
+    <edge source="java.awt.Frame" target="java.awt.Frame">
+      <point x="-20.25" y="14.5" />
+      <point x="594.5004641477251" y="395.0" />
+      <point x="554.2504641477251" y="395.0" />
+      <point x="554.2504641477251" y="360.5" />
+      <point x="-40.5" y="-0.0" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.ElbeWithUI" target="sim.display.GUIState">
+      <point x="26.5" y="-14.5" />
+      <point x="1344.328696246676" y="623.0" />
+      <point x="1346.328696246676" y="623.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="java.awt.Container" target="java.awt.Component">
+      <point x="0.0" y="-14.5" />
+      <point x="551.6504641477252" y="133.0" />
+      <point x="554.5671308143919" y="133.0" />
+      <point x="-9.333333333333314" y="14.5" />
+    </edge>
+    <edge source="javax.swing.JFrame" target="javax.swing.TransferHandler.HasGetTransferHandler">
+      <point x="-5.6843418860808015E-14" y="-14.5" />
+      <point x="906.0364230518342" y="415.0" />
+      <point x="925.750464147725" y="415.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jfree.ui.ApplicationFrame" target="javax.swing.JFrame">
+      <point x="35.5" y="-14.5" />
+      <point x="477.4640410958908" y="524.0" />
+      <point x="874.1614230518343" y="524.0" />
+      <point x="-31.875" y="14.5" />
+    </edge>
+    <edge source="de.uni_oldenburg.simulation.elbe.AppStarter" target="de.uni_oldenburg.simulation.elbe.ElbeWithUI">
+      <point x="0.0" y="-14.5" />
+      <point x="1369.3092679010492" y="732.0" />
+      <point x="1353.1620295800092" y="732.0" />
+      <point x="35.33333333333337" y="14.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6131465517241379" x="623.6274165202109" y="354.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
