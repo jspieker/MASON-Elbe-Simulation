@@ -52,7 +52,7 @@ public class WekaTest {
 	@Test
 	public void CollisionWEKA_confirms() throws Exception {
 		weka = new CollisionWeka("src/test/resources/");
-		weka.addWEKAEntry(new Object[]{1L, false, true, 10, 20, 1, 10, 15.0, 4});
+		weka.addWEKAEntry(new Object[]{1L, false, true, 10, 20, 1, 15, 10, 15.0, 4});
 		weka.writeWEKAEntries();
 		//weka.plotWEKAEntries();
 	}
