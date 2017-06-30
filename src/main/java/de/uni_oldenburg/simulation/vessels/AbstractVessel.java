@@ -85,7 +85,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	}
 
 	public double orientation2D() {
-		return 0.7;
+		return 50;
 	}
 
 	public void setOrientation2D(double orientation) {
@@ -191,9 +191,9 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			yaw = 4.71239; // 270 deg
 		}
 
-		// Look for land (half a ship width)
+		// Look for land (half a ship width to one ship width)
 		Double2D minRefPoint = currentPosition.add(new Double2D(0, -getWidth()).rotate(yaw).rotate(1.5708));
-		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.1).rotate(yaw).rotate(1.5708));
+		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.5).rotate(yaw).rotate(1.5708));
 		if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || vesselInFront()) {
 			// Too near to land
 			yaw -= 0.785398; // 45 deg, turn left

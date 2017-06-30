@@ -272,18 +272,18 @@ public class Elbe extends SimState {
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
 
-		double randomValue = random.nextDouble(); // TODO next double sufficient?
+		double randomValue = random.nextDouble();
 		double randomVesselType = random.nextDouble(false, true) * 100;
 
 		if (randomValue < 0.79) { // 79% of Vessels are Cargos
-			//Tanker oder Cargo
+			//Tanker or Cargo
 			/* Cargo
 			 * 3x 	16x400x60 	22kn 3%
 			 * 10x 	15.5x365x50 24kn 10%
 			 * 16x 	15x300x30	24kn 17%
 			 * 18x 	15x210x30	14kn 19%
 			 * 21x	10x155x25	 	 22%
-			 * 24x	6x110x17 	13kn26%
+			 * 24x	6x110x17 	13kn 26%
 			 */
 			if (randomVesselType <= 3) {
 				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 16, 400, 60, 22);
