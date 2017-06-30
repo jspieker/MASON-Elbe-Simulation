@@ -2,7 +2,6 @@ package de.uni_oldenburg.simulation.vessels;
 
 import de.uni_oldenburg.simulation.elbe.Elbe;
 import sim.engine.*;
-import sim.portrayal.inspector.StableDouble2D;
 import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
@@ -27,19 +26,22 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	private Double2D currentPosition;
 	private Elbe elbe;
 
+	private final double speedConstant = 30.8666666664;//1 kt = 30.8666666664 m/min
+
 	/**
 	 * Constructor
 	 *
-	 * @param draught           Height of the vessel
-	 * @param length           Length of the vessel
-	 * @param width            Width of the vessel
-	 * @param targetSpeed      Target speed of the vessel
-	 * @param directionHamburg True if moving towards docks, else false
+	 * @param draught                Draught of the vessel
+	 * @param length                 Length of the vessel
+	 * @param width                  Width of the vessel
+	 * @param targetSpeed            Target speed of the vessel
+	 * @param directionHamburg       True if moving towards docks, else false
+	 * @param humanErrorInShipLength The human error in ship length
 	 */
 	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
-
-		super(new double[]{-length / 2.0/ scale, length / 4.0/ scale, length / 2.0/ scale, length / 4.0/ scale, -length / 2.0/ scale}, new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
+		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale},
+				new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
 		this.draught = draught;
 		this.length = length;
@@ -48,26 +50,6 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		this.directionHamburg = directionHamburg;
 		this.humanErrorInShipLength = humanErrorInShipLength;
 		shipScale = scale;
-	}
-
-	public double getDraught() {
-		return draught;
-	}
-
-	public double getLength() {
-		return length;
-	}
-
-	public double getWidth() {
-		return width;
-	}
-
-	public double getTargetSpeed() {
-		return targetSpeed;
-	}
-
-	public boolean getDirectionHamburg() {
-		return directionHamburg;
 	}
 
 	/**
@@ -88,12 +70,12 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		if ((directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 3) ||
 				(!directionHamburg && elbe.elbeMap.get((int) currentPosition.x, (int) currentPosition.y) == 2)) {
 			elbe.vesselGrid.remove(this);
-			// remove from the counter
+			// decrease from the counter
 			elbe.decreaseShipCount(this);
 			return;
 		}
 
-		// TODO: dynamically adopt speed (with respect to vessel weight)
+		// TODO: dynamically adopt speed (with respect to vessel draught)
 		currentSpeed = getTargetSpeed();
 		currentYaw = getTargetYaw();
 
@@ -108,10 +90,14 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 */
 	public Double2D getTargetPosition() {
 
-		// Transform km/h to 100m/min, calculate new position
-		Double2D forwardMotion = new Double2D(0, -currentSpeed / 6.0); // course north (0 deg)
+		// Transform knots to 100m/min, calculate new position
+		Double2D forwardMotion = new Double2D(0, -currentSpeed / shipScale); // course north (0 deg)
 		forwardMotion = forwardMotion.rotate(currentYaw);
 		return currentPosition.add(forwardMotion);
+	}
+
+	public Double2D getCurrentPosition() {
+		return currentPosition;
 	}
 
 	/**
@@ -122,7 +108,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	public boolean vesselInFront() {
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
-		double observationRadius = getLength()/ shipScale * humanErrorInShipLength; // TODO adrian check this
+		double observationRadius = getLength() / shipScale * humanErrorInShipLength; // TODO adrian check this
 
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
@@ -156,7 +142,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		Bag neighbors = elbe.vesselGrid.getAllObjects();
 		double observationRadiusY = getWidth() * 2;
-		double observationRadiusX = getLength()/ shipScale * humanErrorInShipLength; // TODO adrian check this
+		double observationRadiusX = getLength() / shipScale * humanErrorInShipLength; // TODO adrian check this
 
 		for (int neighborId = 0; neighborId < neighbors.size(); neighborId++) {
 			AbstractVessel nearVessel = (AbstractVessel) neighbors.get(neighborId);
@@ -208,4 +194,26 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		return yaw;
 	}
+
+	public double getDraught() {
+		return draught;
+	}
+
+	public double getLength() {
+		return length;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	/**
+	 * Gets the target speed in m/min. The passed knots are transformed into m/min.
+	 *
+	 * @return targetSpeed
+	 */
+	public double getTargetSpeed() {
+		return targetSpeed * speedConstant;
+	}
+
 }

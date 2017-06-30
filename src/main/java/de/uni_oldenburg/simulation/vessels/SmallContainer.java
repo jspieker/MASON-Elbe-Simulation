@@ -1,9 +1,9 @@
 package de.uni_oldenburg.simulation.vessels;
 
-public class SmallContainer extends ContainerShip{
+public class SmallContainer extends AbstractVessel {
 
-	public SmallContainer(boolean directionHamburg, double humanErrorInShipLength, double scale) {
-		super(6, 110, 17, 20, directionHamburg, humanErrorInShipLength, scale);
+	public SmallContainer(boolean directionHamburg, double humanErrorInShipLength, double scale, double draught, double length, double width, double targetSpeed) {
+		super(draught, length, width, targetSpeed, directionHamburg, humanErrorInShipLength, scale);
 		
 	}
 
