@@ -52,12 +52,14 @@ public class Elbe extends SimState {
 	private CollisionWeka collisionWEKA;
 	private boolean evaluate = false;
 
-	private int numContainerShip;
-	private int numContainerShipSinceLastMeasurement;
-	private int numTankerShip;
-	private int numTankerShipSinceLastMeasurement;
-	private int numOtherShip;
-	private int numOtherShipSinceLastMeasurement;
+	private int numLargeContainerShips;
+	private int numLargeContainerShipsSinceLastMeasurement;
+	private int numSmallContainerShips;
+	private int numSmallContainerShipsSinceLastMeasurement;
+	private int numLargeTanker;
+	private int numLargeTankerSinceLastMeasurement;
+	private int numSmallTanker;
+	private int numSmallTankerSinceLastMeasurement;
 
 	private int collisionCount;
 	private int waitingShipsCount;
@@ -80,12 +82,14 @@ public class Elbe extends SimState {
 	 * Start the simulation
 	 */
 	public void start() {
-		numContainerShip = 0;
-		numContainerShipSinceLastMeasurement = 0;
-		numTankerShip = 0;
-		numTankerShipSinceLastMeasurement = 0;
-		numOtherShip = 0;
-		numOtherShipSinceLastMeasurement = 0;
+		numLargeContainerShips = 0;
+		numLargeContainerShipsSinceLastMeasurement = 0;
+		numSmallContainerShips = 0;
+		numSmallContainerShipsSinceLastMeasurement = 0;
+		numLargeTanker = 0;
+		numLargeTankerSinceLastMeasurement = 0;
+		numSmallTanker = 0;
+		numSmallTankerSinceLastMeasurement = 0;
 		collisionCount = 0;
 		waitingShipsCount = 0;
 		if (ranAlready) {
@@ -110,11 +114,12 @@ public class Elbe extends SimState {
 			// weka entries
 			if (schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
-						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
-						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
-				numContainerShipSinceLastMeasurement = 0;
-				numTankerShipSinceLastMeasurement = 0;
-				numOtherShipSinceLastMeasurement = 0;
+						numLargeContainerShips + numLargeContainerShipsSinceLastMeasurement, numSmallContainerShips + numSmallContainerShipsSinceLastMeasurement, numLargeTanker + numLargeTankerSinceLastMeasurement,
+						numSmallTanker + numSmallTankerSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
+				numLargeContainerShipsSinceLastMeasurement = 0;
+				numSmallContainerShipsSinceLastMeasurement = 0;
+				numLargeTankerSinceLastMeasurement = 0;
+				numSmallTankerSinceLastMeasurement = 0;
 				collisionCount = 0; // reset collisions
 				waitingShipsCount = 0; // reset waitingShips
 			}
@@ -417,32 +422,31 @@ public class Elbe extends SimState {
 
 	public void increaseShipCount(AbstractVessel vessel) {
 		if (vessel instanceof LargeContainer) { // TODO add
-			numContainerShip++;
+			numLargeContainerShips++;
 		} else if (vessel instanceof SmallContainer) {
-			numContainerShip++;
+			numSmallContainerShips++;
 		} else if (vessel instanceof LargeTanker) {
-			numTankerShip++;
+			numLargeTanker++;
 		} else {
-			numTankerShip++;
+			numSmallTanker++;
 		}
 	}
 
 	public void decreaseShipCount(AbstractVessel vessel) {
 		if (vessel instanceof LargeContainer) { // TODO add
-			numContainerShip--;
-			numContainerShipSinceLastMeasurement++;
+			numLargeContainerShips--;
+			numLargeContainerShipsSinceLastMeasurement++;
 		} else if (vessel instanceof SmallContainer) {
-			numContainerShip--;
-			numContainerShipSinceLastMeasurement++;
+			numSmallContainerShips--;
+			numSmallContainerShipsSinceLastMeasurement++;
 		} else if (vessel instanceof LargeTanker) {
-			numTankerShip--;
-			numTankerShipSinceLastMeasurement++;
+			numLargeTanker--;
+			numLargeTankerSinceLastMeasurement++;
 		} else {
-			numTankerShip--;
-			numTankerShipSinceLastMeasurement++;
+			numSmallTanker--;
+			numSmallTankerSinceLastMeasurement++;
 		}
 	}
-
 
 	private void renderElbe() {
 		calculateInitialValues();
