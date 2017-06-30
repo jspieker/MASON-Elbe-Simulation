@@ -11,8 +11,8 @@ import weka.core.Instances;
  */
 public interface Plot {
 
-	int width = 1024;
-	int height = 728;
+	int width = 800;
+	int height = 600;
 
 	/**
 	 * Plots the data.

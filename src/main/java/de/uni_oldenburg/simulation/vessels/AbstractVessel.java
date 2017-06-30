@@ -26,6 +26,9 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	private Double2D currentPosition;
 	private Elbe elbe;
 
+	private final double speedConstant = 30.8666666664; //1 kt = 30.8666666664 m/min
+	private final double speedScale = 1.0; // additional scale to prevent the ships from beaming through the elbe! // TODO maybe we need this scale to adapt the speed.
+
 	/**
 	 * Constructor
 	 *
@@ -39,7 +42,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
 		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale},
-				new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true); // TODO why is -width added twice?
+				new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
 
 		this.draught = draught;
 		this.length = length;
@@ -48,26 +51,6 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		this.directionHamburg = directionHamburg;
 		this.humanErrorInShipLength = humanErrorInShipLength;
 		shipScale = scale;
-	}
-
-	public double getdraught() {
-		return draught;
-	}
-
-	public double getLength() {
-		return length;
-	}
-
-	public double getWidth() {
-		return width;
-	}
-
-	public double getTargetSpeed() {
-		return targetSpeed;
-	}
-
-	public boolean getDirectionHamburg() {
-		return directionHamburg;
 	}
 
 	/**
@@ -108,8 +91,8 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 */
 	public Double2D getTargetPosition() {
 
-		// Transform km/h to 100m/min, calculate new position
-		Double2D forwardMotion = new Double2D(0, -currentSpeed / 6.0); // course north (0 deg)
+		// Transform knots to 100m/min, calculate new position
+		Double2D forwardMotion = new Double2D(0, -currentSpeed / shipScale / speedScale); // course north (0 deg)
 		forwardMotion = forwardMotion.rotate(currentYaw);
 		return currentPosition.add(forwardMotion);
 	}
@@ -213,7 +196,25 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		return yaw;
 	}
 
-	public Shape getShape() {
-		return super.shape;
+	public double getDraught() {
+		return draught;
 	}
+
+	public double getLength() {
+		return length;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	/**
+	 * Gets the target speed in m/min. The passed knots are transformed into m/min.
+	 *
+	 * @return targetSpeed
+	 */
+	public double getTargetSpeed() {
+		return targetSpeed * speedConstant;
+	}
+
 }

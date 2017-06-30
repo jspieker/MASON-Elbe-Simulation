@@ -52,12 +52,14 @@ public class Elbe extends SimState {
 	private CollisionWeka collisionWEKA;
 	private boolean evaluate = false;
 
-	private int numContainerShip;
-	private int numContainerShipSinceLastMeasurement;
-	private int numTankerShip;
-	private int numTankerShipSinceLastMeasurement;
-	private int numOtherShip;
-	private int numOtherShipSinceLastMeasurement;
+	private int numLargeContainerShips;
+	private int numLargeContainerShipsSinceLastMeasurement;
+	private int numSmallContainerShips;
+	private int numSmallContainerShipsSinceLastMeasurement;
+	private int numLargeTanker;
+	private int numLargeTankerSinceLastMeasurement;
+	private int numSmallTanker;
+	private int numSmallTankerSinceLastMeasurement;
 
 	private int collisionCount;
 	private int waitingShipsCount;
@@ -70,6 +72,7 @@ public class Elbe extends SimState {
 	private ElbeWithUI elbeWithUI;
 	private final double elbeLengthToHamburg = 84900; // in meter
 	private double scale = 50;
+	private double minimumShips = 10;
 
 	public Elbe(long seed) {
 		super(seed);
@@ -80,12 +83,14 @@ public class Elbe extends SimState {
 	 * Start the simulation
 	 */
 	public void start() {
-		numContainerShip = 0;
-		numContainerShipSinceLastMeasurement = 0;
-		numTankerShip = 0;
-		numTankerShipSinceLastMeasurement = 0;
-		numOtherShip = 0;
-		numOtherShipSinceLastMeasurement = 0;
+		numLargeContainerShips = 0;
+		numLargeContainerShipsSinceLastMeasurement = 0;
+		numSmallContainerShips = 0;
+		numSmallContainerShipsSinceLastMeasurement = 0;
+		numLargeTanker = 0;
+		numLargeTankerSinceLastMeasurement = 0;
+		numSmallTanker = 0;
+		numSmallTankerSinceLastMeasurement = 0;
 		collisionCount = 0;
 		waitingShipsCount = 0;
 		if (ranAlready) {
@@ -108,13 +113,14 @@ public class Elbe extends SimState {
 					waterLevelWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), x, waterLevel});
 			}
 			// weka entries
-			if (schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0) {
+			if (schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0 && schedule.getSteps() != 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
-						numContainerShip + numContainerShipSinceLastMeasurement, numTankerShip + numTankerShipSinceLastMeasurement,
-						numOtherShip + numOtherShipSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
-				numContainerShipSinceLastMeasurement = 0;
-				numTankerShipSinceLastMeasurement = 0;
-				numOtherShipSinceLastMeasurement = 0;
+						numLargeContainerShips + numLargeContainerShipsSinceLastMeasurement, numSmallContainerShips + numSmallContainerShipsSinceLastMeasurement, numLargeTanker + numLargeTankerSinceLastMeasurement,
+						numSmallTanker + numSmallTankerSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
+				numLargeContainerShipsSinceLastMeasurement = 0;
+				numSmallContainerShipsSinceLastMeasurement = 0;
+				numLargeTankerSinceLastMeasurement = 0;
+				numSmallTankerSinceLastMeasurement = 0;
 				collisionCount = 0; // reset collisions
 				waitingShipsCount = 0; // reset waitingShips
 			}
@@ -153,12 +159,12 @@ public class Elbe extends SimState {
 	private boolean vesselNeedsToWait(AbstractVessel newVessel) {
 
 		// determine worstCaseTime
-		double averageDistanzAtStep = newVessel.getTargetSpeed() / 6.0; // TODO why 6.0?
+		double averageDistanzAtStep = newVessel.getTargetSpeed() / scale;
 		double averageTimeNeeded = (double) gridWidth / averageDistanzAtStep;
 
 		for (double timeStep = 0; timeStep <= averageTimeNeeded; timeStep++) {
 			double expetedWaterLevelAtXAndTime = depthOfWaterBelowCD + dynamicWaterLevel.getFutureWaterLevelAtTimePosition((long) (timeStep + schedule.getSteps()), (int) (averageDistanzAtStep * timeStep));
-			if (expetedWaterLevelAtXAndTime - securityLevelGroundToDraught < newVessel.getdraught()) {
+			if (expetedWaterLevelAtXAndTime - securityLevelGroundToDraught < newVessel.getDraught()) {
 				//System.out.println(newVessel.getClass().getSimpleName() + " needs to wait: ExpectedWaterLevel at (" + averageDistanzAtStep * timeStep + ", " + (timeStep + schedule.getSteps()) + ") (x,t) is " + expetedWaterLevelAtXAndTime + " with SCN " + depthOfWaterBelowCD + " and draught " + newVessel.getdraught() + " and securityLevel " + securityLevelGroundToDraught + " meters.");
 				waitingShipsCount++;
 				return true;
@@ -183,7 +189,7 @@ public class Elbe extends SimState {
 
 		for (AbstractVessel vessel1 : vessels) {
 			for (AbstractVessel vessel2 : vessels) {
-				if (!toRemove.contains(vessel1) && !toRemove.contains(vessel2)) {
+				if (!toRemove.contains(vessel1) || !toRemove.contains(vessel2)) { // must be or connection if three or mor hips collide
 					double widthFromCenter1 = vessel1.getWidth() / 2;
 					double lengthFromCenter1 = vessel1.getLength() / 2 / scale;
 					double widthFromCenter2 = vessel2.getWidth() / 2;
@@ -257,22 +263,64 @@ public class Elbe extends SimState {
 	}
 
 	private boolean newShipArrivedFromSea() {
-		return random.nextBoolean(0.02);
+		return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
 	}
 
 	private boolean newShipArrivedFromDocks() {
-		return random.nextBoolean(0.02);
+		return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
 
-		double randomValue = random.nextDouble();
+		double randomValue = random.nextDouble(); // TODO next double sufficient?
+		double randomVesselType = random.nextDouble(false, true) * 100;
 
-		// Configure the propabilities for some vessel types
-		if (randomValue < 0.5) {
-			return new ContainerShip(directionHamburg, humanErrorInShipLength, scale);
+		if (randomValue < 0.79) { // 79% of Vessels are Cargos
+			//Tanker oder Cargo
+			/* Cargo
+			 * 3x 	16x400x60 	22kn 3%
+			 * 10x 	15.5x365x50 24kn 10%
+			 * 16x 	15x300x30	24kn 17%
+			 * 18x 	15x210x30	14kn 19%
+			 * 21x	10x155x25	 	 22%
+			 * 24x	6x110x17 	13kn26%
+			 */
+			if (randomVesselType <= 3) {
+				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 16, 400, 60, 22);
+			} else if (3 < randomVesselType & randomVesselType <= 13) {
+				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 15.5, 365, 50, 24);
+			} else if (13 < randomVesselType & randomVesselType <= 30) {
+				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 15, 300, 30, 24);
+			} else if (30 < randomVesselType & randomVesselType <= 49) {
+				return new SmallContainer(directionHamburg, humanErrorInShipLength, scale, 15, 210, 30, 14);
+			} else if (49 < randomVesselType & randomVesselType <= 71) {
+				return new SmallContainer(directionHamburg, humanErrorInShipLength, scale, 10, 155, 25, 14);
+			} else {
+				return new SmallContainer(directionHamburg, humanErrorInShipLength, scale, 6, 110, 17, 13);
+			}
 		} else {
-			return new Tanker(directionHamburg, humanErrorInShipLength, scale);
+			/*
+			 * Tanker
+			 * 1x 8x250x45		13kn 4%
+			 * 3x 12x180x29 	15kn 12%
+			 * 3x 6x138x21 		10kn 12%
+			 * 7x 6x117x17 		15kn 28%
+			 * 6x 7x100x16 		13kn 24%
+			 * 5x 4x70x12 		12kn 20%
+			 */
+			if (randomVesselType <= 4) {
+				return new LargeTanker(directionHamburg, humanErrorInShipLength, scale, 8, 250, 45, 13);
+			} else if (4 < randomVesselType & randomVesselType <= 16) {
+				return new LargeTanker(directionHamburg, humanErrorInShipLength, scale, 12, 180, 29, 15);
+			} else if (16 < randomVesselType & randomVesselType <= 28) {
+				return new LargeTanker(directionHamburg, humanErrorInShipLength, scale, 6, 138, 21, 10);
+			} else if (28 < randomVesselType & randomVesselType <= 56) {
+				return new LargeTanker(directionHamburg, humanErrorInShipLength, scale, 6, 117, 17, 15);
+			} else if (56 < randomVesselType & randomVesselType <= 80) {
+				return new SmallTanker(directionHamburg, humanErrorInShipLength, scale, 7, 100, 16, 13);
+			} else {
+				return new SmallTanker(directionHamburg, humanErrorInShipLength, scale, 4, 70, 12, 12);
+			}
 		}
 	}
 
@@ -374,28 +422,32 @@ public class Elbe extends SimState {
 	}
 
 	public void increaseShipCount(AbstractVessel vessel) {
-		if (vessel instanceof ContainerShip) {
-			numContainerShip++;
-		} else if (vessel instanceof Tanker) {
-			numTankerShip++;
+		if (vessel instanceof LargeContainer) { // TODO add
+			numLargeContainerShips++;
+		} else if (vessel instanceof SmallContainer) {
+			numSmallContainerShips++;
+		} else if (vessel instanceof LargeTanker) {
+			numLargeTanker++;
 		} else {
-			numOtherShip++; // TODO improve if else with other ships
+			numSmallTanker++;
 		}
 	}
 
 	public void decreaseShipCount(AbstractVessel vessel) {
-		if (vessel instanceof ContainerShip) {
-			numContainerShip--;
-			numContainerShipSinceLastMeasurement++;
-		} else if (vessel instanceof Tanker) {
-			numTankerShip--;
-			numTankerShipSinceLastMeasurement++;
+		if (vessel instanceof LargeContainer) { // TODO add
+			numLargeContainerShips--;
+			numLargeContainerShipsSinceLastMeasurement++;
+		} else if (vessel instanceof SmallContainer) {
+			numSmallContainerShips--;
+			numSmallContainerShipsSinceLastMeasurement++;
+		} else if (vessel instanceof LargeTanker) {
+			numLargeTanker--;
+			numLargeTankerSinceLastMeasurement++;
 		} else {
-			numOtherShip--; // TODO improve if else with other ships
-			numOtherShipSinceLastMeasurement++;
+			numSmallTanker--;
+			numSmallTankerSinceLastMeasurement++;
 		}
 	}
-
 
 	private void renderElbe() {
 		calculateInitialValues();
@@ -529,12 +581,19 @@ public class Elbe extends SimState {
 		this.humanErrorInShipLength = humanErrorInShipLength;
 	}
 
-
 	public double getSecurityLevelGroundToDraught() {
 		return securityLevelGroundToDraught;
 	}
 
 	public void setSecurityLevelGroundToDraught(double securityLevelGroundToDraught) {
 		this.securityLevelGroundToDraught = securityLevelGroundToDraught;
+	}
+
+	public double getMinimumShips() {
+		return minimumShips;
+	}
+
+	public void setMinimumShips(double minimumShips) {
+		this.minimumShips = minimumShips;
 	}
 }

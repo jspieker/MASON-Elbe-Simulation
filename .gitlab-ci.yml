@@ -1,7 +1,7 @@
 test:
   stage: test
   script:
-    - "~/maven/bin/mvn install -B"
+    - "~/maven/bin/mvn clean install -B"
     - "cat target/site/jacoco/index.html"
   artifacts:
     paths:

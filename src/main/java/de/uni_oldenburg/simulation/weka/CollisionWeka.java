@@ -22,14 +22,15 @@ public class CollisionWeka extends Weka {
 		long timeRun = (long) wekaEntry[0];
 		boolean isTideActive = (boolean) wekaEntry[1];
 		boolean isElbeExtended = (boolean) wekaEntry[2];
-		int numContainerShip = (int) wekaEntry[3];
-		int numTankerShip = (int) wekaEntry[4];
-		int numOtherShip = (int) wekaEntry[5];
-		int collisions = (int) wekaEntry[6];
-		double humanError = (double) wekaEntry[7];
-		int waitingShips = (int) wekaEntry[8];
+		int numLargeContainerShips = (int) wekaEntry[3];
+		int numSmallContainerShips = (int) wekaEntry[4];
+		int numLargeTanker = (int) wekaEntry[5];
+		int numSmallTanker = (int) wekaEntry[6];
+		int collisions = (int) wekaEntry[7];
+		double humanError = (double) wekaEntry[8];
+		int waitingShips = (int) wekaEntry[9];
 
-		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeExtended ? 1 : 0), numContainerShip, numTankerShip, numOtherShip, collisions, humanError, waitingShips};
+		double[] rowValuesData = new double[]{timeRun, (isTideActive ? 1 : 0), (isElbeExtended ? 1 : 0), numLargeContainerShips, numSmallContainerShips, numLargeTanker, numSmallTanker, collisions, humanError, waitingShips};
 		DenseInstance denseInstance = new DenseInstance(1.0, rowValuesData);
 		return instances.add(denseInstance);
 	}
@@ -40,10 +41,10 @@ public class CollisionWeka extends Weka {
 		Attribute timeRunAttribute = new Attribute("time");
 		Attribute isTideActiveAttribute = new Attribute("tideActive");
 		Attribute isElbeExtendedAttribute = new Attribute("elbeExtended");
-		// TODO num of ships normal or heavy ship
-		Attribute numContainerShipAttribute = new Attribute("containerShip");
-		Attribute numTankerShipAttribute = new Attribute("tankerShip");
-		Attribute numOtherShipAttribute = new Attribute("otherShip");
+		Attribute numLargeContainerShipAttribute = new Attribute("largeContainerShips");
+		Attribute numSmallContainerShipAttribute = new Attribute("smallContainerShips");
+		Attribute numLargeTankerAttribute = new Attribute("largeTanker");
+		Attribute numSmallTankerAttribute = new Attribute("smallTanker");
 		Attribute collisionsAttribute = new Attribute("collisions");
 		Attribute humanErrorInShipLength = new Attribute("humanError");
 		Attribute waitingShips = new Attribute("waitingShips");
@@ -51,9 +52,10 @@ public class CollisionWeka extends Weka {
 		attributes.add(timeRunAttribute);
 		attributes.add(isTideActiveAttribute);
 		attributes.add(isElbeExtendedAttribute);
-		attributes.add(numContainerShipAttribute);
-		attributes.add(numTankerShipAttribute);
-		attributes.add(numOtherShipAttribute);
+		attributes.add(numLargeContainerShipAttribute);
+		attributes.add(numSmallContainerShipAttribute);
+		attributes.add(numLargeTankerAttribute);
+		attributes.add(numSmallTankerAttribute);
 		attributes.add(collisionsAttribute);
 		attributes.add(humanErrorInShipLength);
 		attributes.add(waitingShips);
