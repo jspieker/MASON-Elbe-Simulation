@@ -189,7 +189,7 @@ public class Elbe extends SimState {
 
 		for (AbstractVessel vessel1 : vessels) {
 			for (AbstractVessel vessel2 : vessels) {
-				if (!toRemove.contains(vessel1) && !toRemove.contains(vessel2)) {
+				if (!toRemove.contains(vessel1) || !toRemove.contains(vessel2)) { // must be or connection if three or mor hips collide
 					double widthFromCenter1 = vessel1.getWidth() / 2;
 					double lengthFromCenter1 = vessel1.getLength() / 2 / scale;
 					double widthFromCenter2 = vessel2.getWidth() / 2;
