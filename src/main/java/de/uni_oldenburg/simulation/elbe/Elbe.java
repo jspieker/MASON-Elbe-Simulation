@@ -20,9 +20,9 @@ public class Elbe extends SimState {
 	public DoubleGrid2D tidesMap;
 	public Continuous2D vesselGrid;
 
-	private final int[] FAIRWAY_LENGTH = {507, 230, 230, 200, 48};
+	private final int[] FAIRWAY_LENGTH = {966, 704, 65, 154, 135};
 	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED = {400, 300, 250, 250, 230};
-	private final int[] FAIRWAY_WIDTH_EXTENDED = {400, 320, 380, 250, 250};
+	private final int[] FAIRWAY_WIDTH_EXTENDED = {400, 320, 385, 270, 250};
 	private int[] FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 	private final int MARGIN = 25;
 
