@@ -2,6 +2,7 @@ package de.uni_oldenburg.simulation.vessels;
 
 import de.uni_oldenburg.simulation.elbe.Elbe;
 import sim.engine.*;
+import sim.portrayal.Orientable2D;
 import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 
@@ -10,7 +11,7 @@ import java.awt.*;
 /**
  * The AbstractVessel combines the properties of all vessels
  */
-public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
+public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable, Orientable2D {
 
 	// Properties
 	final private double draught;
@@ -81,6 +82,14 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		currentYaw = getTargetYaw();
 
 		elbe.vesselGrid.setObjectLocation(this, getTargetPosition());
+	}
+
+	public double orientation2D() {
+		return 50;
+	}
+
+	public void setOrientation2D(double orientation) {
+
 	}
 
 
@@ -182,9 +191,9 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 			yaw = 4.71239; // 270 deg
 		}
 
-		// Look for land (half a ship width)
+		// Look for land (half a ship width to one ship width)
 		Double2D minRefPoint = currentPosition.add(new Double2D(0, -getWidth()).rotate(yaw).rotate(1.5708));
-		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.1).rotate(yaw).rotate(1.5708));
+		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.5).rotate(yaw).rotate(1.5708));
 		if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || vesselInFront()) {
 			// Too near to land
 			yaw -= 0.785398; // 45 deg, turn left
