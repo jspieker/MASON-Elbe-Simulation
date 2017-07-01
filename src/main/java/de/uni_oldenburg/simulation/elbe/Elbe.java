@@ -20,8 +20,8 @@ public class Elbe extends SimState {
 	public DoubleGrid2D tidesMap;
 	public Continuous2D vesselGrid;
 
-	private final int[] FAIRWAY_LENGTH = {507, 230, 230, 200, 48}; // TODO find exact values in relation
-	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED = {400, 300, 250, 250, 230}; // TODO find exact values for #2 #3 #4 (#0 and #1 are correct, others mostly)
+	private final int[] FAIRWAY_LENGTH = {507, 230, 230, 200, 48};
+	private final int[] FAIRWAY_WIDTH_NOT_EXTENDED = {400, 300, 250, 250, 230};
 	private final int[] FAIRWAY_WIDTH_EXTENDED = {400, 320, 380, 250, 250};
 	private int[] FAIRWAY_WIDTH = FAIRWAY_WIDTH_NOT_EXTENDED;
 	private final int MARGIN = 25;
@@ -359,14 +359,23 @@ public class Elbe extends SimState {
 			// Calculate width transitions
 			int tempTopIndex = ((fairwayWidthMax - FAIRWAY_WIDTH[elbeSection]) / 2) + MARGIN;
 			int tempBottomIndex = FAIRWAY_WIDTH[elbeSection] - tempWidthHelper;
+			// Draw transitions if the following elbeSection is narrower than the previous one
 			for (int i = (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]); i++) {
-				if (tempWidthHelper > 0) {
-					// Draw transitions if the following elbeSection is narrower than the previous one
-					for (int j = tempTopIndex; j < tempTopIndex + tempWidthHelper + tempBottomIndex; j++) {
+				for (int j = tempTopIndex; j < tempTopIndex + tempWidthHelper + tempBottomIndex; j++) {
+					elbeMap.field[i][j] = FAIRWAY_ID;
+				}
+				tempTopIndex++;
+				tempBottomIndex -= 2;
+			}
+			// Draw transitions if the following elbeSection is wider than the previous one
+			if (tempWidthHelper < 0) {
+				tempWidthHelper = tempWidthHelper * -1;
+				for (int i = (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]) - tempWidthHelper; i < (MARGIN + tempLengthHelper + FAIRWAY_LENGTH[elbeSection]); i++) {
+					for (int j = tempTopIndex + tempBottomIndex - tempWidthHelper; j > tempTopIndex - 2; j--) {
 						elbeMap.field[i][j] = FAIRWAY_ID;
 					}
-					tempTopIndex++;
-					tempBottomIndex -= 2;
+					tempTopIndex--;
+					tempBottomIndex += 2;
 				}
 			}
 			tempLengthHelper += FAIRWAY_LENGTH[elbeSection];
