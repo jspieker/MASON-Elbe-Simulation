@@ -72,7 +72,7 @@ public class Elbe extends SimState {
 	private ElbeWithUI elbeWithUI;
 	private final double elbeLengthToHamburg = 84900; // in meter
 	private double scale = 50;
-	private double minimumShips = 10;
+	private int minimumShips = 10;
 
 	public Elbe(long seed) {
 		super(seed);
@@ -598,11 +598,11 @@ public class Elbe extends SimState {
 		this.securityLevelGroundToDraught = securityLevelGroundToDraught;
 	}
 
-	public double getMinimumShips() {
+	public int getMinimumShips() {
 		return minimumShips;
 	}
 
-	public void setMinimumShips(double minimumShips) {
+	public void setMinimumShips(int minimumShips) {
 		this.minimumShips = minimumShips;
 	}
 }
