@@ -27,7 +27,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	private Double2D currentPosition;
 	private Elbe elbe;
 
-	private final double speedConstant = 30.8666666664; //1 kt = 30.8666666664 m/min
+	private final double speedConstant = 15.433333333; //1 kt = 15.433333333 m/30s
 	private final double speedScale = 1.0; // additional scale to prevent the ships from beaming through the elbe! // TODO maybe we need this scale to adapt the speed.
 
 	/**
