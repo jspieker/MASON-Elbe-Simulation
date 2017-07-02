@@ -44,6 +44,9 @@ public class Elbe extends SimState {
 	private final int SEA_POINT_ID = 2;
 	private final int DOCKYARD_POINT_ID = 3;
 
+	int lastShipArrivedFromDocks = 15;
+	int lastShipArrivedFromSea = 15;
+
 	private double humanErrorInShipLength = 15;
 	private double securityLevelGroundToDraught = 2.5; // TODO is that correct?
 
@@ -64,8 +67,8 @@ public class Elbe extends SimState {
 	private int collisionCount;
 	private int waitingShipsCount;
 	// Tide
-	private final long HIGHT_TIDE_PERIOD = 19670 / 60;
-	private final long LOW_TIDE_PERIOD = 24505 / 60;
+	private final long HIGHT_TIDE_PERIOD = 19670 / 30;
+	private final long LOW_TIDE_PERIOD = 24505 / 30;
 
 	// Auxiliary properties
 	private boolean ranAlready = false;
@@ -263,11 +266,25 @@ public class Elbe extends SimState {
 	}
 
 	private boolean newShipArrivedFromSea() {
-		return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
+
+		if (lastShipArrivedFromSea < 15) {
+			lastShipArrivedFromSea++;
+		} else {
+			lastShipArrivedFromSea = 0;
+			return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
+		}
+		return false;
 	}
 
 	private boolean newShipArrivedFromDocks() {
-		return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
+
+		if (lastShipArrivedFromDocks < 15) {
+			lastShipArrivedFromDocks++;
+		} else {
+			lastShipArrivedFromDocks = 0;
+			return !(vesselGrid.getAllObjects().size() >= minimumShips) || random.nextBoolean(0.02);
+		}
+		return false;
 	}
 
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
@@ -286,11 +303,11 @@ public class Elbe extends SimState {
 			 * 24x	6x110x17 	13kn 26%
 			 */
 			if (randomVesselType <= 3) {
-				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 16, 400, 60, 22);
+				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 16, 400, 60, 15);
 			} else if (3 < randomVesselType & randomVesselType <= 13) {
-				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 15.5, 365, 50, 24);
+				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 15.5, 365, 50, 15);
 			} else if (13 < randomVesselType & randomVesselType <= 30) {
-				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 15, 300, 30, 24);
+				return new LargeContainer(directionHamburg, humanErrorInShipLength, scale, 15, 300, 30, 15);
 			} else if (30 < randomVesselType & randomVesselType <= 49) {
 				return new SmallContainer(directionHamburg, humanErrorInShipLength, scale, 15, 210, 30, 14);
 			} else if (49 < randomVesselType & randomVesselType <= 71) {

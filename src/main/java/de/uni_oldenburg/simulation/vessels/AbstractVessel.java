@@ -11,7 +11,7 @@ import java.awt.*;
 /**
  * The AbstractVessel combines the properties of all vessels
  */
-public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable, Orientable2D {
+public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
 
 	// Properties
 	final private double draught;
@@ -79,19 +79,16 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		// TODO: dynamically adopt speed (with respect to vessel draught)
 		currentSpeed = getTargetSpeed();
+		double targetYaw = getTargetYaw();
+		/*if (currentYaw == 0) {
+			currentYaw = targetYaw;
+		} else {
+			currentYaw += currentYaw+((targetYaw-currentYaw)/6);
+		}*/
 		currentYaw = getTargetYaw();
 
 		elbe.vesselGrid.setObjectLocation(this, getTargetPosition());
 	}
-
-	public double orientation2D() {
-		return 50;
-	}
-
-	public void setOrientation2D(double orientation) {
-
-	}
-
 
 	/**
 	 * Returns the predicted position within 1 step (=1 minute) with the current speed and yaw
@@ -194,13 +191,15 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		// Look for land (half a ship width to one ship width)
 		Double2D minRefPoint = currentPosition.add(new Double2D(0, -getWidth()).rotate(yaw).rotate(1.5708));
 		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.5).rotate(yaw).rotate(1.5708));
-		if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || vesselInFront()) {
-			// Too near to land
-			yaw -= 0.785398; // 45 deg, turn left
-		} else if (elbe.elbeMap.get((int) Math.round(maxRefPoint.x), (int) Math.round(maxRefPoint.y)) == 1 && !vesselToTheRight()) {
-			// No land in sight
-			yaw += 0.785398; // 45 deg, turn right
-		}
+		try {
+			if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || vesselInFront()) {
+				// Too near to land
+				yaw -= 0.785398; // 45 deg, turn left
+			} else if (elbe.elbeMap.get((int) Math.round(maxRefPoint.x), (int) Math.round(maxRefPoint.y)) == 1 && !vesselToTheRight()) {
+				// No land in sight
+				yaw += 0.785398; // 45 deg, turn right
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {}
 
 		return yaw;
 	}
