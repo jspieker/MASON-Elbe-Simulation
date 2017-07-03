@@ -39,11 +39,11 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 * @param targetSpeed            Target speed of the vessel
 	 * @param directionHamburg       True if moving towards docks, else false
 	 * @param humanErrorInShipLength The human error in ship length
+	 * @param scale                  The s-Scale in meters
 	 */
 	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
-		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale},
-				new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
+		super(getShapeX(directionHamburg, length, scale), getShapeY(directionHamburg, width), new Color(255, 255, 0), 1, true);
 
 		this.draught = draught;
 		this.length = length;
@@ -53,6 +53,38 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		this.humanErrorInShipLength = humanErrorInShipLength;
 		shipScale = scale;
 	}
+
+	/**
+	 * Get the x values of the points connecting the shape of the vessel
+	 *
+	 * @param directionHamburg       True if moving towards docks, else false
+	 * @param length                 Length of the vessel
+	 * @param scale                  The s-Scale in meters
+	 * @return                       The x values of the shape
+	 */
+	private static double[] getShapeX(boolean directionHamburg, double length, double scale) {
+		if (directionHamburg) {
+			return new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale};
+		} else {
+			return new double[]{length / 2.0 / scale, -length / 4.0 / scale, -length / 2.0 / scale, -length / 4.0 / scale, length / 2.0 / scale};
+		}
+	}
+
+	/**
+	 * Get the y values of the points connecting the shape of the vessel
+	 *
+	 * @param directionHamburg       True if moving towards docks, else false
+	 * @param width                  Width of the vessel
+	 * @return                       The y values of the shape
+	 */
+	private static double[] getShapeY(boolean directionHamburg, double width) {
+		if (directionHamburg) {
+			return new double[]{-width / 2, -width / 2, 0, width / 2, width / 2};
+		} else {
+			return new double[]{width / 2, width / 2, 0, -width / 2, -width / 2};
+		}
+	}
+
 
 	/**
 	 * Move one simulation step (1 min)
