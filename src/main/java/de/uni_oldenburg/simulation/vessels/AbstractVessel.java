@@ -11,7 +11,7 @@ import java.awt.*;
 /**
  * The AbstractVessel combines the properties of all vessels
  */
-public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable, Orientable2D {
+public abstract class AbstractVessel extends ShapePortrayal2D implements Steppable {
 
 	// Properties
 	final private double draught;
@@ -27,7 +27,7 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	private Double2D currentPosition;
 	private Elbe elbe;
 
-	private final double speedConstant = 30.8666666664; //1 kt = 30.8666666664 m/min
+	private final double speedConstant = 15.433333333; //1 kt = 15.433333333 m/30s
 	private final double speedScale = 1.0; // additional scale to prevent the ships from beaming through the elbe! // TODO maybe we need this scale to adapt the speed.
 
 	/**
@@ -39,11 +39,11 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 	 * @param targetSpeed            Target speed of the vessel
 	 * @param directionHamburg       True if moving towards docks, else false
 	 * @param humanErrorInShipLength The human error in ship length
+	 * @param scale                  The s-Scale in meters
 	 */
 	public AbstractVessel(double draught, double length, double width, double targetSpeed, boolean directionHamburg, double humanErrorInShipLength, double scale) {
 
-		super(new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale},
-				new double[]{-width / 2, -width / 2, 0, width / 2, width / 2}, new Color(255, 255, 0), 1, true);
+		super(getShapeX(directionHamburg, length, scale), getShapeY(directionHamburg, width), new Color(255, 255, 0), 1, true);
 
 		this.draught = draught;
 		this.length = length;
@@ -53,6 +53,38 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		this.humanErrorInShipLength = humanErrorInShipLength;
 		shipScale = scale;
 	}
+
+	/**
+	 * Get the x values of the points connecting the shape of the vessel
+	 *
+	 * @param directionHamburg       True if moving towards docks, else false
+	 * @param length                 Length of the vessel
+	 * @param scale                  The s-Scale in meters
+	 * @return                       The x values of the shape
+	 */
+	private static double[] getShapeX(boolean directionHamburg, double length, double scale) {
+		if (directionHamburg) {
+			return new double[]{-length / 2.0 / scale, length / 4.0 / scale, length / 2.0 / scale, length / 4.0 / scale, -length / 2.0 / scale};
+		} else {
+			return new double[]{length / 2.0 / scale, -length / 4.0 / scale, -length / 2.0 / scale, -length / 4.0 / scale, length / 2.0 / scale};
+		}
+	}
+
+	/**
+	 * Get the y values of the points connecting the shape of the vessel
+	 *
+	 * @param directionHamburg       True if moving towards docks, else false
+	 * @param width                  Width of the vessel
+	 * @return                       The y values of the shape
+	 */
+	private static double[] getShapeY(boolean directionHamburg, double width) {
+		if (directionHamburg) {
+			return new double[]{-width / 2, -width / 2, 0, width / 2, width / 2};
+		} else {
+			return new double[]{width / 2, width / 2, 0, -width / 2, -width / 2};
+		}
+	}
+
 
 	/**
 	 * Move one simulation step (1 min)
@@ -79,19 +111,16 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 
 		// TODO: dynamically adopt speed (with respect to vessel draught)
 		currentSpeed = getTargetSpeed();
+		double targetYaw = getTargetYaw();
+		/*if (currentYaw == 0) {
+			currentYaw = targetYaw;
+		} else {
+			currentYaw += currentYaw+((targetYaw-currentYaw)/6);
+		}*/
 		currentYaw = getTargetYaw();
 
 		elbe.vesselGrid.setObjectLocation(this, getTargetPosition());
 	}
-
-	public double orientation2D() {
-		return 50;
-	}
-
-	public void setOrientation2D(double orientation) {
-
-	}
-
 
 	/**
 	 * Returns the predicted position within 1 step (=1 minute) with the current speed and yaw
@@ -194,13 +223,15 @@ public abstract class AbstractVessel extends ShapePortrayal2D implements Steppab
 		// Look for land (half a ship width to one ship width)
 		Double2D minRefPoint = currentPosition.add(new Double2D(0, -getWidth()).rotate(yaw).rotate(1.5708));
 		Double2D maxRefPoint = currentPosition.add(new Double2D(0, -getWidth() * 1.5).rotate(yaw).rotate(1.5708));
-		if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || vesselInFront()) {
-			// Too near to land
-			yaw -= 0.785398; // 45 deg, turn left
-		} else if (elbe.elbeMap.get((int) Math.round(maxRefPoint.x), (int) Math.round(maxRefPoint.y)) == 1 && !vesselToTheRight()) {
-			// No land in sight
-			yaw += 0.785398; // 45 deg, turn right
-		}
+		try {
+			if (elbe.elbeMap.get((int) Math.round(minRefPoint.x), (int) Math.round(minRefPoint.y)) == 0 || vesselInFront()) {
+				// Too near to land
+				yaw -= 0.785398; // 45 deg, turn left
+			} else if (elbe.elbeMap.get((int) Math.round(maxRefPoint.x), (int) Math.round(maxRefPoint.y)) == 1 && !vesselToTheRight()) {
+				// No land in sight
+				yaw += 0.785398; // 45 deg, turn right
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {}
 
 		return yaw;
 	}

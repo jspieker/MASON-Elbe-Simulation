@@ -77,7 +77,7 @@ public class ElbeWithUI extends GUIState {
 
 		// Draw the tide values
 		tidesPortrayal.setField(elbe.tidesMap);
-		tidesPortrayal.setMap(new SimpleColorMap(10, 20, Color.WHITE, Color.BLUE));
+		tidesPortrayal.setMap(new SimpleColorMap(15, 20, Color.WHITE, new Color(30, 30, 255)));
 
 		// Show the Elbe map
 		elbePortrayal.setField(elbe.elbeMap);

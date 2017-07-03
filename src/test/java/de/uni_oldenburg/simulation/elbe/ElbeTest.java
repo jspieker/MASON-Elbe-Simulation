@@ -14,7 +14,7 @@ public class ElbeTest {
 	private Elbe instance;
 	private long highTidePeriod = 25000;
 	private long lowTidePeriod = 20000;
-	private int elbeLength = 507 + 230 + 230 + 200 + 48;
+	private int elbeLength = 966 + 704 + 65 + 154 + 135;
 
 	long seed = System.currentTimeMillis();
 
