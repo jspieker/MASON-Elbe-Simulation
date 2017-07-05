@@ -23,6 +23,11 @@ public abstract class BarPlot extends ApplicationFrame implements Plot {
 		super("Elbe Events");
 	}
 
+	/**
+	 * Creates a new {@link CategoryDataset} by adding specific attributes from the passed {@link Instances} argument in the {@link #plot(Instances)} method which calls this method.
+	 *
+	 * @return
+	 */
 	protected abstract CategoryDataset createDataset();
 
 	@Override
