@@ -73,7 +73,5 @@ public class CollisionWeka extends Weka {
 		}
 	}
 
-	// use waterlevel, collision, xCoordinate, time and tideSet
-
 }
 

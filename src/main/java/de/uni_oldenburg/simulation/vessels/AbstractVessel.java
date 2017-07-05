@@ -2,7 +2,6 @@ package de.uni_oldenburg.simulation.vessels;
 
 import de.uni_oldenburg.simulation.elbe.Elbe;
 import sim.engine.*;
-import sim.portrayal.Orientable2D;
 import sim.portrayal.simple.ShapePortrayal2D;
 import sim.util.*;
 

@@ -14,6 +14,9 @@ import sim.util.Double2D;
 
 import java.util.ArrayList;
 
+/**
+ * The Elbe class is the system of the simulation. The class starts the simulation, organizes the schedules, ships, tide and different counter for the Weka evaluation.
+ */
 public class Elbe extends SimState {
 
 	public IntGrid2D elbeMap;
@@ -159,6 +162,12 @@ public class Elbe extends SimState {
 		}, 1);
 	}
 
+	/**
+	 * Checks whether  a new vessel needs to wait at Cuxhaven or Hamnburg. To decide whether the ship can enter the Elbe the time needed by the vessel to get to the other end is approximated and for each time step within this interval the draught of the ship is compared to the water level and the security gap to the ground.
+	 *
+	 * @param newVessel The new vessel that wants to enter the elbe.
+	 * @return A boolean value whether the vessel can enter the Elbe (false) or needs to wait (true).
+	 */
 	private boolean vesselNeedsToWait(AbstractVessel newVessel) {
 
 		// determine worstCaseTime
@@ -177,6 +186,9 @@ public class Elbe extends SimState {
 		return false;
 	}
 
+	/**
+	 * A method that checks for land and ship collisions by using the ships upper and lower limits in both the x and y coordinate. For land collisions the upper and lower y limits of the elbe are compared to those of the ship. The method removes a ship if a collision is detected.
+	 */
 	private void checkForCollision() {
 		ArrayList<AbstractVessel> vessels = new ArrayList<>();
 		ArrayList<AbstractVessel> toRemove = new ArrayList<>();
@@ -248,6 +260,12 @@ public class Elbe extends SimState {
 		}
 	}
 
+	/**
+	 * A method to check whether a ship is ashore or has hit the shore.
+	 *
+	 * @param abstractVessel The vessel to check.
+	 * @return A boolean value whether the ships is ashore (true) or not (false).
+	 */
 	private boolean shipIsAshore(AbstractVessel abstractVessel) {
 
 		Double2D double2D = abstractVessel.getCurrentPosition();
@@ -265,6 +283,11 @@ public class Elbe extends SimState {
 		return false;
 	}
 
+	/**
+	 * Decides whether a new ship arrived from sea.
+	 *
+	 * @return A boolean value determine whether a new ship has arrived (true) or not (false).
+	 */
 	private boolean newShipArrivedFromSea() {
 
 		if (lastShipArrivedFromSea < 15) {
@@ -276,6 +299,11 @@ public class Elbe extends SimState {
 		return false;
 	}
 
+	/**
+	 * Decides whether a new ship arrived from the docks (Hamburg).
+	 *
+	 * @return A boolean value determine whether a new ship has arrived (true) or not (false).
+	 */
 	private boolean newShipArrivedFromDocks() {
 
 		if (lastShipArrivedFromDocks < 15) {
@@ -287,6 +315,12 @@ public class Elbe extends SimState {
 		return false;
 	}
 
+	/**
+	 * Gets a new vessel and sets the vessel direction by using the passed argument. The vessel type is decided by using two random values and the distribution researched by real the real data.
+	 *
+	 * @param directionHamburg Whether the ship is to be started from Hamburg or not.
+	 * @return The new vessel as its abstract super class.
+	 */
 	private AbstractVessel getNewVessel(boolean directionHamburg) {
 
 		double randomValue = random.nextDouble();
@@ -437,30 +471,48 @@ public class Elbe extends SimState {
 		dockyardPositionX = fairwayLengthTotal + MARGIN;
 	}
 
+	/**
+	 * Initializes Weka witht the path to write the *.arff files and to check for already existing files.
+	 *
+	 * @param WEKAPath The Weka path either relative to the running jar file or absolute.
+	 */
 	public void initWEKA(final String WEKAPath) {
 		waterLevelWEKA = new WaterLevelWeka(WEKAPath);
 		collisionWEKA = new CollisionWeka(WEKAPath);
 	}
 
+	/**
+	 * Resets the Weka instances and its values.
+	 */
 	public void resetWEKA() {
 		waterLevelWEKA.resetWEKA();
 		collisionWEKA.resetWEKA();
 	}
 
+	/**
+	 * Increases the internal ship count for the passes vessels type.
+	 *
+	 * @param vessel The vessel for which the type is to be determined and the counter to be increased.
+	 */
 	public void increaseShipCount(AbstractVessel vessel) {
-		if (vessel instanceof LargeContainer) { // TODO add
+		if (vessel instanceof LargeContainer) {
 			numLargeContainerShips++;
 		} else if (vessel instanceof SmallContainer) {
 			numSmallContainerShips++;
 		} else if (vessel instanceof LargeTanker) {
 			numLargeTanker++;
-		} else {
+		} else { // small tanker
 			numSmallTanker++;
 		}
 	}
 
+	/**
+	 * Increases the internal ship count for the passes vessels type.
+	 *
+	 * @param vessel The vessel for which the type is to be determined and the counter to be decreased.
+	 */
 	public void decreaseShipCount(AbstractVessel vessel) {
-		if (vessel instanceof LargeContainer) { // TODO add
+		if (vessel instanceof LargeContainer) {
 			numLargeContainerShips--;
 			numLargeContainerShipsSinceLastMeasurement++;
 		} else if (vessel instanceof SmallContainer) {
@@ -469,12 +521,15 @@ public class Elbe extends SimState {
 		} else if (vessel instanceof LargeTanker) {
 			numLargeTanker--;
 			numLargeTankerSinceLastMeasurement++;
-		} else {
+		} else { // small tanker
 			numSmallTanker--;
 			numSmallTankerSinceLastMeasurement++;
 		}
 	}
 
+	/**
+	 * Renders the elbe given its different set of maps.
+	 */
 	private void renderElbe() {
 		calculateInitialValues();
 		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, HIGHT_TIDE_PERIOD, LOW_TIDE_PERIOD, true, isTideActive);
@@ -488,6 +543,9 @@ public class Elbe extends SimState {
 		drawObjects();
 	}
 
+	/**
+	 * Renders the elbe given its different set of maps except the vessel grid. It does not calculate the initial values again.
+	 */
 	private void renderElbeWithoutInit() {
 		dynamicWaterLevel = new DynamicWaterLevel(gridWidth, HIGHT_TIDE_PERIOD, LOW_TIDE_PERIOD, true, isTideActive);
 

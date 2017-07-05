@@ -5,7 +5,7 @@ import weka.gui.explorer.Explorer;
 import weka.gui.explorer.PreprocessPanel;
 
 /**
- * Starts the weka Explorer with the given instances.
+ * Starts the weka Explorer with the given instances to enable inline data analyzing from the Weka gui.
  */
 public class WEKAExplorer {
 
