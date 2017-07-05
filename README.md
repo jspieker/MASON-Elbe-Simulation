@@ -1,7 +1,7 @@
 [![build status](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/badges/master/build.svg)](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/commits/master) [![coverage report](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/badges/master/coverage.svg)](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/commits/master)
 
 ## Elbe-Simulation
-The fabulous Elbe simulation...
+The fabulous Elbe simulation with multiple options to change the behavior of ships within the elbe. Weka is included in this simulation as a powerful evaluation and data analyzing tool. The Elbe-Simulation uses MASON and its general structure as well as its auxiliary methods to easily enable a multi-agent simulation with the ships.
 
 ## Installation guide
 ```bash
