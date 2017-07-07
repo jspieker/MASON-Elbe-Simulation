@@ -122,7 +122,7 @@ public class Elbe extends SimState {
 			if (schedule.getSteps() % (HIGHT_TIDE_PERIOD + LOW_TIDE_PERIOD) == 0 && schedule.getSteps() != 0) {
 				collisionWEKA.addWEKAEntry(new Object[]{schedule.getSteps(), isTideActive(), getIsExtended(),
 						numLargeContainerShips + numLargeContainerShipsSinceLastMeasurement, numSmallContainerShips + numSmallContainerShipsSinceLastMeasurement, numLargeTanker + numLargeTankerSinceLastMeasurement,
-						numSmallTanker + numSmallTankerSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount});
+						numSmallTanker + numSmallTankerSinceLastMeasurement, collisionCount, humanErrorInShipLength, waitingShipsCount, securityLevelGroundToDraught});
 				numLargeContainerShipsSinceLastMeasurement = 0;
 				numSmallContainerShipsSinceLastMeasurement = 0;
 				numLargeTankerSinceLastMeasurement = 0;
