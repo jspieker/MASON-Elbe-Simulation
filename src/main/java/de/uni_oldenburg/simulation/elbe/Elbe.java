@@ -566,8 +566,8 @@ public class Elbe extends SimState {
 		return (((fairwayWidthMax - FAIRWAY_WIDTH[currentElbeSection]) / 2) + MARGIN + FAIRWAY_WIDTH[currentElbeSection]);
 	}
 
-	public int getFairwayLengthTotal() {
-		return fairwayLengthTotal;
+	public double getFairwayLengthTotal() {
+		return fairwayLengthTotal*scale;
 	}
 
 	public int getFairwayWidthMax() {
