@@ -13,7 +13,7 @@ The simulation is based on the [MASON simulation framework](http://cs.gmu.edu/~e
 
 __Developed by__ Jan Dirk Bischoff, Alexander Eguchi, Adrian Jagusch, Hendrik Kahlen and Jannik Spieker
 
-## Class diagrams
+## UML Diagrams
 ![](Klassendiagramm-Elbe.png)
 ![](Klassendiagramm-Tides.png)
 ![](Klassendiagramm-Vessels.png)
