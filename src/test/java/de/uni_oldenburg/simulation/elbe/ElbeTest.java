@@ -34,7 +34,7 @@ public class ElbeTest {
 
 		assertEquals("The fairway max width must meet the expected one.", 400, instance.getFairwayWidthMax());
 
-		assertEquals("The fairway total length must meet the expected one.", elbeLength, instance.getFairwayLengthTotal());
+		assertEquals("The fairway total length must meet the expected one.", 101200.0, instance.getFairwayLengthTotal(), 0);
 
 		// TODO further test but not in detail
 	}
