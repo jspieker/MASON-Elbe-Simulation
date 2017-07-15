@@ -1,5 +1,3 @@
-[![build status](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/badges/master/build.svg)](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/commits/master) [![coverage report](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/badges/master/coverage.svg)](https://gitlab.uni-oldenburg.de/elbe-simulation/Simulation/commits/master)
-
 # Elbe Simulation
 This is a simulation of the maritime traffic on the Elbe river between Hamburg and the north sea.
 
